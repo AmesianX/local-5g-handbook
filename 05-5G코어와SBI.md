@@ -4,7 +4,7 @@
 
 4 장에서 5G 코어가 "제어 평면을 역할별로 쪼갠 것"이라고 했다. 쪼갰으면 서로 말을 해야 한다. 그 말하는 방식이 이 장의 주제이고, 이름은 **SBI(Service Based Interface, 서비스 기반 인터페이스)**다. 이름이 거창하지만 뜻은 독자가 매일 하는 일이다.
 
-각 조각(이제부터 **NF, Network Function** 이라 부른다)은 **HTTP/2 서버**가 되어 자기가 할 수 있는 일을 REST API 로 내놓는다. 다른 조각이 그 일이 필요하면 **HTTP/2 클라이언트**가 되어 호출한다. 응답은 JSON 이다. 그것이 전부다. 4G 의 Diameter 는 "A 와 B 사이에 전용 인터페이스를 정의한다"는 방식이었다. 인터페이스 하나마다 이름이 붙고(S6a, Gx, Rx…), 새 조각을 넣으려면 새 인터페이스를 정의해야 했다. 5G 는 "B 가 API 를 열어 두면 누구든 부른다"로 바꿨다. 그래서 구성도가 선으로 이어진 그림이 아니라 **버스**에 조각들이 매달린 그림으로 바뀌었다.
+각 조각(이제부터 **NF, Network Function** 이라 부른다)은 **HTTP/2 서버**가 되어 자기가 할 수 있는 일을 REST API 로 내놓는다. 다른 조각이 그 일이 필요하면 **HTTP/2 클라이언트**가 되어 호출한다. 응답은 JSON 이다. 그것이 전부다. 4G 의 Diameter 는 "A 와 B 사이에 전용 인터페이스를 정의한다"는 방식이었다. 인터페이스 하나마다 이름이 붙고, 그 이름이 곧 "누구와 누구 사이의 전용 선"이었다. S6a(4G 의 이동성 관리 서버가 가입자 DB 에 인증 정보를 묻는 선), Gx(정책 서버가 데이터 게이트웨이에 과금·품질 규칙을 내리는 선), Rx(IMS 가 정책 서버에 통화용 품질을 요청하는 선)처럼 말이다. 새 조각을 넣으려면 새 인터페이스를 정의해야 했다. 5G 는 "B 가 API 를 열어 두면 누구든 부른다"로 바꿨다. 그래서 구성도가 선으로 이어진 그림이 아니라 **버스**에 조각들이 매달린 그림으로 바뀌었다.
 
 ```
    AMF    SMF    PCF    AUSF    UDM    UDR    NSSF    BSF
@@ -22,7 +22,7 @@
 /nnrf-nfm/v1/nf-instances/{nfInstanceId}
 ```
 
-경로의 첫 조각에 규칙이 있다. `n` 다음에 **그 API 를 제공하는 NF 의 이름**, 하이픈, 서비스 이름이다. `nsmf-pdusession` 은 "SMF 가 제공하는 PDU 세션 서비스"이고, `npcf-policyauthorization` 은 "PCF 가 제공하는 정책 인가 서비스"다. 경로만 보면 **누가 서버이고 누가 손님인지**를 안다. 첫 줄은 AMF 가 SMF 를 부른 것이고, 둘째 줄은 IMS 의 P-CSCF 가 PCF 를 부른 것이다.
+경로의 첫 조각에 규칙이 있다. `n` 다음에 **그 API 를 제공하는 NF 의 이름**, 하이픈, 서비스 이름이다. `nsmf-pdusession` 은 "SMF 가 제공하는 PDU 세션 서비스"이고, `npcf-policyauthorization` 은 "PCF 가 제공하는 정책 인가 서비스"다. 경로만 보면 **누가 서버이고 누가 손님인지**를 안다. 첫 줄은 AMF 가 SMF 를 부른 것이고, 둘째 줄은 IMS 의 P-CSCF(Proxy-CSCF — 단말이 전화 걸 때 처음 만나는 SIP(Session Initiation Protocol) 프록시. SIP 는 VoIP 전화의 시그널링 프로토콜로, 와이어샤크 필터 `sip` 로 보면 HTTP 와 닮은 텍스트 요청·응답이다. 8 장에서 자세히 본다)가 PCF 를 부른 것이다.
 
 왜 하필 HTTP/2 인가. 코어는 초당 수만 건의 작은 요청을 주고받는다. HTTP/1.1 로 하면 요청 하나에 연결 하나를 잡거나, 한 연결에서 앞 요청이 끝날 때까지 뒤가 기다려야 한다(헤드오브라인 블로킹). HTTP/2 는 한 연결 안에 요청 수천 개를 **동시에** 흘릴 수 있고(멀티플렉싱), 매 요청마다 반복되는 헤더를 압축하며(HPACK), 서버가 먼저 알림을 보낼 수단이 있다. 코어의 요구에 정확히 맞는다. 본문은 JSON 이고 스키마는 **OpenAPI** 로 정의되어 있어서, 3GPP 사이트에서 YAML 파일을 받아 Swagger 로 열면 모든 코어 API 를 읽을 수 있다. 통신 표준이 소프트웨어 엔지니어의 도구로 읽히게 된 첫 세대다.
 
@@ -57,7 +57,7 @@ NRF 곁에 조연이 둘 있다. **SCP(Service Communication Proxy)** 는 NF 사
 
 ## 5.3 단말 하나가 붙을 때 코어 안에서 일어나는 일
 
-이 장에서 가장 중요한 그림이다. 모뎀에서 `AT+CFUN=1` 을 친 순간부터 `+C5GREG: 1` 이 뜰 때까지, 코어 조각들이 **어떤 순서로 누구를 부르는지**를 AMF 로그와 함께 따라간다. 이 순서를 알면 어디서 멈췄는지를 로그 한 줄로 짚을 수 있다.
+이 장에서 가장 중요한 그림이다. 모뎀에서 `AT+CFUN=1` 을 친 순간부터(CFUN 은 functionality 의 줄임으로, 모뎀 무선부의 전원 스위치다. `1` 이 켬, `0` 이 끔이고 11c 에서 다시 본다) `+C5GREG: 1` 이 뜰 때까지, 코어 조각들이 **어떤 순서로 누구를 부르는지**를 AMF 로그와 함께 따라간다. 이 순서를 알면 어디서 멈췄는지를 로그 한 줄로 짚을 수 있다.
 
 ```
  UE         gNB        AMF         AUSF       UDM/UDR      SMF       UPF       PCF
@@ -90,15 +90,15 @@ NRF 곁에 조연이 둘 있다. **SCP(Service Communication Proxy)** 는 NF 사
 
 가장 먼저 `gNB-N2 accepted[172.22.0.37]` 가 찍힌다. 기지국이 SCTP 로 AMF 에 붙은 것이고, 단말과 무관하게 기지국이 뜰 때 한 번 일어난다. 그 다음 단말이 전파로 기지국에 RRC 연결을 맺고 첫 NAS 메시지를 보내면, 기지국이 그것을 N2 에 담아 보내고 AMF 가 `InitialUEMessage` 를 찍는다.
 
-바로 뒤에 `RAN_UE_NGAP_ID[0] AMF_UE_NGAP_ID[1] TAC[1] CellID[0x66c000]` 가 나온다. 이 줄은 두 가지를 말한다. 하나는 이 단말이 어느 셀(0x66c000, 11f 의 NCI)의 어느 추적 영역(TAC 1)에서 왔는가. 다른 하나는 기지국과 AMF 가 이 단말을 부를 **임시 번호**를 각각 하나씩 정했다는 것이다. 기지국은 0 번, AMF 는 1 번이라 했다. 왜 번호가 둘인가. TCP 가 양쪽 포트 번호를 쓰는 것과 같은 이유다. 한쪽 번호만 쓰면 한쪽이 재시작하거나 핸드오버가 일어날 때 충돌한다. 그리고 여기에 **IMSI 가 없다**는 것이 중요하다. N2 에서 단말은 임시 번호로만 불린다. 4 장의 "기지국은 가입자를 모른다"가 로그에서 보이는 자리다.
+바로 뒤에 `RAN_UE_NGAP_ID[0] AMF_UE_NGAP_ID[1] TAC[1] CellID[0x66c000]` 가 나온다. 이 줄은 두 가지를 말한다. 하나는 이 단말이 어느 셀(0x66c000. 이 번호가 11f 의 NCI(NR Cell Identity), 즉 망 전체에서 셀 하나를 가리키는 36 비트 번호다)의 어느 추적 영역(TAC 1)에서 왔는가. 다른 하나는 기지국과 AMF 가 이 단말을 부를 **임시 번호**를 각각 하나씩 정했다는 것이다. 기지국은 0 번, AMF 는 1 번이라 했다. 왜 번호가 둘인가. TCP 가 양쪽 포트 번호를 쓰는 것과 같은 이유다. 한쪽 번호만 쓰면 한쪽이 재시작하거나 핸드오버가 일어날 때 충돌한다. 그리고 여기에 **IMSI 가 없다**는 것이 중요하다. N2 에서 단말은 임시 번호로만 불린다. 4 장의 "기지국은 가입자를 모른다"가 로그에서 보이는 자리다.
 
 그 다음 `[suci-0-001-01-0-0-0-1234567895] Unknown UE by SUCI` 가 찍힌다. 단말이 자기를 **SUCI** 라는 형식으로 밝혔고(6 장), AMF 는 이 SUCI 를 처음 본다는 뜻이다. **이것은 오류가 아니다.** 처음 보는 단말이면 당연히 모른다. 이 로그를 보고 "등록이 실패했다"고 오해하는 사람이 많은데, 바로 다음 줄이 `Registration request` 이고 절차는 정상 진행 중이다.
 
 인증 왕복(AUSF, UDM 과의 대화)은 AMF 로그에 자세히 찍히지 않는다. 6 장에서 따로 본다. 인증이 끝나면 `[imsi-001011234567895] Registration complete` 가 찍힌다. 주목할 점은 **이제 SUCI 가 아니라 IMSI 로 찍힌다**는 것이다. 인증이 통과해서 망이 이 단말의 진짜 신원을 확정했다는 표시다. 그 다음 `Configuration update command` 는 망이 단말에게 추적 영역 목록 같은 설정을 내린 것이다.
 
-이어서 단말이 세션을 요청한다. `UE SUPI[imsi-…895] DNN[ims] LBO[0] S_NSSAI[SST:1 SD:0xffffff] smContextRef[NULL]` 는 "이 단말이 `ims` 라는 데이터망으로 세션을 원하는데 아직 SMF 쪽 컨텍스트가 없다"는 뜻이다. AMF 는 SMF 의 REST 를 부르고, 그것이 `/nsmf-pdusession/v1/sm-contexts/{ref}/modify` 다. SMF 가 IP 를 할당하면 SMF 로그에 `UE SUPI[…] DNN[internet] IPv4[10.45.0.3]` 이, UPF 로그에 `UE F-SEID[UP:0x770 CP:0x392] APN[internet]` 이 찍힌다. 7 장에서 이 부분을 자세히 본다.
+이어서 단말이 세션을 요청한다. 이때 AMF 가 찍는 줄에는 처음 보는 칸 이름이 여럿 있으니 먼저 이름부터 푼다. SUPI(Subscription Permanent Identifier)는 5G 에서 가입자의 영구 ID 이고, SIM 가입자라면 `imsi-` 접두어를 붙인 IMSI 그대로다. DNN(Data Network Name)은 4G 의 APN 과 같은 것으로, 단말이 어느 데이터망(`internet`, `ims`)에 붙고 싶은지를 적은 이름이다. LBO(Local Breakout)는 로밍 중일 때 방문한 망에서 곧바로 인터넷으로 내보낼지를 뜻하는 플래그이고, 집 망인 우리는 `0` 이다. `S_NSSAI` 는 이 세션이 어느 **망 슬라이스**(같은 코어를 용도별로 나눈 논리 망)에 속하는지를 고르는 값으로 두 칸이 있다. SST(Slice/Service Type)는 슬라이스 종류로 `1` 이 일반 모바일 브로드밴드이고, SD(Slice Differentiator)는 같은 종류 안의 구분자로 `0xffffff` 가 "구분 없음"이다. 이 이름들을 알고 나면 `UE SUPI[imsi-…895] DNN[ims] LBO[0] S_NSSAI[SST:1 SD:0xffffff] smContextRef[NULL]` 는 "이 단말이 `ims` 라는 데이터망으로, 기본 슬라이스에서 세션을 원하는데 아직 SMF 쪽 세션 객체(`smContextRef`)가 비어 있다"로 읽힌다. AMF 는 SMF 의 REST 를 부르고, 그것이 `/nsmf-pdusession/v1/sm-contexts/{ref}/modify` 다. SMF 가 IP 를 할당하면 SMF 로그에 `UE SUPI[…] DNN[internet] IPv4[10.45.0.3]` 이 찍힌다. UPF 쪽 로그는 F-SEID(Fully qualified Session Endpoint ID)로 세션을 부른다. F-SEID 는 UPF 와 SMF 사이 제어 프로토콜(PFCP)의 세션 번호이고, 양쪽이 하나씩 붙이므로 UP(User Plane, 즉 UPF 쪽이 붙인 번호)와 CP(Control Plane, 즉 SMF 쪽이 붙인 번호) 두 칸이다. 그 줄이 `UE F-SEID[UP:0x770 CP:0x392] APN[internet]` 이다. 7 장에서 이 부분을 자세히 본다.
 
-마지막으로 `UE Context Release [Action:2]` 가 등록 몇 초 뒤에 찍힌다. 이것도 오류가 아니다. 단말이 데이터를 보내지 않으면 망은 무선 연결(RRC)을 놓아서 전파와 배터리를 아낀다. 단말은 등록된 채로 11f 의 `NOCONN`, 즉 IDLE 상태가 된다. 데이터가 생기면 다시 연결한다.
+마지막으로 `UE Context Release [Action:2]` 가 등록 몇 초 뒤에 찍힌다. 이것도 오류가 아니다. 단말이 데이터를 보내지 않으면 망은 무선 연결(RRC)을 놓아서 전파와 배터리를 아낀다. 단말은 등록된 채로 IDLE 상태가 된다. 11f 에서 볼 Quectel 모뎀의 `AT+QENG` 응답에 NOCONN(no connection — 등록은 되어 있지만 무선 연결은 없다는 뜻)으로 뜨는 상태가 이것이다. 데이터가 생기면 다시 연결한다.
 
 ## 5.4 NAS: 기지국이 열어 보지 못하는 봉투
 
@@ -114,7 +114,7 @@ NAS 는 다시 **두 층**이다. **5GMM(Mobility Management)** 은 AMF 와의 �
 
 **5G 코어의 제어 조각**이 열 개다. 전화번호부 `nrf`, API 프록시 `scp`, 출입국 관리 `amf`(SCTP 38412 에서 기지국을 받는다), 인증 셋 `ausf`·`udm`·`udr`, 세션 `smf`, 정책 셋 `pcf`·`bsf`·`nssf`. 전부 TCP 7777 에서 HTTP/2 를 듣는다. **사용자 평면**은 `upf` 하나이고, 그 안에 `ogstun` 이라는 TUN 인터페이스가 단말 IP 대역의 게이트웨이(10.45.0.1)로 서 있다.
 
-**저장소**가 둘이다. `mongo` 는 5G 코어의 가입자 DB 이고 UDR 이 이것을 읽는다. `mysql` 은 IMS 쪽 DB 로, PyHSS 와 CSCF 들이 쓴다. 가입자 DB 가 **둘**이라는 점을 기억하라. 4G 유산(IMS)과 5G 가 공존하는 모습이고, 그래서 가입자를 추가할 때 양쪽에 넣어야 했다.
+**저장소**가 둘이다. `mongo` 는 5G 코어의 가입자 DB 이고 UDR 이 이것을 읽는다. `mysql` 은 IMS 쪽 DB 로, PyHSS 와 CSCF 들이 쓴다. CSCF(Call Session Control Function)는 IMS 의 SIP 프록시들을 통틀어 부르는 이름이고, 앞에 붙는 P·I·S 한 글자로 역할이 갈린다(8 장). 가입자 DB 가 **둘**이라는 점을 기억하라. 4G 유산(IMS)과 5G 가 공존하는 모습이고, 그래서 가입자를 추가할 때 양쪽에 넣어야 했다.
 
 **IMS** 가 일곱 개다. SIP 프록시 셋 `pcscf`·`icscf`·`scscf`, 가입자·인증 `pyhss`(Diameter 3875), 문자 센터 `smsc`, 음성 중계 `rtpengine`, 그리고 내부 DNS `dns`(bind). 8 장에서 전부 만난다.
 
@@ -156,12 +156,12 @@ TCP 헤더를 비트 단위로 그려 놓고 플래그를 하나씩 설명하듯
 | `0x42` | Registration accept | AMF→단말 | 모뎀에 `+C5GREG: 1` 이 뜨는 순간 |
 | `0x43` | Registration complete | 단말→AMF | |
 | `0x44` | Registration reject | AMF→단말 | 거절 사유 코드가 함께 온다 |
-| `0x56` | Authentication request | AMF→단말 | RAND, AUTN |
-| `0x57` | Authentication response | 단말→AMF | RES\* |
+| `0x56` | Authentication request | AMF→단말 | RAND(망이 뽑은 128 bit 난수), AUTN(망이 진짜라는 증명 토큰). 6 장 |
+| `0x57` | Authentication response | 단말→AMF | RES\*. RES 는 RESponse 의 줄임으로, 카드가 계산한 답이다 |
 | `0x5D` | Security mode command | AMF→단말 | 이 뒤부터 보안 헤더 종류가 1 이상 |
 | `0x5E` | Security mode complete | 단말→AMF | |
-| `0x67` | UL NAS transport | 단말→AMF | 5GSM 메시지를 **싸서** 나르는 봉투 |
-| `0x68` | DL NAS transport | AMF→단말 | 반대 방향 |
+| `0x67` | UL NAS transport | 단말→AMF | 5GSM 메시지를 **싸서** 나르는 봉투. UL 은 uplink, 단말→망 방향이다 |
+| `0x68` | DL NAS transport | AMF→단말 | DL 은 downlink, 즉 반대 방향이다 |
 
 마지막 두 줄이 5.4 절의 "AMF 는 5GSM 을 열어 보지 않고 전달한다"의 패킷 모습이다. 세션 요청(5GSM `0xC1`)은 5GMM 의 `UL NAS transport` 안에 **페이로드로** 들어가 있고, AMF 는 그 페이로드를 꺼내 SMF 에 넘긴다. 봉투 안에 봉투가 있는 것이다.
 
@@ -191,7 +191,7 @@ TCP 헤더를 비트 단위로 그려 놓고 플래그를 하나씩 설명하듯
 
 ## 5.6b 와이어샤크로 보기
 
-호스트에서 `tcpdump -i br-b33ecd87724d -w reg.pcap` 를 켠 채 모뎀을 `AT+CFUN=0` → `AT+CFUN=1` 하면 등록 전 과정이 한 파일에 담긴다. 와이어샤크로 열고 필터 `ngap` 을 치면 5.3 절의 그림이 그대로 나온다. `InitialUEMessage` 를 펼치면 그 안에 `NAS-PDU` 가 있고, 와이어샤크가 그것을 `nas-5gs` 로 다시 해석해서 위 표의 `0x41 Registration request` 와 그 안의 SUCI 필드까지 보여 준다. `0x56 Authentication request` 의 RAND 와 AUTN 도 바이트로 보인다. `0x5D Security mode command` 이후 NAS 는 `Ciphered` 로 표시되고 내용이 안 보인다 — 6 장의 키 계층이 작동한 자리다. 필터를 `http2` 로 바꾸면 같은 시간대에 AMF 가 SMF 를 부른 `POST /nsmf-pdusession/v1/sm-contexts` 와 JSON 본문이 보인다. 두 필터를 번갈아 보면 "단말이 보낸 한 메시지가 코어 안에서 REST 몇 번으로 번지는지"가 눈에 들어온다.
+호스트에서 `tcpdump -i br-b33ecd87724d -w reg.pcap` 를 켠 채 모뎀을 `AT+CFUN=0` → `AT+CFUN=1` 하면 등록 전 과정이 한 파일에 담긴다. 와이어샤크로 열고 필터 `ngap` 을 치면 5.3 절의 그림이 그대로 나온다. `InitialUEMessage` 를 펼치면 그 안에 `NAS-PDU` 가 있고(NAS-PDU 는 NGAP 메시지에 통째로 실린 NAS 메시지 바이트다. PDU, Protocol Data Unit 은 한 층이 주고받는 메시지 한 덩어리를 부르는 말이다), 와이어샤크가 그것을 `nas-5gs` 로 다시 해석해서 위 표의 `0x41 Registration request` 와 그 안의 SUCI 필드까지 보여 준다. `0x56 Authentication request` 의 RAND 와 AUTN 도 바이트로 보인다. `0x5D Security mode command` 이후 NAS 는 `Ciphered` 로 표시되고 내용이 안 보인다 — 6 장의 키 계층이 작동한 자리다. 필터를 `http2` 로 바꾸면 같은 시간대에 AMF 가 SMF 를 부른 `POST /nsmf-pdusession/v1/sm-contexts` 와 JSON 본문이 보인다. 두 필터를 번갈아 보면 "단말이 보낸 한 메시지가 코어 안에서 REST 몇 번으로 번지는지"가 눈에 들어온다.
 
 ## 5.7 이 장의 요약
 

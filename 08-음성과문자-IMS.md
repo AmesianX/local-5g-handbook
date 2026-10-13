@@ -2,7 +2,7 @@
 
 ## 8.1 이미 아는 것에서 출발한다
 
-VoIP 를 한 번이라도 다뤄 봤다면 SIP 를 안다. REGISTER 로 "나 여기 있다"를 알리고, INVITE 로 통화를 걸고, SDP 로 미디어 포트를 협상하고, RTP 로 음성을 보내고, BYE 로 끊는다. 프록시가 중간에서 Via 와 Record-Route 를 쌓는다. 이것을 알면 IMS 의 **8 할은 이미 아는 것**이다. IMS 는 SIP 에 통신사의 요구 다섯 가지를 얹은 것이고, 그 다섯 가지가 새로 배울 전부다.
+VoIP 를 한 번이라도 다뤄 봤다면 SIP 를 안다. 다뤄 본 적이 없어도 와이어샤크에서 `sip` 필터를 걸면 HTTP 와 거의 같은 텍스트 요청·응답이라 금방 읽힌다. REGISTER 로 "나 여기 있다"를 알린다. INVITE 는 통화를 거는 요청이다. HTTP 의 POST 처럼 본문을 싣는데, 그 본문이 SDP(Session Description Protocol)로 "나는 이 IP 의 이 UDP 포트로 이 코덱을 받겠다"는 몇 줄짜리 텍스트다. 실제 음성은 SIP 가 아니라 RTP(Real-time Transport Protocol)라는 UDP 패킷 흐름으로 따로 가고, 와이어샤크의 `rtp` 필터에 잡히는 것이 그것이다. BYE 는 통화를 끊는 요청이다. 프록시가 중간에서 Via 와 Record-Route 를 쌓는다. 이것을 알면 IMS 의 **8 할은 이미 아는 것**이다. IMS 는 SIP 에 통신사의 요구 다섯 가지를 얹은 것이고, 그 다섯 가지가 새로 배울 전부다.
 
 | 독자가 아는 것 (SIP/VoIP) | IMS 에서의 이름 |
 |---|---|
@@ -12,8 +12,8 @@ VoIP 를 한 번이라도 다뤄 봤다면 SIP 를 안다. REGISTER 로 "나 여
 | 사용자 DB (Asterisk 의 sip.conf, Kamailio 의 subscriber 테이블) | **HSS** (우리는 PyHSS) |
 | HTTP Digest 인증 | **AKAv1-MD5** (6 장의 MILENAGE 를 Digest 에 담은 것) |
 | 미디어 릴레이 (rtpproxy, TURN) | **rtpengine** |
-| DNS SRV/NAPTR 로 다음 홉 찾기 | IMS 도메인 `ims.mnc001.mcc001.3gppnetwork.org` 해석 |
-| SIP MESSAGE 로 인스턴트 메시지 | **SMS over IMS** (본문이 3GPP SMS 바이트) |
+| DNS SRV(서비스별 호스트·포트 레코드)/NAPTR(이름을 규칙으로 다시 쓰는 레코드)로 다음 홉 찾기 | IMS 도메인 `ims.mnc001.mcc001.3gppnetwork.org` 해석 |
+| SIP MESSAGE(본문에 글을 실어 보내는 SIP 요청, RFC 3428)로 인스턴트 메시지 | **SMS over IMS** (본문이 3GPP SMS 바이트) |
 
 새로 배울 다섯 가지는 이것이다. 첫째, **전화번호(E.164)로 걸고 다른 사업자에게도 걸린다** — 그래서 `tel:` URI 와 I-CSCF 가 있다. 둘째, **품질을 보장한다** — 그래서 P-CSCF 가 코어의 PCF 에 "이 통화에 음성 베어러를 열어라"고 요청하는 N5 가 있고, 7 장의 5QI 가 여기서 쓰인다. 셋째, **인증은 SIM 으로** — 그래서 HTTP Digest 안에 MILENAGE 가 들어간다. 넷째, **단말의 IP 와 코어의 세션이 묶여 있어야 한다** — 그래서 P-CSCF 가 소스 IP 로 PDU 세션을 확인한다. 다섯째, **문자는 1990 년대 SMS 바이트를 그대로 SIP 에 싼다.**
 
@@ -93,11 +93,11 @@ rtpengine 은 처음에 상대 주소를 모른다. **첫 RTP 패킷이 온 소�
 
 단말이 MESSAGE 를 보내면 S-CSCF 가 **iFC** 를 본다. iFC(initial Filter Criteria) 는 HSS 가 등록 때 S-CSCF 에 내려 준 XML 규칙 목록으로, "이런 조건의 요청이 오면 이 응용서버로 보내라"다. 우리 `default_ifc.xml` 에 `<Method>MESSAGE</Method> <SessionCase>0</SessionCase> → smsc:5060` 이 있었다. **S-CSCF 는 SMS 가 무엇인지 모른다.** 규칙대로 SMSC 에 넘길 뿐이다. 이것이 IMS 의 확장 방식이다. 새 서비스는 응용서버 하나와 iFC 한 줄로 붙는다.
 
-SMSC 는 TPDU 를 풀어 발신, 착신, 본문, 문자 인코딩(DCS)을 DB 에 저장하고 단말에 `202 Accepted` 를 보낸다. "받았다, 전달은 나중에"라는 뜻이다. 그리고 워커가 큐에서 꺼내 착신 번호를 `sip:번호@realm` 으로 바꿔 새 MESSAGE 를 만들어 S-CSCF(B) 로 보낸다. 거기서 P-CSCF(B) 를 거쳐 B 에 도착하면 B 가 200 OK 를 돌려준다.
+SMSC 는 TPDU 를 풀어 발신, 착신, 본문, 문자 인코딩을 알리는 DCS(Data Coding Scheme — `0` 이면 GSM 7 비트 문자표, `8` 이면 UCS2(유니코드 한 글자를 2 바이트로 담는 인코딩)처럼 본문 해석법을 정하는 1 바이트)를 DB 에 저장하고 단말에 `202 Accepted` 를 보낸다. "받았다, 전달은 나중에"라는 뜻이다. 그리고 워커가 큐에서 꺼내 착신 번호를 `sip:번호@realm` 으로 바꿔 새 MESSAGE 를 만들어 S-CSCF(B) 로 보낸다. 거기서 P-CSCF(B) 를 거쳐 B 에 도착하면 B 가 200 OK 를 돌려준다.
 
-**벽 ⑥: `text/plain` 으로 보내면 SMSC 의 DB 가 깨진다.** 처음엔 평문 본문으로 보냈다. SMSC 는 받아서 본문까지 읽었는데(200 OK), DB 에 넣을 때 DCS 가 비어 있어 SQL 문법 오류가 났다. 설정을 열어 보니 `text/plain` 경로(OTT 용)는 DCS 변수를 채우지 않는 **업스트림 버그**였다. 설정을 고치는 대신 **실제 단말과 같은 `application/vnd.3gpp.sms` + TPDU** 로 보냈다. 그 경로는 TPDU 에서 DCS 를 읽어 `8`(UCS2)로 채웠고 저장이 됐다. 응답도 3GPP 경로의 표준인 `202 Accepted` 로 바뀌었다.
+**벽 ⑥: `text/plain` 으로 보내면 SMSC 의 DB 가 깨진다.** 처음엔 평문 본문으로 보냈다. SMSC 는 받아서 본문까지 읽었는데(200 OK), DB 에 넣을 때 DCS 가 비어 있어 SQL 문법 오류가 났다. 설정을 열어 보니 `text/plain` 경로는 OTT(Over-The-Top: 사업자 SMS 체계를 거치지 않고 데이터 위에서 도는 메신저류) 메시지용이라 DCS 변수를 채우지 않는 **업스트림 버그**였다. 설정을 고치는 대신 **실제 단말과 같은 `application/vnd.3gpp.sms` + TPDU** 로 보냈다. 그 경로는 TPDU 에서 DCS 를 읽어 `8`(UCS2)로 채웠고 저장이 됐다. 응답도 3GPP 경로의 표준인 `202 Accepted` 로 바뀌었다.
 
-**벽 ⑦: 저장은 됐는데 전달이 안 됨.** SMSC 워커가 `sip:821099994532@ims.mnc001.mcc001.3gppnetwork.org` 로 보내려는데 이름이 안 풀렸다. DNS 존에 `scscf.ims…`, `hss.ims…` 같은 **호스트 이름만** 있고 **도메인 자체(`@`)의 A 레코드가 없었다.** 독자가 아는 것으로 치면 `_sip._udp.example.com` SRV 는 있는데 `example.com` A 가 없어서, SRV 를 안 보는 클라이언트가 실패한 것이다. 이름이 안 풀리니 전송이 **조용히** 멈추고 큐에 남았다. `@ IN A <I-CSCF 주소>` 를 넣자 전달됐다. IMS 도메인의 SIP 진입점은 I-CSCF 이므로 그쪽이 맞다. 표준은 NAPTR/SRV 로 찾지만 Kamailio 의 uac 모듈은 A 를 봤다.
+**벽 ⑦: 저장은 됐는데 전달이 안 됨.** SMSC 워커가 `sip:821099994532@ims.mnc001.mcc001.3gppnetwork.org` 로 보내려는데 이름이 안 풀렸다. DNS 존에 `scscf.ims…`, `hss.ims…` 같은 **호스트 이름만** 있고 **도메인 자체(`@`)의 A 레코드가 없었다.** 독자가 아는 것으로 치면 `_sip._udp.example.com` SRV 는 있는데 `example.com` A 가 없어서, SRV 를 안 보는 클라이언트가 실패한 것이다. 이름이 안 풀리니 전송이 **조용히** 멈추고 큐에 남았다. `@ IN A <I-CSCF 주소>`(존 파일 문법으로 "이 도메인 자체(`@`)의 인터넷 클래스(`IN`) A 레코드")를 넣자 전달됐다. IMS 도메인의 SIP 진입점은 I-CSCF 이므로 그쪽이 맞다. 표준은 NAPTR/SRV 로 찾지만 Kamailio 의 uac 모듈은 A 를 봤다.
 
 착신 B 가 받은 MESSAGE 는 `text/plain` 이었다. SMSC 가 착신 단말이 3GPP SMS 를 받을 수 있는지(등록 때 `+g.3gpp.smsip` 를 광고했는지) 보고 OTT 형식으로 내려 준 것이다. 한글 본문이 그대로 도착했다.
 
@@ -233,7 +233,7 @@ INVITE 가 홉마다 커지는 이유가 이 그림에 있다. P-헤더 둘, Via
 |---|---|
 | 이미 아는 것 | SIP/RTP/Digest/릴레이/DNS. 이름만 바뀐다 |
 | 새로 배울 다섯 | 번호와 상호접속 / QoS(N5, 5QI) / SIM 인증 / 세션-IP 묶임 / SMS 바이트 |
-| P / I / S-CSCF | 단말 경계(outbound proxy+SBC) / 입구(디렉터리 조회) / registrar+라우터 |
+| P / I / S-CSCF | 단말 경계(outbound proxy + SBC(Session Border Controller, 사업자 경계의 SIP 방화벽 겸 NAT)) / 입구(디렉터리 조회) / registrar+라우터 |
 | 등록 | REGISTER → N5 → UAR → MAR → 401 → MILENAGE → REGISTER → SAR → 200 OK |
 | 통화 | INVITE 가 P→S→I(LIR)→S→P→단말. 각 P-CSCF 가 N5 와 rtpengine |
 | rtpengine | 릴레이. 경로·QoS·감청·코덱. latch 로 역방향 |
