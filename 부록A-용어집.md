@@ -30,7 +30,7 @@
 
 **AKAv1-MD5** — IMS 등록에서 AKA 결과를 HTTP Digest 인증에 끼워 넣은 방식. SIP `401 Unauthorized` 의 `WWW-Authenticate` 헤더에 RAND·AUTN 이 들어간다. → 8장
 
-**AMF** (Access and Mobility Management Function) — 5G 코어의 출입국 관리소. 기지국과 N2(NGAP)로 말하고, 등록·인증·이동 관리를 한다. 4G 의 MME 에 해당. `amf` 컨테이너, SCTP 38412. → 5장
+**AMF** (Access and Mobility Management Function) — 5G 코어의 출입국 관리소. 기지국과 N2(NGAP)로 말하고, 등록·인증·이동 관리를 한다. 4G 의 MME(Mobility Management Entity)에 해당. `amf` 컨테이너, SCTP 38412. → 5장
 
 **AMF 필드** (Authentication Management Field) — AKA 의 AUTN 안에 들어가는 16비트 값. 위의 AMF(코어 조각)와 이름만 같다. 우리 가입자는 `8000`. → 6장
 
@@ -294,7 +294,7 @@
 
 **UHD** (USRP Hardware Driver) — Ettus SDR 의 드라이버 라이브러리. 펌웨어·FPGA 적재와 샘플 송수신을 맡는다. → 2, 9장
 
-**UPF** (User Plane Function) — 5G 코어의 사용자 평면. GTP-U 를 벗겨 `ogstun` 으로 내보내고 NAT 한다. 4G 의 SGW-U+PGW-U. → 5, 7장
+**UPF** (User Plane Function) — 5G 코어의 사용자 평면. GTP-U 를 벗겨 `ogstun` 으로 내보내고 NAT 한다. 4G 의 SGW-U(Serving Gateway 사용자 평면)+PGW-U(PDN Gateway 사용자 평면). → 5, 7장
 
 **URC** (Unsolicited Result Code) — 묻지 않아도 모뎀이 먼저 보내는 AT 줄(`RING`, `+C5GREG: …`, `+QIND: …`). → 11c
 

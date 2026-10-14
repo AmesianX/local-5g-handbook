@@ -30,7 +30,7 @@ for f in files:
         ctx = text_nocode[s:e].replace('\n',' ')
         defined = bool(re.search(r'\*\*[^*]*'+re.escape(a)+r'[^*]*\*\*', ctx)) or \
                   bool(re.search(re.escape(a)+r'\s*\(', ctx)) or \
-                  bool(re.search(re.escape(a)+r'(/[A-Z0-9]+)?\s*[\(—]', ctx)) or bool(re.search(r'\('+re.escape(a)+r'[,)]', ctx)) or \
+                  bool(re.search(re.escape(a)+r"(/[A-Z0-9]+)?[\"'\s]*[\(—]", ctx)) or bool(re.search(r'\('+re.escape(a)+r'[,)]', ctx)) or \
                   bool(re.search(re.escape(a)+r'\s*(는|은|이란|란|이라|라고|를|을)\s', ctx) and re.search(r'(다\.|이다|한다|뜻|줄임|약자)', ctx))
         seen[a] = (f, defined, ctx.strip())
 und = [(a,v) for a,v in seen.items() if not v[1]]
