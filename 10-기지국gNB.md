@@ -79,15 +79,26 @@ log:
 
 pcap:
   mac_enable: false
+  mac_filename: /mnt/srsran/gnb_mac.pcap
   ngap_enable: false
-  …
+  ngap_filename: /mnt/srsran/gnb_ngap.pcap
+  f1ap_enable: false
+  f1ap_filename: /mnt/srsran/gnb_f1ap.pcap
+  e1ap_enable: false
+  e1ap_filename: /mnt/srsran/gnb_e1ap.pcap
+  e2ap_enable: false
+  e2ap_cu_cp_filename: /mnt/srsran/cu_cp_e2ap.pcap
+  e2ap_cu_up_filename: /mnt/srsran/cu_up_e2ap.pcap
+  e2ap_du_filename: /mnt/srsran/du_e2ap.pcap
+  n3_enable: false
+  n3_filename: /mnt/srsran/gnb_n3.pcap
 ```
 
 ### `cu_cp.amf` — 기지국이 코어를 찾는 법
 
 `addr` 은 AMF 의 주소다. 기지국은 뜨면서 이 주소의 **SCTP 포트 38412** 로 연결을 건다. SCTP 는 TCP 와 비슷하지만 메시지 경계를 유지하고 여러 스트림을 한 연결에 담는 전송 계층이고, N2 는 그 위에서 NGAP 를 나른다. `bind_addr` 은 기지국 자기 주소다. 컨테이너가 여러 네트워크에 붙어 있을 때 어느 쪽으로 나갈지 정한다. **이 두 값이 틀리면 로그에 `N2: Connection to AMF … completed` 가 안 뜨고 기지국은 셀을 띄운 채로 코어 없이 돈다.** 단말은 셀을 보지만 등록은 영원히 안 된다. 11f 의 `+C5GREG: 2,2`(찾는 중)가 계속되는 증상이다.
 
-`supported_tracking_areas` 는 "이 기지국이 어느 TAC 의 어느 PLMN 을 서비스하는가"를 AMF 에 알리는 값이다. 연결 직후 **NG Setup** 이라는 NGAP 메시지에 실려 가고, AMF 는 자기 설정의 PLMN/TAC 과 비교해서 **맞으면 받고 틀리면 끊는다.** 우리 코어 `amf.yaml` 의 `plmn_support` 와 `tai` 가 그 비교 상대다. 두 설정이 같은 `.env` 에서 치환되기 때문에 우연히 어긋날 일은 없지만, 코어와 기지국을 따로 받아 쓰는 사람은 여기서 하루를 보낸다. `sst: 1` 은 슬라이스이고 7.3 의 S-NSSAI 다.
+`supported_tracking_areas` 는 "이 기지국이 어느 TAC 의 어느 PLMN 을 서비스하는가"를 AMF 에 알리는 값이다. 연결 직후 **NG Setup** 이라는 NGAP 메시지에 실려 가고, AMF 는 자기 설정의 PLMN/TAC 과 비교해서 **맞으면 받고 틀리면 끊는다.** 우리 코어 `amf.yaml` 의 `plmn_support` 와 `tai` 가 그 비교 상대다. 두 설정이 같은 `.env` 에서 치환되기 때문에 우연히 어긋날 일은 없지만, 코어와 기지국을 따로 받아 쓰는 사람은 여기서 하루를 보낸다. `sst: 1` 은 슬라이스이고 7.3 의 S-NSSAI 다. 슬라이스는 SST(종류)와 SD(같은 종류 안의 세부 구분, 24비트) 두 칸인데 우리 설정에는 `sd` 줄이 없다. 없으면 어떻게 되는가를 이 이미지의 소스(커밋 11c9bbab 의 `apps/units/flexible_o_du/o_du_high/du_high/du_high_config.h`)에서 찾으면 `uint32_t sd = 0xffffffU;` 다. 3GPP 에서 SD 값 `0xFFFFFF` 는 "SD 없음"을 뜻하는 예약값이므로, 기지국은 "SST 1, SD 없음"을 알린다. 코어의 가입자 설정도 SD 없이 SST 1 만 갖고 있어서 둘이 맞는다. 코어 쪽 가입자에 SD 를 넣고 기지국에는 안 넣으면, 등록은 되는데 PDU 세션에서 슬라이스 불일치로 거절되는 하루짜리 함정이 생긴다.
 
 ### `ru_sdr` — 전파를 내는 장치
 
@@ -107,7 +118,9 @@ pcap:
 
 `band: 78` 은 TDD 대역이다. srsRAN 은 대역 번호에서 "TDD 인가 FDD 인가", "상향 주파수는 어디인가"(TDD 는 같음)를 표로 찾는다. `channel_bandwidth_MHz: 20` 과 `common_scs: 30` 에서 PRB 수 51 이 나온다(3.5). `plmn` 과 `tac` 는 셀이 **SIB1 로 방송**하는 값이다. 단말이 `AT+COPS=?` 에서 `00101` 을 본 것은 이 값을 읽은 것이다. `pci: 1` 은 3.6 의 물리 셀 번호다. SSB 의 PSS/SSS 패턴이 이 번호로 정해진다.
 
-이 설정에 **없는** 것이 하나 있다. TDD 패턴이다. srsRAN 은 `tdd_ul_dl_cfg` 를 안 쓰면 기본값을 쓴다. 설정 레퍼런스에 적힌 기본값은 `dl_ul_tx_period: 10`(슬롯), `nof_dl_slots: 6`, `nof_dl_symbols: 8`, `nof_ul_slots: 3`, `nof_ul_symbols: 0` 이다. 즉 **10 슬롯(30 kHz 에서 5 ms) 주기에 하향 6, 전환 1(앞 8 심볼 하향), 상향 3** — 3.7 의 그 패턴이다. 바꾸려면 `cell_cfg` 아래에 `tdd_ul_dl_cfg: {dl_ul_tx_period: 10, nof_dl_slots: 7, nof_dl_symbols: 8, nof_ul_slots: 2, nof_ul_symbols: 0}` 처럼 넣는다. 주기와 슬롯 수의 합이 맞아야 기동된다.
+이 설정에 **없는** 것이 하나 있다. TDD 패턴이다. srsRAN 은 `tdd_ul_dl_cfg` 를 안 쓰면 기본값을 쓴다. 설정 레퍼런스에 적힌 기본값은 `dl_ul_tx_period: 10`(슬롯), `nof_dl_slots: 6`, `nof_dl_symbols: 8`, `nof_ul_slots: 3`, `nof_ul_symbols: 0` 이다. 즉 **10 슬롯(30 kHz 에서 5 ms) 주기에 하향 6, 전환 1(앞 8 심볼 하향), 상향 3** — 3.7 의 그 패턴이다. 바꾸려면 `cell_cfg` 아래에 `tdd_ul_dl_cfg: {dl_ul_tx_period: 10, nof_dl_slots: 7, nof_dl_symbols: 8, nof_ul_slots: 2, nof_ul_symbols: 0}` 처럼 넣는다. 주기와 슬롯 수의 합이 맞아야 기동된다. 이 기본값은 레퍼런스 문서만이 아니라 이 이미지의 소스(`du_high_config_cli11_schema.cpp`)에서 확인했다. TDD 대역인데 `tdd_ul_dl_cfg` 가 없으면 정확히 위 다섯 숫자를 채워 넣는 코드가 있다.
+
+같은 함수 바로 아래에 이 설정에 **없는 두 번째 것**이 있다. 단말이 처음 손을 드는 PRACH(10.5)의 설정이다. `prach_config_index` 를 안 주면 FDD 는 16, FR1 의 TDD 는 **159** 를 넣는다. 소스의 주석은 "5 ms 주기의 TDD 에 맞고, 159 가 가장 많이 시험됐다"이다. 이 인덱스는 TS 38.211 의 표 한 줄을 가리키는데, 그 줄이 PRACH 프리앰블의 형식과 "몇 번째 프레임의 몇 번째 슬롯에 PRACH 기회를 두는가"를 정한다. 상향 슬롯이 아닌 곳에 PRACH 기회를 두면 단말이 손을 들 수 없으므로, 인덱스는 TDD 패턴과 짝이 맞아야 한다. TDD 패턴을 바꿀 때 PRACH 인덱스를 같이 봐야 하는 이유가 이것이다. 나머지 기본값도 같은 구조체에 있다. 루트 시퀀스 번호 1(프리앰블 부호의 시작점 — 이웃 셀과 겹치지 않게 고른다), 제로 상관 구간 0(셀 반경이 작다는 가정), 프리앰블 목표 수신 전력 −100 dBm(10.8 에서 다시), 응답 대기 창은 `10 << μ`, 30 kHz(μ=1)에서 20 슬롯 = 10 ms.
 
 ### `log` 와 `pcap`
 
@@ -125,13 +138,13 @@ pcap:
 ```
 Lower PHY in triple executor mode.
 ```
-하위 PHY 가 스레드 세 개(하향 변조, 상향 복조, 제어)로 돈다는 뜻이다. CPU 코어가 모자라면 여기서 `dual` 이나 `single` 로 떨어지고 지연이 늘어 TDD 타이밍이 틀어진다. 우리 32 코어 박스는 여유가 있었다.
+하위 PHY(OFDM 변복조와 샘플 입출력을 맡는 맨 아래층)가 전용 스레드 세 개로 돈다는 뜻이다. 소스(`apps/services/worker_manager/worker_manager.cpp` 의 `create_lower_phy_executors`)를 열면 세 스레드의 이름과 실시간 우선순위가 그대로 있다. `lower_phy_tx`(송신 — IFFT 와 샘플 내보내기, 최고 우선순위), `lower_phy_ul`(상향 복조, 한 단계 아래), `lower_phy_rx`(샘플 받기, 그 아래). 이와 별개로 장치 입출력을 맡는 `radio` 스레드가 하나 더 있다. 어느 모드로 갈지는 실행 시점에 CPU 수로 정한다(`ru_sdr_config.h`). 사용 가능한 CPU 가 4 개 미만이면 `single`(한 스레드가 전부), 8 개 미만이면 `dual`(하향 하나, 상향 하나), 그 이상이면 `triple` 이다. 모드가 낮을수록 한 스레드가 할 일이 늘어 슬롯 마감을 놓칠 가능성이 커지고, 놓치면 아래에서 볼 `late`/`underflow` 가 찍힌다. 우리 32 스레드 박스는 당연히 `triple` 이었다. 이 결정은 컨테이너에 CPU 제한(`--cpus`)을 걸면 바뀐다는 점을 기억해 둘 만하다.
 
 ```
 Available radio types: uhd and zmq.
 [INFO] [UHD] linux; GNU C++ version 11.2.0; Boost_107400; UHD_4.1.0.5-3
 ```
-컨테이너 안의 UHD 가 4.1.0.5 다. 호스트는 4.6 이었다. **두 버전이 다르다는 것이 중요하다.** 호스트에서 `uhd_usrp_probe` 로 FPGA 를 올린 뒤 컨테이너의 gNB 가 그 장치를 쓰면, 컨테이너의 UHD 가 "내 버전과 FPGA 이미지가 맞나"를 검사한다. 복제 보드 이미지는 버전 검사를 느슨하게 통과하지만, 정품 이미지를 섞어 쓰면 여기서 거부된다.
+UHD 가 자기 빌드 환경을 밝히는 줄이다. `linux` 는 운영체제, `GNU C++ version 11.2.0` 은 UHD 를 컴파일한 g++ 버전, `Boost_107400` 은 링크한 Boost C++ 라이브러리 버전(1.74.0 을 숫자 하나로 쓴 것), 마지막이 UHD 자체의 버전이다. 앞의 둘은 "이 바이너리가 어느 배포판에서 빌드됐나"를 알려 주는 지문이라, 다른 배포판의 UHD 라이브러리를 섞어 쓰다 심볼 오류가 날 때 첫 단서가 된다. 컨테이너 안의 UHD 가 4.1.0.5 다. 호스트는 4.6 이었다. **두 버전이 다르다는 것이 중요하다.** 호스트에서 `uhd_usrp_probe` 로 FPGA 를 올린 뒤 컨테이너의 gNB 가 그 장치를 쓰면, 컨테이너의 UHD 가 "내 버전과 FPGA 이미지가 맞나"를 검사한다. 복제 보드 이미지는 버전 검사를 느슨하게 통과하지만, 정품 이미지를 섞어 쓰면 여기서 거부된다.
 
 ```
 Making USRP object with args 'type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,num_recv_frames=64,num_send_frames=64'
@@ -154,7 +167,7 @@ AD9361 칩(2.4)의 레지스터를 써 보고 읽어서 FPGA 와 RF 칩 사이�
 [INFO] [MULTI_USRP] Setting master clock rate selection to 'manual'.
 [INFO] [B200] Asking for clock rate 23.040000 MHz... Actually got clock rate 23.040000 MHz.
 ```
-UHD 가 먼저 기본 16 MHz 로 칩을 깨우고, srsRAN 이 `srate: 23.04` 를 요구하면 마스터 클럭을 그 값으로 다시 맞춘다. AD9361 은 임의의 클럭을 못 낸다. 칩 안의 **PLL**(Phase-Locked Loop, 위상 고정 루프)이 기준 발진기 하나를 정수·분수 배로 곱하고 나눠 원하는 주파수를 만드는데, 그 곱셈·나눗셈 조합으로 정확히 만들 수 있는 값만 낸다. CPU 의 기본 클럭에 배수를 곱해 코어 클럭을 만드는 것과 같은 장치다. 그런데 23.04 MHz 는 정확히 맞는 값이다. `Actually got` 이 요구값과 다르면 샘플레이트가 어긋나 단말이 주파수 오프셋으로 못 붙는다.
+UHD 가 먼저 기본 16 MHz 로 칩을 깨우고, srsRAN 이 `srate: 23.04` 를 요구하면 마스터 클럭을 그 값으로 다시 맞춘다. 두 줄의 `automatic` 과 `manual` 은 누가 마스터 클럭을 정하느냐의 차이다. `automatic` 이면 UHD 가 요청받은 샘플레이트를 보고 알아서 마스터 클럭을 고르고(필요하면 FPGA 안에서 샘플을 솎아 내는 데시메이션을 쓴다), `manual` 이면 응용 프로그램이 정확한 클럭 값을 지정한다. srsRAN 은 샘플 타이밍을 직접 계산하므로 UHD 가 중간에 클럭을 바꾸지 못하게 `manual` 로 고정한 뒤 23.04 MHz 를 요구하고, 그 결과 마스터 클럭과 샘플레이트가 같아져(1:1) FPGA 의 솎아 내기 없이 칩의 샘플이 그대로 나온다. AD9361 은 임의의 클럭을 못 낸다. 칩 안의 **PLL**(Phase-Locked Loop, 위상 고정 루프)이 기준 발진기 하나를 정수·분수 배로 곱하고 나눠 원하는 주파수를 만드는데, 그 곱셈·나눗셈 조합으로 정확히 만들 수 있는 값만 낸다. CPU 의 기본 클럭에 배수를 곱해 코어 클럭을 만드는 것과 같은 장치다. 그런데 23.04 MHz 는 정확히 맞는 값이다. `Actually got` 이 요구값과 다르면 샘플레이트가 어긋나 단말이 주파수 오프셋으로 못 붙는다.
 
 ```
 Cell pci=1, bw=20 MHz, 1T1R, dl_arfcn=623334 (n78), dl_freq=3350.01 MHz, dl_ssb_arfcn=623040, ul_freq=3350.01 MHz
@@ -166,6 +179,30 @@ N2: Connection to AMF on 172.22.0.10:38412 completed
 ==== gNB started ===
 ```
 SCTP 연결과 NG Setup 이 끝났다. AMF 로그에는 같은 순간 `gNB-N2 accepted[172.22.0.37]` 가 찍힌다(5.3). 이 줄 뒤부터 B210 은 **SSB 를 20 ms 마다 쏘고 있다.** 로그에는 아무것도 더 안 찍힌다. `all_level: warning` 이라 정상 동작은 침묵이다.
+
+### 정상이 아닐 때 로그가 하는 말: 실시간 실패
+
+침묵이 깨지는 경우가 있다. 이 실험실의 10월 4~5일 기동분 로그(`upstream/srsran/gnb.log.2026-10-05`, 106만 줄)가 그 견본이다. 처음 몇 줄은 이렇다.
+
+```
+2026-10-04T18:10:58.341735 [GNB     ] [I] Built in Release mode using commit 11c9bbabb6 on branch HEAD
+2026-10-04T18:10:58.744341 [GNB     ] [W] DRM KMS polling is enabled, which may hinder performance. You can disable it using the "srsran_performance" script
+2026-10-04T18:12:30.147605 [RF      ] [W] Real-time failure in RF: underflow
+2026-10-04T18:12:30.150721 [RF      ] [W] Real-time failure in RF: late
+```
+
+`DRM KMS polling` 경고는 리눅스의 그래픽 드라이버(DRM, Direct Rendering Manager)가 모니터 연결 상태를 주기적으로 훑는(KMS, Kernel Mode Setting 의 폴링) 기능이 켜져 있다는 뜻이다. 그 폴링이 잠깐씩 CPU 를 붙잡아 실시간 스레드의 마감을 흔들 수 있어서 srsRAN 이 기동 때 검사해 경고한다. 저장소의 `srsran_performance` 스크립트가 이것과 CPU 절전 설정을 함께 끈다. 우리는 끄지 않고 운용했다.
+
+`Real-time failure in RF` 는 2장에서 콘솔의 `U`, `O`, `L` 한 글자로 봤던 것의 긴 이름이다. **underflow** 는 송신 버퍼가 비었다는 것 — 기지국이 다음 샘플을 제때 만들지 못해 B210 이 보낼 것이 없었다. **overflow** 는 반대로 수신 버퍼가 넘쳤다는 것 — B210 이 보낸 샘플을 호스트가 제때 가져가지 못했다. **late** 는 샘플이 도착은 했는데 그 샘플에 붙은 송신 예정 시각이 이미 지났다는 것이다. 어느 쪽이든 그 순간의 무선 프레임은 깨지고, 몇 번이면 단말이 견디지만 계속되면 셀을 놓친다. 이 로그에서 RF 실패는 기동 직후 몇십 줄로 끝났다.
+
+문제는 그다음이었다. 10월 5일 01:53 부터 이 로그는 같은 줄로 채워졌다.
+
+```
+2026-10-05T01:53:19.868026 [PHY     ] [W] [    3.19] Real-time failure in low-phy: PRACH request overflow for sector 0, slot 3.19 and start symbol 0.
+2026-10-05T01:53:19.883383 [PHY     ] [W] [    4.19] Real-time failure in low-phy: PRACH request overflow for sector 0, slot 4.19 and start symbol 0.
+```
+
+대괄호 안 `3.19` 는 "시스템 프레임 3 의 슬롯 19"다(10 ms 프레임 하나에 30 kHz 슬롯 20개, 0~19). 프레임 번호가 하나씩 오르며 매번 슬롯 19 에서 찍혔고, 시간당 약 17만 7천 줄, 초당 약 49 줄 — 이 셀의 PRACH 기회가 오는 자리마다 한 줄씩 찍힌 것으로 보인다. 같은 슬롯 번호(19)에서만 찍힌다는 것 자체가 PRACH 기회의 위치를 로그로 알려 주는 셈인데, 인덱스 159 의 표 값과 직접 대조하지는 않았다 [검증 필요: TS 38.211 표 6.3.3.2-3 의 159 행]. 프레임은 10 ms 인데 초당 49 줄이라는 점도 "매 프레임"과 정확히 맞지는 않는다 — 로그 기록 자체가 밀렸을 수 있다. 뜻은 "상위 PHY 가 '이 슬롯의 PRACH 를 받아 달라'고 하위 PHY 에 요청을 넣으려 했는데 요청 큐가 이미 차 있었다"이다. 하위 PHY 가 이전 PRACH 요청을 처리하지 못하고 쌓아 두고 있었다는 뜻이고, 그 상태에서는 단말이 손을 들어도 기지국이 보지 못한다. 그날 밤 이 로그가 찍히는 동안 붙어 있던 단말은 없었다. 원인이 무엇이었는지 — 그 시점의 USB 연결 상태인지, 상향 샘플 흐름이 끊긴 것인지 — 는 당시 기록으로 가려내지 못했다 [검증 필요]. 지금 기동분의 `gnb.log` 에는 이 줄이 한 줄도 없다. 교훈은 둘이다. **로그 파일 크기 자체가 건강 지표다** — 정상 운전 중인 `warning` 레벨 로그는 0 바이트에 가깝고, 몇백 MB 로 불어나 있으면 무언가 매 슬롯 실패하고 있다. 그리고 **PRACH 쪽 실패는 하향 쪽이 멀쩡해도 생긴다** — 셀은 보이는데(SSB 는 나가는데) 아무도 못 붙는 증상의 후보로 기억해 둔다.
 
 ## 10.5 단말이 붙는 10 초 동안 기지국 안에서 일어나는 일
 
@@ -240,6 +277,8 @@ USB 3 가 되고 시리얼을 고정한 뒤에도 모뎀은 셀을 못 봤다. `
 이 숫자들을 1 장의 방식으로 놓고 보자. B210 데이터시트의 송신 출력은 `>10 dBm`(주파수 조건 없이 한 줄)이고 게인 범위는 0~89.75 dB 다. 게인 80 은 최대에서 약 10 dB 아래이니 **0 dBm, 1 mW** 근처다. 거기서 케이블 손실 2~3 dB 와 감쇠기 40 dB 를 빼면 모뎀 입력은 약 -43 dBm 이어야 한다. 그런데 모뎀은 -71 을 보고했다. **28 dB 가 설명되지 않는다.** 가능한 곳은 셋이다. 복제 보드의 실제 출력이 정품 사양보다 낮을 수 있다. **MHF4** 피그테일과 커넥터 접촉에서 손실이 있을 수 있다. MHF4 는 노트북 Wi-Fi 카드의 안테나 단자처럼 손톱만 한 초소형 동축 커넥터(일본 커넥터 제조사 I-PEX(아이펙스)가 정한 규격 이름)이고, 피그테일은 그 단자에서 **SMA**(SubMiniature version A — B210 보드 가장자리에 달린 금색 나사식 커넥터가 이것이다) 같은 큰 커넥터로 이어 주는 짧은 동축 선이다. 작은 만큼 끼움 상태에 따라 손실이 들쭉날쭉하다. 그리고 RSRP 는 "채널 전체"가 아니라 "SSB 의 자원 요소 하나당 평균"이라서(11f.4), 20 MHz 에 퍼진 총 전력보다 10·log₁₀(612) ≈ **27.9 dB** 낮게 나오는 것이 **정상**이다. 612 는 51 PRB × 12 부반송파다. 마지막 항목이 거의 전부를 설명한다. 즉 -71 dBm RSRP 는 모뎀 입력 총 전력 약 -44 dBm 에 해당하고, 우리 계산과 맞는다.
 
 그러면 왜 65 에서는 안 됐나. 15 dB 아래, RSRP 로 -86 dBm 이면 11f 의 표에서 "좋음" 구간이라 붙었어야 한다. 그런데 -110 이 나왔다. 이것은 **첫 측정의 함정**이다. 등록 전 탐색 중의 RSRP 는 단말이 아직 채널 추정을 제대로 못 한 값이고, 게인 65 의 그 세션은 USB 2 상태였을 가능성이 있다. 즉 "65 에서 안 됐다"는 결론 자체가 다른 변수와 섞여 있었다. 지금 80 에서 안정됐으니 **65 로 내려서 다시 재는 것**이 정직한 다음 실험이고, 12 장의 과제로 둔다.
+
+수신 게인 `rx_gain: 36` 은 우리가 한 번도 바꾸지 않은 업스트림 기본값이다(`configs/_backup/gnb.yml.orig.bak` 에도 36). 바꿀 필요가 없었던 이유는 상향 방향에는 **단말 쪽 전력 제어**가 있기 때문이다. 기지국은 SIB1 으로 "PRACH 프리앰블이 내 수신단에 몇 dBm 으로 도착하길 원한다"(preambleReceivedTargetPower)를 방송하고, 단말은 하향 신호로 잰 경로 손실을 더해 자기 송신 전력을 정한다. 이 이미지의 기본 목표값은 소스상 `preamble_rx_target_pw = -100` dBm 이다. 그래서 감쇠기 40 dB 가 끼어 있든 아니든 단말은 그만큼 세게 또는 약하게 쏴서 기지국 입구에서 약 −100 dBm 을 맞추려 한다. 수신 게인은 그 −100 dBm 근처 신호가 B210 의 ADC 범위에서 너무 작지도(양자화 잡음에 묻힘) 너무 크지도(포화) 않게 놓는 값이고, 36 dB 는 그 범위 안에 있었다 — 상향 11 Mbps 가 나오고 PRACH 가 한 번에 붙었다는 것이 우리가 가진 증거의 전부다. 상향 수신 전력을 직접 재 보지는 않았다 [검증 필요: 기지국 MAC pcap 또는 `info` 로그의 상향 SNR 로 확인].
 
 왜 더 올리지 않는가. 두 이유다. 하나는 포화다. B210 의 송신 증폭기는 최대 근처에서 비선형이 되어 신호가 일그러지고(스펙트럼이 옆으로 번진다), 그러면 모뎀의 SINR 이 오히려 떨어진다. 다른 하나는 안전이다. 게인이 높을수록 케이블과 커넥터에서 새는 전파도 세진다. 모뎀이 붙는 **가장 낮은 게인에서 10 dB 여유**를 두는 것이 원칙이다. 지금 80 은 그 기준에서 높은 쪽이고, 12 장의 게인 스윕에서 적정값을 정한다.
 
