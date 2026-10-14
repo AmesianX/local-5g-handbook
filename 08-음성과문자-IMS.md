@@ -57,7 +57,7 @@ P-Associated-URI: <sip:821099994531@ims.mnc001.mcc001.3gppnetwork.org>, <tel:821
 Service-Route: <sip:orig@scscf.ims.mnc001.mcc001.3gppnetwork.org:6060;lr>
 ```
 
-**P-Associated-URI** 는 "너는 이 세 이름으로 불린다"다. 전화번호 형식의 sip 주소, `tel:` 주소, 그리고 IMSI 형식의 sip 주소. HSS 의 `ims_subscriber.msisdn` 이 `tel:` 로 돌아온 것이고, **전화번호가 IMS 에 반영됐다**는 증거다. **Service-Route** 는 "앞으로 발신 요청은 이 S-CSCF 를 거쳐라"다. 이후 INVITE 의 Route 헤더에 넣는 값이다.
+**P-Associated-URI** 는 "당신은 이 세 이름으로 불린다"다. 전화번호 형식의 sip 주소, `tel:` 주소, 그리고 IMSI 형식의 sip 주소. HSS 의 `ims_subscriber.msisdn` 이 `tel:` 로 돌아온 것이고, **전화번호가 IMS 에 반영됐다**는 증거다. **Service-Route** 는 "앞으로 발신 요청은 이 S-CSCF 를 거쳐라"다. 이후 INVITE 의 Route 헤더에 넣는 값이다.
 
 IMS 의 신원 용어를 정리한다. **IMPI(IMS Private Identity)** 는 인증용 비공개 ID 로 로그인 ID 에 해당한다. 우리는 `001011234567895@ims.mnc001.mcc001.3gppnetwork.org` 다. **IMPU(IMS Public Identity)** 는 남이 부르는 공개 ID 로 이메일 주소나 전화번호에 해당하고 여러 개 가질 수 있다. **realm(홈 도메인)** 은 IMS 망의 이름이다. 4a 에서 ISIM 이 비어 있어 IMPI 를 IMSI 에서 유도했다고 했는데, 그 규칙이 `IMSI@ims.mnc<MNC>.mcc<MCC>.3gppnetwork.org` 다. 이 `3gppnetwork.org` 도메인은 인터넷으로 나가지 않는다. 우리 `dns` 컨테이너가 푼다.
 
@@ -203,7 +203,7 @@ INVITE 가 홉을 지날 때마다 Via·Record-Route·P-헤더가 붙어 1220 �
 | **P** (Proxiable) | 중계 가능 | |
 | **E** (Error) | 프로토콜 오류 응답 | |
 | **T** (Retransmit) | 재전송 | |
-| **명령 코드** | `300` UAR/UAA, `301` SAR/SAA, `302` LIR/LIA, `303` MAR/MAA | 8.8 절의 네 쌍. 요청과 응답이 같은 코드, R 비트로 구분 |
+| **명령 코드** | `300` UAR/UAA, `301` SAR/SAA, `302` LIR/LIA, `303` MAR/MAA | 8.8절의 네 쌍. 요청과 응답이 같은 코드, R 비트로 구분 |
 | **응용 ID** | 어느 Diameter 응용인가 | Cx = `16777216` |
 | **Hop-by-Hop / End-to-End** | 요청과 응답 짝 맞추기 (홉마다 / 끝에서 끝) | |
 | AVP **V** | 벤더 전용 AVP (뒤에 벤더 ID 가 붙음) | 3GPP AVP 는 전부 V=1, 벤더 10415 |
@@ -242,7 +242,7 @@ INVITE 가 홉을 지날 때마다 Via·Record-Route·P-헤더가 붙어 1220 �
 
 ## 8.8b 와이어샤크로 보기
 
-통화 한 번을 캡처하고 필터 `sip` 을 치면 와이어샤크의 **전화 → VoIP 통화** 메뉴가 통화를 자동으로 묶어 준다. 거기서 "흐름 순서" 를 누르면 8.5 절의 그림이 **실제 패킷으로** 그려진다. P-CSCF, S-CSCF, I-CSCF 사이를 INVITE 가 몇 번 오가는지, 각 홉에서 Via 가 몇 줄 쌓이는지, 200 OK 의 Record-Route 가 몇 개인지 전부 보인다. INVITE 하나를 골라 길이를 보면 1300 바이트를 넘는 것을 확인할 수 있고, 그 다음 홉이 `tcp` 로 바뀐 것도 보인다. `sdp` 필터로 SDP 만 모으면 A 의 포트가 rtpengine 주소로 바뀌는 순간이 홉 단위로 보인다. 필터 `diameter` 는 같은 시간대의 UAR/MAR/SAR/LIR 을 보여 주고, 위 그림대로 AVP 를 펼치면 `Server-Name` 과 `Result-Code 2001` 이 읽힌다. 마지막으로 `rtp` 를 치고 **전화 → RTP → RTP 스트림** 을 열면 양방향 패킷 수, 손실, 지터가 표로 나온다. 우리가 "송신 200 / 수신 200" 이라고 세었던 것을 와이어샤크가 대신 세어 준다.
+통화 한 번을 캡처하고 필터 `sip` 을 치면 와이어샤크의 **전화 → VoIP 통화** 메뉴가 통화를 자동으로 묶어 준다. 거기서 "흐름 순서" 를 누르면 8.5절의 그림이 **실제 패킷으로** 그려진다. P-CSCF, S-CSCF, I-CSCF 사이를 INVITE 가 몇 번 오가는지, 각 홉에서 Via 가 몇 줄 쌓이는지, 200 OK 의 Record-Route 가 몇 개인지 전부 보인다. INVITE 하나를 골라 길이를 보면 1300 바이트를 넘는 것을 확인할 수 있고, 그 다음 홉이 `tcp` 로 바뀐 것도 보인다. `sdp` 필터로 SDP 만 모으면 A 의 포트가 rtpengine 주소로 바뀌는 순간이 홉 단위로 보인다. 필터 `diameter` 는 같은 시간대의 UAR/MAR/SAR/LIR 을 보여 주고, 위 그림대로 AVP 를 펼치면 `Server-Name` 과 `Result-Code 2001` 이 읽힌다. 마지막으로 `rtp` 를 치고 **전화 → RTP → RTP 스트림** 을 열면 양방향 패킷 수, 손실, 지터가 표로 나온다. 우리가 "송신 200 / 수신 200" 이라고 세었던 것을 와이어샤크가 대신 세어 준다.
 
 ## 8.9 이 장의 요약: 벽 일곱 개가 가르쳐 준 것
 

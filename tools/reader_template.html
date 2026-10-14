@@ -1,0 +1,291 @@
+<title>로컬 5G 망 구축하기</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* 레이아웃: 좌측 고정 목차 + 본문 한 단(68ch) + 상단 얇은 바. 계측기 눈금 같은 중립색에 신호 청록 하나 */
+:root{
+  --bg:#f7f8f9; --panel:#ffffff; --rail:#eef1f3; --fg:#14181c; --muted:#5d6b78;
+  --line:#dde3e8; --accent:#0d7d78; --accent-soft:#e2f1f0; --warn:#a4450f; --warn-soft:#fbeee6;
+  --code-bg:#f2f5f7; --code-fg:#1d2c33;
+  --serif:"Noto Serif KR",ui-serif,Georgia,"Apple SD Gothic Neo","Malgun Gothic",serif;
+  --sans:system-ui,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --fs:17px; --rail-w:300px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10151a; --panel:#141a20; --rail:#0d1216; --fg:#e4e9ee; --muted:#93a2b0;
+  --line:#242e37; --accent:#4fd1c5; --accent-soft:#113230; --warn:#f0a978; --warn-soft:#2d1d12;
+  --code-bg:#0c1115; --code-fg:#cbd6de; color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#10151a; --panel:#141a20; --rail:#0d1216; --fg:#e4e9ee; --muted:#93a2b0;
+  --line:#242e37; --accent:#4fd1c5; --accent-soft:#113230; --warn:#f0a978; --warn-soft:#2d1d12;
+  --code-bg:#0c1115; --code-fg:#cbd6de; color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--serif);font-size:var(--fs);line-height:1.75;-webkit-text-size-adjust:100%}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ── 상단 바 ── */
+#top{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;display:flex;gap:.6rem;align-items:center;
+  background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--line);padding:.5rem .8rem;font-family:var(--sans)}
+#menu{display:none}
+.btn{font-family:var(--sans);font-size:.8rem;color:var(--fg);background:var(--rail);
+  border:1px solid var(--line);border-radius:6px;padding:.35rem .6rem;cursor:pointer;line-height:1.2}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+#where{font-size:.82rem;color:var(--muted);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#where b{color:var(--fg);font-weight:600}
+#q{font-family:var(--sans);font-size:.85rem;background:var(--bg);color:var(--fg);border:1px solid var(--line);
+  border-radius:6px;padding:.35rem .6rem;width:9rem;min-width:0}
+#q:focus{border-color:var(--accent);outline:none}
+#bar{position:fixed;left:0;top:0;height:2px;background:var(--accent);width:0;z-index:40;transition:width .15s}
+
+/* ── 목차 ── */
+#rail{position:fixed;left:0;top:0;bottom:0;width:var(--rail-w);background:var(--rail);
+  border-right:1px solid var(--line);overflow-y:auto;padding:1rem 0 3rem;font-family:var(--sans);z-index:20}
+#rail h1{font-size:.95rem;font-weight:800;margin:.2rem 1rem 1rem;line-height:1.4;letter-spacing:-.01em}
+#rail h1 small{display:block;font-size:.68rem;font-weight:400;color:var(--muted);letter-spacing:.04em;margin-top:.25rem}
+.navitem{margin-bottom:.1rem}
+a.chap{display:flex;gap:.55rem;align-items:baseline;padding:.4rem 1rem;font-size:.84rem;color:var(--fg)}
+a.chap:hover{background:var(--accent-soft);text-decoration:none}
+a.chap .num{font-family:var(--mono);font-size:.72rem;color:var(--muted);min-width:2.6em;font-variant-numeric:tabular-nums}
+a.chap.on{background:var(--accent-soft);color:var(--accent);font-weight:600}
+a.chap.on .num{color:var(--accent)}
+.secs{display:none;padding:.1rem 0 .5rem}
+.navitem.open .secs{display:block}
+a.sec{display:block;padding:.2rem 1rem .2rem 3.6rem;font-size:.76rem;color:var(--muted);line-height:1.5}
+a.sec:hover{color:var(--accent);text-decoration:none}
+
+/* ── 본문 ── */
+#wrap{margin-left:var(--rail-w)}
+main{max-width:68ch;margin:0 auto;padding:2.2rem 1.1rem 6rem}
+.ch>h1{font-family:var(--sans);font-size:1.65rem;font-weight:800;line-height:1.3;letter-spacing:-.02em;
+  margin:0 0 1.8rem;padding-bottom:1rem;border-bottom:2px solid var(--line);text-wrap:balance}
+.ch h2{font-family:var(--sans);font-size:1.18rem;font-weight:700;margin:2.8rem 0 .9rem;letter-spacing:-.01em;
+  text-wrap:balance;scroll-margin-top:5rem}
+.ch h3{font-family:var(--sans);font-size:.98rem;font-weight:700;color:var(--accent);margin:2rem 0 .7rem;scroll-margin-top:5rem}
+.ch h2+h3{margin-top:1.2rem}
+p{margin:0 0 1.15rem}
+strong{font-weight:800}
+em{font-style:normal;color:var(--warn)}
+ul,ol{margin:0 0 1.2rem;padding-left:1.4rem}
+li{margin:.3rem 0}
+hr{border:0;border-top:1px solid var(--line);margin:2.5rem 0}
+blockquote{margin:0 0 1.2rem;padding:.8rem 1rem;background:var(--panel);border-left:3px solid var(--accent);
+  border-radius:0 6px 6px 0;color:var(--muted);font-size:.95em}
+blockquote p:last-child{margin:0}
+code{font-family:var(--mono);font-size:.84em;background:var(--code-bg);color:var(--code-fg);
+  padding:.1em .35em;border-radius:4px;word-break:break-word}
+pre{margin:0 0 1.3rem;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;
+  padding:.9rem 1rem;overflow-x:auto}
+pre code{background:none;padding:0;font-size:.78rem;line-height:1.6;color:var(--code-fg);white-space:pre;word-break:normal}
+.tw{overflow-x:auto;margin:0 0 1.3rem}
+table{border-collapse:collapse;font-family:var(--sans);font-size:.82rem;line-height:1.6;min-width:100%}
+th,td{border-bottom:1px solid var(--line);padding:.45rem .7rem;text-align:left;vertical-align:top}
+th{color:var(--accent);font-weight:700;white-space:nowrap;border-bottom-width:2px}
+td code{font-size:.9em}
+img{max-width:100%}
+
+/* ── 이 책의 표기 ── */
+.tag{font-family:var(--mono);font-size:.74em;font-weight:600;padding:.08em .4em;border-radius:4px;white-space:nowrap}
+.tag.m{background:var(--accent-soft);color:var(--accent)}
+.tag.e{background:var(--warn-soft);color:var(--warn)}
+.tag.v{background:var(--code-bg);color:var(--muted)}
+.todo{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:0 6px 6px 0;padding:.75rem 1rem;margin:0 0 1.2rem;font-size:.93em}
+.todo p{margin:0}
+.danger{background:var(--warn-soft);border-left:3px solid var(--warn);border-radius:0 6px 6px 0;
+  padding:.75rem 1rem;margin:0 0 1.2rem;font-size:.95em}
+.danger p{margin:0}
+mark{background:var(--accent-soft);color:var(--accent);padding:0 .15em;border-radius:3px}
+
+/* ── 검색 결과 ── */
+#res{display:none;max-width:68ch;margin:0 auto;padding:1.5rem 1.1rem 5rem}
+#res h2{font-family:var(--sans);font-size:1rem;margin:0 0 1rem;color:var(--muted);font-weight:600}
+.hit{display:block;padding:.7rem .9rem;margin-bottom:.5rem;background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;color:var(--fg);font-size:.88rem;line-height:1.6}
+.hit:hover{border-color:var(--accent);text-decoration:none}
+.hit .loc{font-family:var(--mono);font-size:.7rem;color:var(--accent);display:block;margin-bottom:.2rem}
+
+/* ── 장 이동 ── */
+#foot{display:flex;gap:.8rem;justify-content:space-between;margin-top:3.5rem;padding-top:1.5rem;border-top:1px solid var(--line)}
+#foot a{font-family:var(--sans);font-size:.83rem;flex:1;padding:.7rem .9rem;background:var(--panel);
+  border:1px solid var(--line);border-radius:8px;line-height:1.4}
+#foot a:hover{border-color:var(--accent);text-decoration:none}
+#foot a.nx{text-align:right}
+#foot span{display:block;font-size:.7rem;color:var(--muted);font-family:var(--mono)}
+
+@media (max-width:900px){
+  :root{--fs:16.5px}
+  #menu{display:inline-block}
+  #rail{transform:translateX(-100%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  body.nav #rail{transform:none}
+  #wrap{margin-left:0}
+  main{padding:1.6rem 1rem 5rem}
+  .ch>h1{font-size:1.4rem}
+  #q{width:6.5rem}
+}
+@media print{#rail,#top,#foot{display:none}#wrap{margin:0}.ch[hidden]{display:block!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div id="bar"></div>
+<nav id="rail" aria-label="목차">
+  <h1>로컬 5G 망 구축하기<small>해커를 위한 이동통신 실무서</small></h1>
+  <!--TOC-->
+</nav>
+<div id="wrap">
+  <header id="top">
+    <button class="btn" id="menu" aria-label="목차 열기">☰</button>
+    <div id="where"></div>
+    <input id="q" type="search" placeholder="책 전체 검색" aria-label="책 전체 검색" autocomplete="off">
+    <button class="btn" id="fsm" title="글씨 작게">A−</button>
+    <button class="btn" id="fsp" title="글씨 크게">A+</button>
+  </header>
+  <main>
+    <!--CHAPTERS-->
+    <div id="foot"></div>
+  </main>
+  <div id="res"></div>
+</div>
+
+<script>
+(function(){
+  var chs = [].slice.call(document.querySelectorAll('article.ch'));
+  var navs = [].slice.call(document.querySelectorAll('a.chap'));
+  var store = {
+    get: function(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+    set: function(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  };
+
+  /* 이 책의 표기를 눈에 보이게: [측정]/[추정]/[검증 필요], 🔎 지금 할 일, ⚠️ */
+  function decorate(ch){
+    if (ch.dataset.done) return;
+    ch.dataset.done = '1';
+    var walk = document.createTreeWalker(ch, NodeFilter.SHOW_TEXT, null);
+    var hits = [], n;
+    while ((n = walk.nextNode())) {
+      if (n.parentNode.closest('pre,code,.tag')) continue;
+      if (/\[(측정|추정|검증 필요[^\]]*)\]/.test(n.nodeValue)) hits.push(n);
+    }
+    hits.forEach(function(node){
+      var frag = document.createDocumentFragment(), s = node.nodeValue, re = /\[(측정|추정|검증 필요[^\]]*)\]/g, m, last = 0;
+      while ((m = re.exec(s))) {
+        if (m.index > last) frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+        var sp = document.createElement('span');
+        sp.className = 'tag ' + (m[1] === '측정' ? 'm' : m[1] === '추정' ? 'e' : 'v');
+        sp.textContent = m[1];
+        frag.appendChild(sp); last = re.lastIndex;
+      }
+      frag.appendChild(document.createTextNode(s.slice(last)));
+      node.parentNode.replaceChild(frag, node);
+    });
+    [].slice.call(ch.querySelectorAll('p')).forEach(function(p){
+      var t = p.textContent;
+      if (t.indexOf('🔎') === 0) p.className = 'todo';
+      else if (t.indexOf('⚠️') === 0) p.className = 'danger';
+    });
+    [].slice.call(ch.querySelectorAll('table')).forEach(function(tb){
+      if (tb.parentNode.className === 'tw') return;
+      var w = document.createElement('div'); w.className = 'tw';
+      tb.parentNode.insertBefore(w, tb); w.appendChild(tb);
+    });
+  }
+
+  var cur = -1;
+  function show(i, secId, remember){
+    if (i < 0 || i >= chs.length) return;
+    if (cur >= 0) chs[cur].hidden = true;
+    cur = i;
+    var ch = chs[i];
+    decorate(ch);
+    ch.hidden = false;
+    document.getElementById('res').style.display = 'none';
+    navs.forEach(function(a, k){
+      a.classList.toggle('on', k === i);
+      a.parentNode.classList.toggle('open', k === i);
+    });
+    document.getElementById('where').innerHTML =
+      '<b>' + ch.dataset.num + '</b> · ' + ch.dataset.title;
+    var p = chs[i - 1], nx = chs[i + 1], f = document.getElementById('foot');
+    f.innerHTML =
+      (p ? '<a href="#' + p.id + '" data-ch="' + p.id + '"><span>← 앞</span>' + p.dataset.num + ' ' + p.dataset.title + '</a>' : '<a style="visibility:hidden"></a>') +
+      (nx ? '<a class="nx" href="#' + nx.id + '" data-ch="' + nx.id + '"><span>다음 →</span>' + nx.dataset.num + ' ' + nx.dataset.title + '</a>' : '');
+    if (secId) {
+      var el = document.getElementById(secId);
+      if (el) { el.scrollIntoView(); window.scrollBy(0, -8); }
+    } else window.scrollTo(0, 0);
+    if (remember !== false) store.set('ch', ch.id);
+    if (history.replaceState) history.replaceState(null, '', '#' + ch.id);
+    document.body.classList.remove('nav');
+  }
+
+  document.addEventListener('click', function(e){
+    var a = e.target.closest('a[data-ch]');
+    if (!a) return;
+    e.preventDefault();
+    var i = chs.indexOf(document.getElementById(a.dataset.ch));
+    show(i, a.dataset.sec);
+  });
+  document.getElementById('menu').onclick = function(){ document.body.classList.toggle('nav'); };
+
+  /* 검색: 장별 본문에서 찾아 문맥과 함께 */
+  var q = document.getElementById('q'), res = document.getElementById('res'), timer;
+  q.addEventListener('input', function(){
+    clearTimeout(timer); timer = setTimeout(search, 180);
+  });
+  function search(){
+    var s = q.value.trim();
+    if (s.length < 2) { res.style.display = 'none'; if (cur >= 0) chs[cur].hidden = false; return; }
+    var low = s.toLowerCase(), out = [], total = 0;
+    chs.forEach(function(ch, i){
+      var txt = ch.textContent, lt = txt.toLowerCase(), from = 0, k = 0, idx;
+      while ((idx = lt.indexOf(low, from)) > -1 && k < 3) {
+        var a = Math.max(0, idx - 70), b = Math.min(txt.length, idx + s.length + 90);
+        var snip = (a > 0 ? '…' : '') + txt.slice(a, idx) + '\u0001' + txt.slice(idx, idx + s.length) + '\u0002' + txt.slice(idx + s.length, b) + (b < txt.length ? '…' : '');
+        out.push('<a class="hit" href="#' + ch.id + '" data-ch="' + ch.id + '">' +
+          '<span class="loc">' + ch.dataset.num + ' ' + ch.dataset.title + '</span>' +
+          snip.replace(/[&<>]/g, function(c){ return { '&':'&amp;','<':'&lt;','>':'&gt;' }[c]; })
+              .replace(/\u0001/g, '<mark>').replace(/\u0002/g, '</mark>') + '</a>');
+        from = idx + s.length; k++; total++;
+      }
+    });
+    if (cur >= 0) chs[cur].hidden = true;
+    res.innerHTML = '<h2>“' + s.replace(/[&<>]/g, '') + '” — ' + (total ? total + '곳' : '찾지 못했다') + '</h2>' + out.join('');
+    res.style.display = 'block';
+    window.scrollTo(0, 0);
+  }
+
+  /* 글씨 크기 */
+  var fs = parseFloat(store.get('fs')) || 17;
+  function setFs(v){ fs = Math.min(22, Math.max(14, v)); document.documentElement.style.setProperty('--fs', fs + 'px'); store.set('fs', fs); }
+  setFs(fs);
+  document.getElementById('fsp').onclick = function(){ setFs(fs + 1); };
+  document.getElementById('fsm').onclick = function(){ setFs(fs - 1); };
+
+  /* 읽은 진도 */
+  function prog(){
+    var h = document.documentElement, max = h.scrollHeight - h.clientHeight;
+    document.getElementById('bar').style.width = (max > 0 ? (h.scrollTop / max * 100) : 0) + '%';
+  }
+  window.addEventListener('scroll', prog, { passive: true });
+
+  /* 열 때: URL 앵커 → 지난번 위치 → 머리말 */
+  var want = (location.hash || '').replace('#', '');
+  var start = chs.findIndex(function(c){ return c.id === want; });
+  if (start < 0) start = chs.findIndex(function(c){ return c.id === store.get('ch'); });
+  show(start < 0 ? 0 : start, null, false);
+  prog();
+
+  document.addEventListener('keydown', function(e){
+    if (e.target.tagName === 'INPUT') { if (e.key === 'Escape') { q.value = ''; search(); q.blur(); } return; }
+    if (e.key === 'ArrowRight' || e.key === 'j') show(cur + 1);
+    else if (e.key === 'ArrowLeft' || e.key === 'k') show(cur - 1);
+    else if (e.key === '/') { e.preventDefault(); q.focus(); }
+  });
+})();
+</script>
