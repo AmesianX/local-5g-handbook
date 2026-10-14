@@ -29,6 +29,7 @@ docker exec amf grep -n 'tac\|mcc' /open5gs/install/etc/open5gs/amf.yaml   # ③
 |---|---|---|---|
 | `env/env` | `.env` | 모든 컨테이너(env_file) → 각 `*_init.sh` | 5.6, 9.6 |
 | `dns/ims_zone` | `dns/ims_zone` | `dns` 컨테이너(bind) | 8, 13 |
+| `compose/sa-vonr-deploy.yaml` | `sa-vonr-deploy.yaml` | docker compose (코어·IMS 전체 정의) | 9, 11e |
 | `srsran/gnb.yml` | `srsran/gnb.yml` | `srsgnb` 의 `gnb` 프로세스 | 10 전체 |
 | `srsran/libresdr_alphafox02.bin` | `srsran/…bin` | `srsgnb` 안 UHD (FPGA 적재) | 2, 9.2, 10 |
 | `srsran/gnb_zmq_n78.yml` | `srsran/…` | 시뮬레이션 기지국(ZMQ) | 3 |
@@ -65,6 +66,10 @@ OAI 시뮬레이션 프로파일(`compose/oai_n78_rfsim.yaml` 과 `configs/oai/g
 **`pcscf/route/{register,mo,mt}.cfg`**
 
 - P-CSCF 가 PCF 에 보내는 N5 정책 요청(JSON, `Npcf_PolicyAuthorization`) 안의 미디어 컴포넌트마다 있던 `"qosReference": "qosVoNR"` 줄을 지웠다(발신 4곳, 착신 4곳, 등록 1곳). 원본은 `configs/_backup/*.qosref.bak`(2026-09-21). **바꾼 이유는 당시 기록에 남아 있지 않다.** 우리가 소스에서 확인한 것은 다음뿐이다. 로컬에 받아 둔 Open5GS 소스(`src/pcf/npcf-handler.c`, 2026-09-19 커밋 bb810d3)의 PCF 는 `qosReference` 가 오면 자기 설정의 `qos_profile` 목록에서 같은 이름을 찾고, 없으면 `"Unknown qosReference - check PCF qos_profiles config"` 로 거절한다. `qosReference` 가 없으면 미디어 종류로 정한다 — AUDIO 는 QoS 인덱스 1, VIDEO 는 2. 우리 PCF 설정에는 `qosVoNR` 이라는 프로파일이 없다. 그러므로 이 줄을 지운 것이 PCF 가 음성에 5QI 1, 영상에 5QI 2 를 고르게 한 경로와 일치한다. 다만 실제로 돌고 있는 PCF 이미지는 `v2.8.0-48-gf87da61` 이고 그 커밋이 로컬 소스에 없어 같은 코드인지 확인하지 못했다 [검증 필요].
+
+**`sa-vonr-deploy.yaml`** (코어·IMS compose 정의)
+
+- PyHSS REST(8080), webui(9999), grafana(3000), metrics(9090) 의 `ports:` 를 `0.0.0.0` 공개에서 `127.0.0.1:` 로 바꿨다. 업스트림 기본은 호스트의 모든 인터페이스에 공개라, 인증 없는 PyHSS API 가 LAN 에 열려 있었다(11e.4). 원본은 `configs/_backup/sa-vonr-deploy.yaml.pre-loopback.bak`.
 
 **호스트 쪽 (컨테이너 밖)**
 
