@@ -1,0 +1,47 @@
+<section>
+<section class="center">
+  <p class="chapter-no">LOCAL 5G HANDBOOK</p>
+  <h1>로컬 5G 망 구축하기</h1>
+  <p class="lead">리눅스 한 대 위에 이동통신사 하나를 올린다</p>
+  <p class="small">AmesianX · 2026 · MIT</p>
+  <aside class="notes">이 덱은 책의 장 순서를 그대로 따른다. 각 장의 세로 슬라이드(아래 화살표)가 그 장의 세부다.</aside>
+</section>
+<section>
+  <h2>이 책이 존재하는 이유</h2>
+  <p class="lead"><strong>이동통신 기술이 특정 엔지니어의 전유물이어서는 안 된다.</strong></p>
+  <ul>
+    <li>독자: TCP/IP·리버싱·와이어샤크는 익숙, 전자공학은 "들어는 봤다"</li>
+    <li>방식: 이미 아는 것에 새 이름을 붙인다 — C++ 개발자에게 자바를 가르치듯</li>
+    <li>목소리: 1인칭 조사 서사, 실제 산출물, 막다른 길까지</li>
+    <li>이론서가 아니다 — 모든 절은 "지금 네 장비에서 칠 것"으로 끝난다</li>
+  </ul>
+</section>
+<section>
+  <h2>우리가 실제로 만든 것</h2>
+  <div class="two-col">
+    <div>
+      <ul>
+        <li>B210(LibreSDR) + srsRAN gNB, n78 3350.01 MHz, 20 MHz, 30 kHz</li>
+        <li>Open5GS 5GC + Kamailio IMS, 컨테이너 24개</li>
+        <li>실물 USIM(sysmoISIM-SJA5)을 직접 쓴 Quectel RM520N-GL 모뎀</li>
+        <li>동축 직결 + 40 dB 감쇠기 (차폐함 입고 대기)</li>
+      </ul>
+    </div>
+    <div>
+      <div class="box measure"><span class="tag m">측정</span> DL 55 / UL 11 Mbps, RTT 38 ms</div>
+      <div class="box measure"><span class="tag m">측정</span> IMS 음성·문자·영상 양방향 성립<br><span class="small">오디오 50 pps, 비디오 16.75 fps</span></div>
+      <div class="box est"><span class="tag e">추정</span> 20 MHz 1T1R 하향 상한 약 70 Mbps</div>
+    </div>
+  </div>
+</section>
+<section>
+  <h2>표기</h2>
+  <ul>
+    <li><span class="tag m">측정</span> 이 실험실에서 실제로 잰 값</li>
+    <li><span class="tag e">추정</span> 계산으로 얻은 상한·예상</li>
+    <li><span class="tag w">주의</span> 장비·법규 위험</li>
+    <li><span class="tag v">검증 필요</span> 아직 확인하지 않은 것</li>
+    <li>키·ADM·PIN 은 전부 <code>&lt;KI&gt;</code> <code>&lt;ADM1&gt;</code> 같은 자리표시자</li>
+  </ul>
+</section>
+</section>

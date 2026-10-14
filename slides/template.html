@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>로컬 5G 망 구축하기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reset.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.css">
+<style>
+:root {
+  --bg: #0f1216; --fg: #e6e8eb; --muted: #9aa3ad; --accent: #4fd1c5; --accent2: #f6ad55;
+  --warn: #fc8181; --panel: #181d23; --line: #2a313a; --code: #c3e88d;
+}
+.reveal-viewport { background: var(--bg); }
+.reveal { font-family: "Noto Sans KR", sans-serif; font-size: 30px; color: var(--fg); }
+.reveal h1, .reveal h2, .reveal h3 { font-family: "Noto Sans KR", sans-serif; color: var(--fg); text-transform: none; letter-spacing: -0.01em; }
+.reveal h1 { font-size: 2.0em; font-weight: 800; }
+.reveal h2 { font-size: 1.35em; font-weight: 800; margin-bottom: 0.5em; }
+.reveal h3 { font-size: 1.0em; font-weight: 600; color: var(--accent); }
+.reveal .slides section { text-align: left; }
+.reveal .slides section.center, .reveal .slides section .center { text-align: center; }
+.reveal p, .reveal li { line-height: 1.45; }
+.reveal ul, .reveal ol { margin-left: 1em; }
+.reveal li { margin: 0.25em 0; }
+.reveal strong { color: var(--accent); }
+.reveal em { color: var(--accent2); font-style: normal; }
+.reveal a { color: var(--accent); }
+.reveal code { font-family: "JetBrains Mono", monospace; color: var(--code); font-size: 0.85em; }
+.reveal pre { box-shadow: none; width: 100%; margin: 0.4em 0; }
+.reveal pre code, .reveal pre.diagram {
+  font-family: "JetBrains Mono", monospace; font-size: 0.5em; line-height: 1.35;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 0.7em 0.9em;
+  max-height: 560px; color: var(--fg); white-space: pre; overflow: auto; display: block;
+}
+.reveal pre.diagram { font-size: 0.48em; }
+.reveal table { font-size: 0.62em; border-collapse: collapse; margin: 0.4em 0; }
+.reveal table th, .reveal table td { border-bottom: 1px solid var(--line); padding: 0.3em 0.6em; text-align: left; vertical-align: top; }
+.reveal table th { color: var(--accent); font-weight: 600; }
+.reveal .lead { font-size: 1.05em; color: var(--fg); }
+.reveal .small { font-size: 0.7em; color: var(--muted); }
+.reveal .muted { color: var(--muted); }
+.reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; align-items: start; }
+.reveal .two-col > div { min-width: 0; }
+.reveal .box { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 0.6em 0.9em; margin: 0.4em 0; }
+.reveal .measure { border-left: 4px solid var(--accent); }
+.reveal .est { border-left: 4px solid var(--accent2); }
+.reveal .warn { border-left: 4px solid var(--warn); }
+.reveal .tag { display: inline-block; font-size: 0.55em; font-weight: 600; padding: 0.1em 0.5em; border-radius: 4px; vertical-align: middle; margin-right: 0.4em; }
+.reveal .tag.m { background: rgba(79,209,197,0.15); color: var(--accent); }
+.reveal .tag.e { background: rgba(246,173,85,0.15); color: var(--accent2); }
+.reveal .tag.w { background: rgba(252,129,129,0.15); color: var(--warn); }
+.reveal .tag.v { background: rgba(154,163,173,0.15); color: var(--muted); }
+.reveal .big { font-size: 2.2em; font-weight: 800; color: var(--accent); line-height: 1.1; }
+.reveal .chapter-no { font-family: "JetBrains Mono", monospace; color: var(--accent); font-size: 0.8em; }
+.reveal .progress { color: var(--accent); }
+.reveal .controls { color: var(--accent); }
+.reveal .slide-number { background: transparent; color: var(--muted); font-family: "JetBrains Mono", monospace; }
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+<!--PARTS-->
+</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/reveal.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.1.0/plugin/notes/notes.min.js"></script>
+<script>
+Reveal.initialize({
+  hash: true, slideNumber: 'c/t', width: 1280, height: 720, margin: 0.05,
+  transition: 'none', backgroundTransition: 'none', center: false,
+  plugins: [ RevealNotes ]
+});
+</script>
+</body>
+</html>
