@@ -22,7 +22,7 @@
 /nnrf-nfm/v1/nf-instances/{nfInstanceId}
 ```
 
-경로의 첫 조각에 규칙이 있다. `n` 다음에 **그 API 를 제공하는 NF 의 이름**, 하이픈, 서비스 이름이다. `nsmf-pdusession` 은 "SMF 가 제공하는 PDU 세션 서비스"이고, `npcf-policyauthorization` 은 "PCF 가 제공하는 정책 인가 서비스"다. 경로만 보면 **누가 서버이고 누가 손님인지**를 안다. 첫 줄은 AMF 가 SMF 를 부른 것이고, 둘째 줄은 IMS 의 P-CSCF(Proxy-CSCF — 단말이 전화 걸 때 처음 만나는 SIP(Session Initiation Protocol) 프록시. SIP 는 VoIP 전화의 시그널링 프로토콜로, 와이어샤크 필터 `sip` 로 보면 HTTP 와 닮은 텍스트 요청·응답이다. 8 장에서 자세히 본다)가 PCF 를 부른 것이다.
+경로의 첫 조각에 규칙이 있다. `n` 다음에 **그 API 를 제공하는 NF 의 이름**, 하이픈, 서비스 이름이다. `nsmf-pdusession` 은 "SMF 가 제공하는 PDU 세션 서비스"이고, `npcf-policyauthorization` 은 "PCF 가 제공하는 정책 인가 서비스"다. 경로만 보면 **누가 서버이고 누가 손님인지**를 안다. 첫 줄은 AMF 가 SMF 를 부른 것이고, 둘째 줄은 IMS 의 P-CSCF 가 PCF 를 부른 것이다. P-CSCF(Proxy Call Session Control Function)는 단말이 전화를 걸 때 처음 만나는 SIP 프록시이고, SIP 는 4 장에서 본 인터넷 전화의 호 설정 프로토콜이다. 와이어샤크 필터 `sip` 로 보면 HTTP 와 닮은 텍스트 요청·응답이다. 8 장에서 자세히 본다.
 
 왜 하필 HTTP/2 인가. 코어는 초당 수만 건의 작은 요청을 주고받는다. HTTP/1.1 로 하면 요청 하나에 연결 하나를 잡거나, 한 연결에서 앞 요청이 끝날 때까지 뒤가 기다려야 한다(헤드오브라인 블로킹). HTTP/2 는 한 연결 안에 요청 수천 개를 **동시에** 흘릴 수 있고(멀티플렉싱), 매 요청마다 반복되는 헤더를 압축하며(HPACK), 서버가 먼저 알림을 보낼 수단이 있다. 코어의 요구에 정확히 맞는다. 본문은 JSON 이고 스키마는 **OpenAPI** 로 정의되어 있어서, 3GPP 사이트에서 YAML 파일을 받아 Swagger 로 열면 모든 코어 API 를 읽을 수 있다. 통신 표준이 소프트웨어 엔지니어의 도구로 읽히게 된 첫 세대다.
 
@@ -32,26 +32,28 @@
 
 동작은 세 단계이고, 세 단계가 전부 우리 로그에 있다.
 
-첫째는 **등록**이다. 각 NF 가 뜨면서 NRF 에 "나는 PCF 이고 주소는 172.22.0.27 포트 7777 이며 이런 서비스를 제공한다"는 **프로파일**을 PUT 한다. NRF 는 그것을 저장하고, 주기적으로 살아 있는지 확인한다.
+실제 AMF 의 기동 로그(10월 13일 23:28 기동분, 시각과 소스 위치는 줄였다)로 따라간다.
 
 ```
-[sbi] INFO: [6effd050-c710-41f1-93b0-9f24dc149da8] (NRF-notify) NF registered
-[sbi] INFO: … NF Profile updated [type:PCF]
+11.285  Setup NF EndPoint(addr) [172.22.0.12:7777]      ← NRF
+11.285  Setup NF EndPoint(addr) [172.22.0.35:7777]      ← SCP
+11.287  [5151d970-…] NF registered [Heartbeat:10s]
+11.289  [5120ef54-…] (NRF-profile-get) NF registered
+11.289  [UDM] NFInstance associated [5120ef54-…]
+11.289  Setup NF EndPoint(addr) [172.22.0.13:7777]      ← UDM
+11.289  [nudm-ueau] NFService associated [5120f6d4-…]
+11.289  [nudm-uecm] NFService associated [5120f792-…]
 ```
 
-둘째는 **구독**이다. "PCF 가 새로 생기거나 바뀌거나 죽으면 나에게 알려 달라"고 NRF 에 구독을 건다. 그러면 변화가 생길 때 NRF 가 **콜백**으로, 즉 구독자의 URI 를 HTTP/2 로 호출해서 알린다. 로그의 `NRF-notify` 가 그 콜백이 온 순간이다.
+첫 두 줄이 이 구조의 출발점이다. AMF 가 기동할 때 **설정 파일로 아는 주소는 NRF(.12)와 SCP(.35) 둘뿐**이다. 다른 조각의 주소는 전부 여기서부터 알아낸다.
 
-셋째는 **발견과 연결**이다. AMF 가 세션을 만들어야 해서 SMF 가 필요해지면 NRF 에 "SMF 를 찾아 줘"(`GET /nnrf-disc/v1/nf-instances?target-nf-type=SMF`)를 묻고, 받은 주소로 연결한다.
+첫째는 **등록**이다. 셋째 줄의 `NF registered [Heartbeat:10s]` 는 AMF 자신이 NRF 에 "나는 AMF 이고 주소는 이것이며 이런 서비스를 제공한다"는 **프로파일**을 올리고 등록된 것이다(`PUT /nnrf-nfm/v1/nf-instances/{자기 UUID}`). `Heartbeat:10s` 는 10 초마다 살아 있다고 알리겠다는 약속이다. 알림이 끊기면 NRF 는 그 NF 를 목록에서 지운다.
 
-```
-[sbi] INFO: Setup NF Instance [type:UDR]
-[sbi] INFO: Setup NF EndPoint(addr) [172.22.0.27:7777]
-[sbi] INFO: [npcf-smpolicycontrol] NFService associated [6f00415c-…]
-```
+둘째는 **구독**이다. 각 NF 는 "UDM 이 새로 생기거나 바뀌거나 죽으면 나에게 알려 달라"고 NRF 에 구독을 건다. 변화가 생기면 NRF 가 **콜백**으로, 즉 구독자의 URI 를 HTTP/2 로 호출해서 알린다. 로그에 `(NRF-notify)` 가 붙은 줄이 그 콜백이 온 순간이다.
 
-마지막 줄의 `NFService associated` 가 "이 서비스는 이 인스턴스가 제공한다"고 묶은 순간이다. 그 뒤로는 NRF 를 거치지 않고 직접 부른다. NRF 는 **길을 알려 주는 곳**이지 모든 요청이 지나는 곳이 아니다.
+셋째는 **발견과 연결**이다. 넷째 줄 `(NRF-profile-get) NF registered` 는 AMF 가 NRF 에서 UDM 의 프로파일을 받아 왔다는 뜻이고(발견. 일반형은 `GET /nnrf-disc/v1/nf-instances?target-nf-type=UDM&requester-nf-type=AMF`), 다섯째 줄 `[UDM] NFInstance associated` 가 "UDM 은 이 인스턴스다"라고 묶은 순간, 여섯째 줄이 그 주소(.13), 마지막 두 줄이 그 UDM 이 제공하는 서비스 두 개(`nudm-ueau` 인증 벡터, `nudm-uecm` 등록 관리)를 묶은 순간이다. 9 장의 `wait_core_ready` 가 기다리는 줄이 바로 이 `NFInstance associated` 다. 그 뒤로는 NRF 를 거치지 않고 직접 부른다. NRF 는 **길을 알려 주는 곳**이지 모든 요청이 지나는 곳이 아니다.
 
-이 구조가 우리 운영 절차 하나를 설명한다. 코어를 기동한 직후에는 등록이 아직 끝나지 않아 AMF 가 SMF 를 찾지 못한다. 그 순간에 단말이 등록을 시도하면 거절된다. 그래서 우리 기동 스크립트의 `wait_core_ready` 는 **NRF 에 핵심 NF 다섯 개가 등록될 때까지** 기다렸다가 "코어 준비 완료 (NF 5/5, 10초)" 를 찍는다. 쿠버네티스의 readiness probe 와 같은 역할이다. 이것을 생략하면 "가끔 첫 단말이 안 붙는" 현상을 쫓게 된다.
+이 구조가 우리 운영 절차 하나를 설명한다. 코어를 기동한 직후에는 등록이 아직 끝나지 않아 AMF 가 SMF 를 찾지 못한다. 그 순간에 단말이 등록을 시도하면 거절된다. 그래서 우리 기동 스크립트의 `wait_core_ready` 는 **AMF 의 로그에 핵심 NF 다섯 개(AUSF·UDM·PCF·SMF·NSSF)의 `NFInstance associated` 가 다 찍힐 때까지** 기다렸다가 "코어 준비 완료 (NF 5/5, 10초)" 를 찍는다(9.7). 쿠버네티스의 readiness probe 와 같은 역할이다. 이것을 생략하면 "가끔 첫 단말이 안 붙는" 현상을 쫓게 된다.
 
 NRF 곁에 조연이 둘 있다. **SCP(Service Communication Proxy)** 는 NF 사이에 끼어들 수 있는 API 게이트웨이다. 라우팅, 부하 분산, 재시도를 대신해 준다. 서비스 메시의 사이드카 프록시와 같은 자리이고, 우리 배포에도 `scp` 컨테이너가 있다. **BSF(Binding Support Function)** 는 아주 작은 조회 서비스인데, "단말 IP `10.45.0.6` 의 세션은 **어느 PCF** 가 담당하고 있나"를 기억한다. 이것이 필요한 이유는 8 장에서 나온다. IMS 의 P-CSCF 가 통화 QoS 를 요청하려면 그 단말의 PCF 를 찾아야 하는데, P-CSCF 는 코어 바깥(4G 유산)에 있어서 SMF 의 내부 상태를 모른다. 그래서 BSF 에 IP 로 묻는다.
 
@@ -96,7 +98,7 @@ NRF 곁에 조연이 둘 있다. **SCP(Service Communication Proxy)** 는 NF 사
 
 인증 왕복(AUSF, UDM 과의 대화)은 AMF 로그에 자세히 찍히지 않는다. 6 장에서 따로 본다. 인증이 끝나면 `[imsi-001011234567895] Registration complete` 가 찍힌다. 주목할 점은 **이제 SUCI 가 아니라 IMSI 로 찍힌다**는 것이다. 인증이 통과해서 망이 이 단말의 진짜 신원을 확정했다는 표시다. 그 다음 `Configuration update command` 는 망이 단말에게 추적 영역 목록 같은 설정을 내린 것이다.
 
-이어서 단말이 세션을 요청한다. 이때 AMF 가 찍는 줄에는 처음 보는 칸 이름이 여럿 있으니 먼저 이름부터 푼다. SUPI(Subscription Permanent Identifier)는 5G 에서 가입자의 영구 ID 이고, SIM 가입자라면 `imsi-` 접두어를 붙인 IMSI 그대로다. DNN(Data Network Name)은 4G 의 APN 과 같은 것으로, 단말이 어느 데이터망(`internet`, `ims`)에 붙고 싶은지를 적은 이름이다. LBO(Local Breakout)는 로밍 중일 때 방문한 망에서 곧바로 인터넷으로 내보낼지를 뜻하는 플래그이고, 집 망인 우리는 `0` 이다. `S_NSSAI` 는 이 세션이 어느 **망 슬라이스**(같은 코어를 용도별로 나눈 논리 망)에 속하는지를 고르는 값으로 두 칸이 있다. SST(Slice/Service Type)는 슬라이스 종류로 `1` 이 일반 모바일 브로드밴드이고, SD(Slice Differentiator)는 같은 종류 안의 구분자로 `0xffffff` 가 "구분 없음"이다. 이 이름들을 알고 나면 `UE SUPI[imsi-…895] DNN[ims] LBO[0] S_NSSAI[SST:1 SD:0xffffff] smContextRef[NULL]` 는 "이 단말이 `ims` 라는 데이터망으로, 기본 슬라이스에서 세션을 원하는데 아직 SMF 쪽 세션 객체(`smContextRef`)가 비어 있다"로 읽힌다. AMF 는 SMF 의 REST 를 부르고, 그것이 `/nsmf-pdusession/v1/sm-contexts/{ref}/modify` 다. SMF 가 IP 를 할당하면 SMF 로그에 `UE SUPI[…] DNN[internet] IPv4[10.45.0.3]` 이 찍힌다. UPF 쪽 로그는 F-SEID(Fully qualified Session Endpoint ID)로 세션을 부른다. F-SEID 는 UPF 와 SMF 사이 제어 프로토콜(PFCP)의 세션 번호이고, 양쪽이 하나씩 붙이므로 UP(User Plane, 즉 UPF 쪽이 붙인 번호)와 CP(Control Plane, 즉 SMF 쪽이 붙인 번호) 두 칸이다. 그 줄이 `UE F-SEID[UP:0x770 CP:0x392] APN[internet]` 이다. 7 장에서 이 부분을 자세히 본다.
+이어서 단말이 세션을 요청한다. 이때 AMF 가 찍는 줄에는 처음 보는 칸 이름이 여럿 있으니 먼저 이름부터 푼다. SUPI(Subscription Permanent Identifier)는 5G 에서 가입자의 영구 ID 이고, SIM 가입자라면 `imsi-` 접두어를 붙인 IMSI 그대로다. DNN(Data Network Name)은 4G 의 APN 과 같은 것으로, 단말이 어느 데이터망(`internet`, `ims`)에 붙고 싶은지를 적은 이름이다. LBO(Local Breakout)는 로밍 중일 때 방문한 망에서 곧바로 인터넷으로 내보낼지를 뜻하는 플래그이고, 집 망인 우리는 `0` 이다. `S_NSSAI` 는 이 세션이 어느 **망 슬라이스**(같은 코어를 용도별로 나눈 논리 망)에 속하는지를 고르는 값으로 두 칸이 있다. SST(Slice/Service Type)는 슬라이스 종류로 `1` 이 일반 모바일 브로드밴드이고, SD(Slice Differentiator)는 같은 종류 안의 구분자로 `0xffffff` 가 "구분 없음"이다. 이 이름들을 알고 나면 `UE SUPI[imsi-…895] DNN[ims] LBO[0] S_NSSAI[SST:1 SD:0xffffff] smContextRef[NULL]` 는 "이 단말이 `ims` 라는 데이터망으로, 기본 슬라이스에서 세션을 원하는데 아직 SMF 쪽 세션 객체(`smContextRef`)가 비어 있다"로 읽힌다. AMF 는 SMF 의 REST 를 부른다. 세션을 새로 만드는 호출은 `POST /nsmf-pdusession/v1/sm-contexts` 이고, SMF 가 만든 세션 객체의 주소(`smContextRef`)를 돌려준다. 그 뒤 기지국이 터널 준비를 마쳤다는 등 세션 상태가 바뀔 때마다 AMF 가 `POST /nsmf-pdusession/v1/sm-contexts/{ref}/modify` 로 알린다. 앞 절의 경로 목록에 있던 `…/modify` 가 그것이다. SMF 가 IP 를 할당하면 SMF 로그에 `UE SUPI[…] DNN[internet] IPv4[10.45.0.3]` 이 찍힌다. UPF 쪽 로그는 F-SEID(Fully qualified Session Endpoint ID)로 세션을 부른다. F-SEID 는 UPF 와 SMF 사이 제어 프로토콜(PFCP)의 세션 번호이고, 양쪽이 하나씩 붙이므로 UP(User Plane, 즉 UPF 쪽이 붙인 번호)와 CP(Control Plane, 즉 SMF 쪽이 붙인 번호) 두 칸이다. 그 줄이 `UE F-SEID[UP:0x770 CP:0x392] APN[internet]` 이다. 7 장에서 이 부분을 자세히 본다.
 
 마지막으로 `UE Context Release [Action:2]` 가 등록 몇 초 뒤에 찍힌다. 이것도 오류가 아니다. 단말이 데이터를 보내지 않으면 망은 무선 연결(RRC)을 놓아서 전파와 배터리를 아낀다. 단말은 등록된 채로 IDLE 상태가 된다. 11f 에서 볼 Quectel 모뎀의 `AT+QENG` 응답에 NOCONN(no connection — 등록은 되어 있지만 무선 연결은 없다는 뜻)으로 뜨는 상태가 이것이다. 데이터가 생기면 다시 연결한다.
 
@@ -124,9 +126,9 @@ NAS 는 다시 **두 층**이다. **5GMM(Mobility Management)** 은 AMF 와의 �
 
 ## 5.6 설정의 정본은 한 곳이다
 
-컨테이너마다 설정 파일이 있다. `amf.yaml`, `smf.yaml`, `upf.yaml`, `gnb.yml` 등이다. 그런데 그 안의 주소, PLMN, TAC, IP 대역은 **전부 `.env` 한 파일에서** 온다. 각 컨테이너의 기동 스크립트가 설정 파일의 플레이스홀더(`AMF_IP`, `MCC`, `PLMN`, `UE_IPV4_INTERNET_APN_SUBNET` …)를 env 값으로 `sed` 치환한다. 11b 에서 본 `srsran_init.sh` 가 `PLMN` 을 `001`+`01` 로 바꾸던 것이 같은 방식이다.
+컨테이너마다 설정 파일이 있다. `amf.yaml`, `smf.yaml`, `upf.yaml`, `gnb.yml` 등이다. 그런데 그 안의 주소, PLMN, TAC, IP 대역은 **전부 `.env` 한 파일에서** 온다. 각 컨테이너의 기동 스크립트가 설정 파일의 플레이스홀더(`AMF_IP`, `MCC`, `PLMN`, `UE_IPV4_INTERNET_APN_SUBNET` …)를 env 값으로 `sed` 치환한다. 10 장에서 볼 `srsran_init.sh` 가 기지국 설정의 `PLMN` 을 `001`+`01` 로 바꾸는 것이 같은 방식이다.
 
-이 구조에서 운영 원칙 하나가 나온다. **설정을 바꿀 때는 `configs/env/env` 한 곳을 고치고 `deploy-configs.sh` 로 배포한다. 컨테이너 안의 파일을 직접 고치면 재기동 때 사라진다.** 우리가 단말 IP 대역을 `192.168.100.0/24` 에서 `10.45.0.0/16` 으로 바꾼 것은 env 두 줄(`UE_IPV4_INTERNET`, `UE_IPV4_IMS`)이었고, `ip_utils.py` 가 거기서 서브넷과 게이트웨이를 파생시켜 `smf.yaml` 과 `upf.yaml` 에 넣었다. 반면 DNS 존의 A 레코드는 급해서 컨테이너 안에서 먼저 고쳤고, 그 뒤 정본인 `upstream/dns/ims_zone` 에 다시 반영하고 재기동으로 확인해야 했다. 13 장의 사례 하나가 이것이다.
+이 구조에서 운영 원칙 하나가 나온다. **설정을 바꿀 때는 `configs/env/env` 한 곳을 고치고 `deploy-configs.sh` 로 배포한다. 컨테이너 안의 파일을 직접 고치면 재기동 때 사라진다.** 우리가 단말 IP 대역을 `192.168.100.0/24` 에서 `10.45.0.0/16` 으로 바꾼 것은 env 두 줄(`UE_IPV4_INTERNET`, `UE_IPV4_IMS`)이었고, `ip_utils.py` 가 거기서 서브넷과 게이트웨이를 파생시켜 `smf.yaml` 과 `upf.yaml` 에 넣었다. 반면 DNS 존의 A 레코드는 급해서 컨테이너 안에서 먼저 고쳤고, 그 뒤 클론의 `dns/ims_zone` 에 반영했고, 마지막으로 정본 `configs/dns/ims_zone` 과 배포 매핑에 올렸다(부록 C). 세 단계를 다 거치기 전까지는 사라질 수 있는 수정이었다. 13 장의 사례 하나가 이것이다.
 
 ## 5.6a 패킷 해부: NAS 메시지의 머리
 
@@ -135,8 +137,9 @@ TCP 헤더를 비트 단위로 그려 놓고 플래그를 하나씩 설명하듯
 ```
  바이트  0                   1                   2
         +-------------------+-------------------+-------------------+
- 평문   | 확장 프로토콜 식별자 | 보안 헤더 종류 | 여유 | 메시지 종류        |  ← 5GMM 평문 메시지 (3 바이트 머리)
- NAS    |   EPD = 0x7E      |   0000      |0000|  0x41 등          |
+ 평문   | 확장 프로토콜 식별자 | 여유 | 보안 헤더 종류 | 메시지 종류        |  ← 5GMM 평문 메시지 (3 바이트 머리)
+ NAS    |   EPD = 0x7E      | 0000 |   0000      |  0x41 등          |
+        |                   | 상위 4비트 | 하위 4비트 |                   |
         +-------------------+-------------------+-------------------+
         | 그 다음부터 메시지 종류별 정보 요소(IE) 들이 TLV 로 이어진다        |
 ```
@@ -187,7 +190,7 @@ TCP 헤더를 비트 단위로 그려 놓고 플래그를 하나씩 설명하듯
         +-------------------+-------------------+-------------------+-------------------+
 ```
 
-**PDU 세션 ID** 는 단말이 세션에 붙인 번호(1~15)로, 모뎀의 `+CGDCONT` 프로파일 번호와 대응한다. **PTI** 는 요청과 응답을 짝 맞추는 번호다. 메시지 종류 `0xC1` 이 PDU session establishment request, `0xC2` 가 accept, `0xC3` 가 reject 다. 7 장의 IP 할당 결과가 `0xC2` 의 정보 요소 안에 들어 있다.
+**PDU 세션 ID** 는 단말이 세션에 붙인 번호(1~15)다. 모뎀의 `+CGDCONT` 프로파일 번호와 흔히 같게 잡히지만 표준이 둘을 같은 번호로 묶지는 않는다 [검증 필요: 우리 모뎀에서 cid 와 PDU 세션 ID 대조]. **PTI** 는 요청과 응답을 짝 맞추는 번호다. 메시지 종류 `0xC1` 이 PDU session establishment request, `0xC2` 가 accept, `0xC3` 가 reject 다. 7 장의 IP 할당 결과가 `0xC2` 의 정보 요소 안에 들어 있다.
 
 ## 5.6b 와이어샤크로 보기
 
@@ -199,7 +202,7 @@ TCP 헤더를 비트 단위로 그려 놓고 플래그를 하나씩 설명하듯
 |---|---|
 | SBI 란 | 각 NF 가 HTTP/2 REST 서버. 경로 `n<제공NF>-<서비스>/v1/…` 로 누가 서버인지 안다 |
 | 왜 HTTP/2 | 멀티플렉싱·헤더 압축·콜백. 초당 수만 건의 작은 요청에 맞다. OpenAPI 로 공개 |
-| NRF | 서비스 레지스트리. 등록 → 구독(콜백) → 발견·직접 연결. `NF registered`, `Setup NF Instance` |
+| NRF | 서비스 레지스트리. 등록 → 구독(콜백) → 발견·직접 연결. `NF registered`, `NFInstance associated` |
 | SCP / BSF | API 프록시 / "이 단말 IP 는 어느 PCF" 조회 |
 | 등록 순서 | RRC → NAS 등록(SUCI) → 인증 → 보안 모드 → 등록 수락 → PDU 세션(SMF·PCF·UPF) |
 | `Unknown UE by SUCI` | 오류 아님. 처음 보는 단말 |
