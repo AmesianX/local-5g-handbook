@@ -33,7 +33,7 @@ VoIP 를 한 번이라도 다뤄 봤다면 SIP 를 안다. 다뤄 본 적이 없
                      UAR  │        │  MAR, SAR, LIR
  [단말] ──SIP──▶ [P-CSCF] ──▶ [I-CSCF] ──▶ [S-CSCF] ──▶ (착신 S-CSCF → P-CSCF → 단말)
                     │                           │
-                    │ N5 (Rx)                   │ ISC (iFC 가 시키는 대로)
+                    │ N5 (4G 의 Rx 자리)        │ ISC (iFC 가 시키는 대로)
                     ▼                           ▼
                   [PCF]                 [응용서버: SMSC …]
 ```
@@ -73,9 +73,9 @@ A 가 INVITE 를 P-CSCF 에 보낸다. SDP 에 자기 오디오 포트가 있다
 
 **벽 ②: `500 Server error on LIR select next S-CSCF`.** 이 문구는 "LIR 이 실패했다"처럼 읽힌다. 아니었다. I-CSCF 설정을 열어 보니 이 문장은 `failure_route` 안, 즉 **다음 홉이 408 타임아웃을 냈을 때 들어오는 블록**에 있었다. 캡처에서 LIA 에는 S-CSCF 주소가 정상적으로 들어 있었다. 그러니까 LIR 은 성공했고, I-CSCF 가 S-CSCF 로 INVITE 를 넘긴 뒤 **그 뒤 어딘가**에서 응답이 없어 408 이 났고, 대체 S-CSCF 가 없어 500 으로 포장된 것이다. Kamailio 의 오류 문구는 **그 코드가 놓인 자리의 이름**이지 원인이 아니다. 원인은 다음 홉에 있었다.
 
-**벽 ③: P-CSCF 가 단말에 TCP 로 보낸다.** 착신 P-CSCF 로그가 답이었다. `connect 10.46.0.7:5062 failed`, 그 위에 `tcp_main.c`. 우리 단말 쪽 소프트웨어는 UDP 만 듣고 있었는데 P-CSCF 는 TCP 로 연결하려 했다. 왜 TCP 인가. **S-CSCF 가 만든 INVITE 가 1317 바이트**였다. RFC 3261 §18.1.1 은 요청이 MTU 에서 200 을 뺀 크기(보통 1300 바이트)를 넘으면 **TCP 로 보내라**고 정한다. IMS 는 홉마다 Via, Record-Route, P-헤더가 붙어서 INVITE 가 금방 커진다. 그래서 **IMS 단말은 TCP 를 반드시 들어야 한다.** 우리 도구에 TCP listener 를 넣자 INVITE 가 도착했다. Contact 에 `;transport=udp` 를 넣어 UDP 를 강제하는 것도 시도했는데 **역효과**였다. P-CSCF 가 Contact 의 `alias=` 파라미터로 단말 주소를 파싱하는데 `transport=` 가 끼자 파싱이 깨져 `IP is <null>` 이 됐다. 표준만 믿고 프록시의 구현을 모르면 생기는 일이다.
+**벽 ③: P-CSCF 가 단말에 TCP 로 보낸다.** 착신 P-CSCF 로그가 답이었다. `connect 10.46.0.7:5062 failed`, 그 위에 `tcp_main.c`. 우리 단말 쪽 소프트웨어는 UDP 만 듣고 있었는데 P-CSCF 는 TCP 로 연결하려 했다. 왜 TCP 인가. 캡처로 홉마다 크기를 재 보니 INVITE 는 P-CSCF 를 떠날 때 1220 바이트였다가 S-CSCF 를 지나 **1317**, I-CSCF 를 지나 1465, 착신 S-CSCF 를 지나 P-CSCF(B)에 도착할 때 **1472 바이트**였다(8.8a 의 표). RFC 3261 §18.1.1 은 요청이 경로 MTU 에서 200 을 뺀 크기를 넘거나, MTU 를 모를 때 1300 바이트를 넘으면 **TCP 처럼 혼잡 제어가 있는 전송으로 보내라**고 정한다. IMS 는 홉마다 Via, Record-Route, P-헤더가 붙어서 INVITE 가 금방 커진다. 그래서 **IMS 단말은 TCP 를 반드시 들어야 한다.** 우리 도구에 TCP listener 를 넣자 INVITE 가 도착했다. Contact 에 `;transport=udp` 를 넣어 UDP 를 강제하는 것도 시도했는데 **역효과**였다. P-CSCF 가 Contact 의 `alias=` 파라미터로 단말 주소를 파싱하는데 `transport=` 가 끼자 파싱이 깨져 `IP is <null>` 이 됐다. 표준만 믿고 프록시의 구현을 모르면 생기는 일이다.
 
-**벽 ④: `404 Not here` 와 단방향 RTP.** INVITE 가 통했는데 BYE 에 404 가 오고 발신 쪽 RTP 수신이 0 이었다. 둘 다 **내 코드가 다이얼로그 안의 요청(ACK, BYE)을 잘못 만든** 버그였다. RFC 3261 §12.1.2 는 UAC 가 2xx 응답의 **Record-Route 를 Route 로 바꿔** 그 순서대로 넣고, Request-URI 는 **2xx 의 Contact(remote target)** 로 하라고 한다. 나는 Record-Route 를 이름 그대로 넣고 Request-URI 에 원래 호출 URI 를 썼다. 프록시는 그런 요청의 다이얼로그를 못 찾는다(404). ACK 가 B 에 안 닿으니 rtpengine 이 역방향을 열지 않아 RTP 가 한쪽만 흘렀다. 고친 뒤 ACK 도착, RTP 양방향 200/200, BYE 200 OK 가 됐다. SIP 를 아는 독자라면 "그걸 왜 틀려" 하겠지만, 실험용 도구를 급하게 짤 때 가장 자주 빠지는 구멍이다.
+**벽 ④: `404 Not here` 와 단방향 RTP.** INVITE 가 통했는데 BYE 에 404 가 오고 발신 쪽 RTP 수신이 0 이었다. 둘 다 **우리 도구가 다이얼로그 안의 요청(ACK, BYE)을 잘못 만든** 버그였다. RFC 3261 §12.1.2 는 UAC 가 2xx 응답의 **Record-Route 를 Route 로 바꿔** 그 순서대로 넣고, Request-URI 는 **2xx 의 Contact(remote target)** 로 하라고 한다. 우리 도구는 Record-Route 를 이름 그대로 넣고 Request-URI 에 원래 호출 URI 를 썼다. 프록시는 그런 요청의 다이얼로그를 못 찾는다(404). ACK 가 B 에 안 닿으니 rtpengine 이 역방향을 열지 않아 RTP 가 한쪽만 흘렀다. 고친 뒤 ACK 도착, RTP 양방향 200/200, BYE 200 OK 가 됐다. SIP 를 아는 독자라면 "그걸 왜 틀려" 하겠지만, 실험용 도구를 급하게 짤 때 가장 자주 빠지는 구멍이다.
 
 **벽 ⑤: `488 N5 QoS authorization failed for call`.** INVITE 가 통하자 P-CSCF 가 **통화 미디어용 QoS** 를 PCF 에 요청했고, PCF 가 `No PCC Rule in DB [QoS Index:1]` 로 거절했다. 7 장의 5QI 1 PCC 규칙을 양쪽 가입자에 넣자 통과했다. 영상은 같은 방식으로 5QI 2 다. 이 벽이 **IMS 와 코어가 연결되어 있다**는 가장 직접적인 증거다. SIP 통화가 성립하려면 PCF 가 음성 베어러를 열어 줘야 하고, 그 근거는 가입자 DB 의 PCC 규칙이다. 일반 VoIP 에는 없는 단계다.
 
@@ -105,41 +105,67 @@ SMSC 는 TPDU 를 풀어 발신, 착신, 본문, 문자 인코딩을 알리는 D
 
 IMS 조각들이 HSS 와 말하는 Diameter 는 4G 유산이고, 독자가 RADIUS 를 안다면 그 후손이다. 메시지는 **AVP(Attribute-Value Pair)** 의 나열이고, 11d 의 TLV 와 같은 발상이다. 우리 캡처(TCP 3875)에 네 쌍이 보였다. 등록 시작 때 I-CSCF 가 보내는 **UAR/UAA**("등록 가능한가, S-CSCF 는?"), 인증 때 S-CSCF 가 보내는 **MAR/MAA**("인증 벡터 줘"), 등록 확정 때의 **SAR/SAA**("등록됐다, iFC 줘"), 착신 INVITE 때 I-CSCF 가 보내는 **LIR/LIA**("이 번호의 S-CSCF 는?"). `Server-Name` AVP(602)에 `sip:scscf…:6060` 이, `Result-Code` AVP(268)에 `2001`(성공)이 실려 있었다. `tcpdump -A` 로 보면 문자열 AVP 는 그대로 읽힌다.
 
-운영 함정 하나. I-CSCF 가 PyHSS 보다 **먼저 뜨면** Diameter 연결(`peer_connect`)에 실패하고 **재시도하지 않는다.** 우리는 코어를 여러 번 재기동하다 이 상태에 빠졐고, `docker restart icscf` 로 풀었다. 13 장에 둔다.
+운영 함정 하나. I-CSCF 가 PyHSS 보다 **먼저 뜨면** Diameter 연결(`peer_connect`)에 실패하고 **재시도하지 않는다.** 우리는 코어를 여러 번 재기동하다 이 상태에 빠졌고, `docker restart icscf` 로 풀었다. 13 장에 둔다.
 
 ## 8.8a 패킷 해부: SIP 메시지, Diameter 헤더, RTP 헤더
 
 ### SIP 요청 한 통의 해부
 
-SIP 는 텍스트라 비트 그림 대신 **줄 단위 해부**다. 우리 INVITE 가 P-CSCF 를 지나 S-CSCF 에 도착했을 때의 모습이다. 홉을 지날 때마다 **어느 줄이 늘어나는지**가 핵심이다.
+SIP 는 텍스트라 비트 그림 대신 **줄 단위 해부**다. 아래는 지어낸 예시가 아니라 우리가 10월 14일 0시 3분에 도커 브리지에서 잡은 캡처(`sip2.pcap`) 속 실제 패킷이다. 발신 A(모뎀 쪽, `10.45.0.6`)의 INVITE 가 P-CSCF(`172.22.0.21`)를 지나 S-CSCF(`172.22.0.20`)로 가는 순간이고, UDP 페이로드 1220 바이트다.
 
 ```
 INVITE sip:001011234567896@ims.mnc001.mcc001.3gppnetwork.org SIP/2.0     ← 요청 줄: 메서드, Request-URI(착신), 버전
-Via: SIP/2.0/UDP 172.22.0.21:5060;branch=z9hG4bK…                        ← P-CSCF 가 쌓음 (응답이 되돌아올 길)
-Via: SIP/2.0/UDP 10.45.0.6:5060;rport;branch=z9hG4bK…;received=10.45.0.6 ← 단말이 넣음. P-CSCF 가 received= 추가
-Record-Route: <sip:mo@pcscf.ims.…:5060;lr>                               ← P-CSCF 가 쌓음 (다이얼로그 내 요청이 지날 길)
-Route: <sip:orig@scscf.ims.…:6060;lr>                                     ← 단말이 등록 때 받은 Service-Route 를 넣음
-Max-Forwards: 69                                                           ← 홉마다 1 씩 줄어든다. 루프 방지
-From: <sip:001011234567895@ims.…>;tag=uhh52tpquu                          ← 발신. tag 가 다이얼로그 식별자의 반쪽
-To: <sip:001011234567896@ims.…>                                           ← 착신. 200 OK 가 올 때 tag 가 붙어 돌아온다
-Call-ID: 6orvpiki9xklza1r                                                  ← 이 통화의 고유 번호. From-tag, To-tag 와 셋이 다이얼로그를 정한다
-CSeq: 1 INVITE                                                             ← 순번 + 메서드. 같은 다이얼로그 안에서 증가
-Contact: <sip:001011234567895@10.45.0.6:5060;alias=10.45.0.6~5060~1>       ← 발신의 직접 주소. 상대가 다이얼로그 내 요청을 보낼 곳. alias 는 P-CSCF 가 붙임
-P-Asserted-Identity: <sip:001011234567895@ims.…>, <tel:821099994531>       ← P-CSCF 가 "이 발신자는 인증됐다"고 보증해서 붙임. IMS 전용
-P-Access-Network-Info: 3GPP-NR-FDD; utran-cell-id-3gpp=00101000001066C000  ← 단말이 어느 셀에서 왔나. IMS 전용
+Route: <sip:orig@scscf.ims.mnc001.mcc001.3gppnetwork.org:6060;lr>          ← 단말이 등록 때 받은 Service-Route(8.4)를 넣은 것
+Record-Route: <sip:mo@172.22.0.21;lr=on;ftag=pdvxg2d0qf;rm=8;did=161.25f2> ← P-CSCF 가 쌓음. "다이얼로그 안 요청은 나를 거쳐라"
+Via: SIP/2.0/UDP 172.22.0.21;branch=z9hG4bK891c.42e4…                     ← P-CSCF 가 쌓음 (응답이 되돌아올 길)
+Via: SIP/2.0/UDP 10.45.0.6:5060;received=10.45.0.6;rport=5060;branch=…    ← 단말이 넣음. P-CSCF 가 received=/rport= 를 채움
+Max-Forwards: 69                                                           ← 단말이 70 으로 보냈고 홉마다 1 씩 준다. 루프 방지
+From: <sip:001011234567895@ims.mnc001.mcc001.3gppnetwork.org>;tag=pdvxg2d0qf  ← 발신. tag 가 다이얼로그 식별자의 반쪽
+To: <sip:001011234567896@ims.mnc001.mcc001.3gppnetwork.org>                ← 착신. 200 OK 가 올 때 To-tag 가 붙는다
+Call-ID: a3zvak124ujyoi49                                                  ← 이 통화의 고유 번호
+CSeq: 1 INVITE                                                             ← 순번 + 메서드
+Contact: <sip:001011234567895@10.45.0.6:5060;alias=10.45.0.6~5060~1>       ← 발신의 직접 주소. alias= 는 P-CSCF 가 붙인 것(벽 ③)
+Allow: INVITE,ACK,CANCEL,BYE,UPDATE,PRACK
+Supported: 100rel,timer
 Content-Type: application/sdp
-Content-Length: 243
+Content-Length: 212
+P-Charging-Vector: icid-value=495653AC…;icid-generated-at=172.22.0.21      ← P-CSCF 가 붙인 과금 상관 번호. IMS 전용
+P-Asserted-Identity: <sip:001011234567895@ims.mnc001.mcc001.3gppnetwork.org> ← P-CSCF 가 "이 발신자는 인증됐다"고 보증. IMS 전용
+P-Visited-Network-ID: ims.mnc001.mcc001.3gppnetwork.org                    ← 단말이 지금 있는 망의 이름. 로밍 정산용
 
-v=0                                                                        ← SDP 시작
-o=- 1234 1 IN IP4 10.45.0.6
-c=IN IP4 172.22.0.16                                                       ← P-CSCF 가 rtpengine 주소로 바꿔 쓴 자리 (원래 10.45.0.6)
-m=audio 49512 RTP/AVP 0 8 101                                              ← 포트도 rtpengine 것으로. 0=PCMU 8=PCMA 101=DTMF
+v=0
+o=- 1260689447 1 IN IP4 172.22.0.16                                       ← 원래 단말 주소였던 자리를 P-CSCF 가 rtpengine 으로 바꿈
+s=-
+t=0 0
+m=audio 49254 RTP/AVP 0 8 101                                              ← 포트도 rtpengine 의 것. 0=PCMU 8=PCMA 101=DTMF
+c=IN IP4 172.22.0.16                                                       ← 미디어 주소 = rtpengine (8.6)
 a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:101 telephone-event/8000
+a=sendrecv
+a=rtcp:49255
 ```
 
-읽는 법 세 가지. 첫째, **Via 는 응답의 길**이다. 프록시마다 자기 주소를 맨 위에 쌓고, 응답은 맨 위 Via 부터 벗기며 되돌아간다. 둘째, **Record-Route 는 다이얼로그 내 요청(ACK, BYE)의 길**이다. 200 OK 에 이 줄들이 그대로 담겨 단말에 오고, 단말은 그것을 **Route 로 바꿔** ACK 와 BYE 에 넣는다. 벽 ④가 이것을 안 해서 생겼다. 셋째, **다이얼로그는 Call-ID + From-tag + To-tag 세 값**으로 정해진다. 프록시가 "404 Not here, 그런 다이얼로그 없다"고 한 것은 이 셋 중 하나 또는 Route 가 안 맞았다는 뜻이다.
+읽는 법 세 가지. 첫째, **Via 는 응답의 길**이다. 프록시마다 자기 주소를 맨 위에 쌓고, 응답은 맨 위 Via 부터 벗기며 되돌아간다. 둘째, **Record-Route 는 다이얼로그 안 요청(ACK, BYE)의 길**이다. 200 OK 에 이 줄들이 그대로 담겨 단말에 오고, 단말은 그것을 **Route 로 바꿔** ACK 와 BYE 에 넣는다. 벽 ④가 이것을 안 해서 생겼다. `did=161.25f2` 같은 파라미터는 Kamailio 가 다이얼로그를 다시 찾으려고 자기 Record-Route 에 심어 둔 표시다. 셋째, **다이얼로그는 Call-ID + From-tag + To-tag 세 값**으로 정해진다. 프록시가 "404 Not here, 그런 다이얼로그 없다"고 한 것은 이 셋 중 하나 또는 Route 가 안 맞았다는 뜻이다.
 
-INVITE 가 홉마다 커지는 이유가 이 그림에 있다. P-헤더 둘, Via 한 줄, Record-Route 한 줄이 프록시마다 붙는다. 세 프록시를 지나면 수백 바이트가 늘어 1300 을 넘기고, 벽 ③의 TCP 전환이 일어난다.
+### 같은 INVITE 를 홉마다 재 보면: 벽 ②와 ③의 실제 모습
+
+같은 캡처에서 이 통화의 패킷만 시간순으로 뽑으면 벽 ②와 ③이 한 화면에 나온다. (마지막 칸은 UDP 페이로드 바이트, 시각은 초 단위 끝자리.)
+
+```
+:18  P-CSCF(.21) → S-CSCF(.20)   INVITE  1220   ← 위의 패킷
+:18  S-CSCF(.20) → I-CSCF(.19)   INVITE  1317   ← S-CSCF(A)가 발신 처리 후 I-CSCF 로. 여기서 1300 을 넘었다
+:18  I-CSCF(.19) → S-CSCF(.20)   INVITE  1465   ← LIR 로 B 의 S-CSCF 를 찾아 넘김 (LIR 은 성공했다)
+:18  S-CSCF(.20) → P-CSCF(.21)   INVITE  1472   ← S-CSCF(B)가 B 의 등록 경로로. Request-URI 가 B 의 Contact 로 바뀜
+:18  P-CSCF(.21) → S-CSCF(.20)   100 Trying
+        … 3 초 동안 아무것도 없다 …
+:21  P-CSCF(.21) → S-CSCF(.20)   408 Request Timeout
+:21  S-CSCF(.20) → I-CSCF(.19)   408 Request Timeout
+:21  I-CSCF(.19) → S-CSCF(.20)   500 Server error on LIR select next S-CSCF
+:21  S-CSCF(.20) → P-CSCF(.21)   500 Server error on LIR select next S-CSCF   → 발신 단말이 받은 응답
+```
+
+INVITE 가 홉을 지날 때마다 Via·Record-Route·P-헤더가 붙어 1220 → 1317 → 1465 → 1472 바이트로 자랐다. P-CSCF(B)가 단말 B 에게 보내야 할 INVITE 는 이미 1300 을 한참 넘었고, RFC 3261 §18.1.1 에 따라 TCP 로 연결하려 했다. 그 3 초의 빈칸이 P-CSCF 가 B 의 TCP 5062 에 연결을 시도하다 실패한 시간이다(벽 ③). 그 실패가 408 이 되어 거꾸로 올라가다가, I-CSCF 의 `failure_route` 에서 "다른 S-CSCF 를 고를 수 있나"를 시도했고 대안이 없어 500 으로 바뀌었다(벽 ②). **500 의 문구는 I-CSCF 가 그 응답을 만든 코드 블록의 이름이고, 원인은 맨 끝 홉의 TCP 였다.** 이 표 한 장이 벽 ②와 ③을 같이 설명한다.
 
 ### Diameter 헤더와 AVP (RFC 6733)
 
@@ -223,7 +249,7 @@ INVITE 가 홉마다 커지는 이유가 이 그림에 있다. P-헤더 둘, Via
 |---|---|---|---|
 | ① | `412 N5 QoS` | 단말 세션 IP 가 아니거나 5QI 9 | P-CSCF 는 PDU 세션과 묶인다 |
 | ② | `500 LIR select next S-CSCF` | 다음 홉 408 을 failure_route 가 포장 | 오류 문구 ≠ 원인 |
-| ③ | `connect …:5062 failed` | INVITE > 1300 B → TCP | IMS 단말은 TCP 필수 |
+| ③ | `connect …:5062 failed` | INVITE 가 홉마다 자라 1472 B → TCP | IMS 단말은 TCP 필수 |
 | ④ | `404 Not here`, RTP 단방향 | Route set / remote target 누락 | RFC 3261 §12 다이얼로그 |
 | ⑤ | `488 N5 QoS … for call` | 5QI 1/2 PCC 규칙 없음 | 통화 = PCF 가 베어러를 열어야 |
 | ⑥ | SMSC SQL 오류 | text/plain 경로의 DCS 미설정 | 3GPP SMS 형식을 써라 |
@@ -243,7 +269,7 @@ INVITE 가 홉마다 커지는 이유가 이 그림에 있다. P-헤더 둘, Via
 ## 점검 문제
 
 1. P-CSCF 가 N5 로 PCF 에 묻는 것을 "등록 때"와 "통화 때" 각각 한 문장으로 쓰라.
-2. INVITE 가 1317 바이트였다. 어느 헤더들이 크기를 만들었고, UDP 로 보내려면 무엇을 줄여야 하나?
+2. INVITE 가 1220 → 1317 → 1465 → 1472 바이트로 자랐다. 각 홉에서 무엇이 붙었는지 캡처로 확인하고, 착신 단말까지 UDP 로 보내려면 무엇을 줄여야 하나?
 3. Record-Route 를 Route 로 바꾸지 않으면 프록시가 왜 다이얼로그를 못 찾는가?
 4. rtpengine 의 latch 가 완성되려면 어느 방향의 첫 패킷이 필요한가? ACK 가 안 가면 왜 latch 가 안 되나?
 5. S-CSCF 가 SMS 를 모르는데 어떻게 SMSC 로 보내는가? 새 서비스를 IMS 에 붙이려면 무엇 둘이 필요한가?
