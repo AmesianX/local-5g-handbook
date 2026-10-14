@@ -230,7 +230,7 @@
 
 **RRC** (Radio Resource Control) — 단말과 기지국 사이 무선 제어 계층. 상태는 IDLE(쉼), INACTIVE(기억만), CONNECTED(통신 중). 엔지니어 모드의 상태 표시가 이것이다. → 4, 10, 11f
 
-**RSRP** (Reference Signal Received Power) — 셀의 기준 신호 한 부반송파의 수신 전력. 단위 dBm. 어림값으로 −80 이상 아주 좋음, −80~−90 좋음, −90~−100 보통, −100 아래 나쁨. 우리 직결 측정 −71 dBm. 5G 에서는 SSB 로 재서 SS-RSRP 라 부른다. → 1, 11f
+**RSRP** (Reference Signal Received Power) — 셀의 기준 신호 한 부반송파의 수신 전력. 단위 dBm. 어림값으로 −80 이상 아주 좋음, −80~−90 좋음, −90~−100 보통, −100 아래 나쁨. 5G 에서는 SSB 로 재서 SS-RSRP 라 부른다. **수신 경로마다 따로 측정되므로 `AT+QRSRP` 처럼 경로별로 물어야 한다** — 우리 케이블 경로 실측은 −112(ANT1)·−103(ANT2)이고, 엔지니어 모드 한 칸에 뜨던 −71 은 종단한 포트의 찌꺼기였다(1.8, 13장 사례 17). → 1, 11f
 
 **RSRQ** (Reference Signal Received Quality) — RSRP 를 전체 수신 전력(RSSI)에 비춘 값. 단위 dB. −10 이상 좋음, −10~−15 보통, −15 아래 나쁨. 간섭이 많으면 RSRP 가 좋아도 나빠진다. 우리 −10~−11. → 11f, 13장
 
