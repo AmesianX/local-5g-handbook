@@ -82,6 +82,9 @@ code{font-family:var(--mono);font-size:.84em;background:var(--code-bg);color:var
   padding:.1em .35em;border-radius:4px;word-break:break-word}
 pre{margin:0 0 1.3rem;background:var(--code-bg);border:1px solid var(--line);border-radius:8px;
   padding:.9rem 1rem;overflow-x:auto}
+pre.w2 code{font-size:.66rem}
+pre.w3 code{font-size:.55rem}
+pre.w4 code{font-size:.46rem}
 pre code{background:none;padding:0;font-size:.78rem;line-height:1.6;color:var(--code-fg);white-space:pre;word-break:normal}
 .tw{overflow-x:auto;margin:0 0 1.3rem}
 table{border-collapse:collapse;font-family:var(--sans);font-size:.82rem;line-height:1.6;min-width:100%}
@@ -366,8 +369,8 @@ RADIUS·LDAP·DHCP·NAT 서버의 조합이고, GTP-U 터널은 VXLAN 과 같은
 <p><strong>Part II. 망의 구조</strong> (4~8장) 세대가 바뀐 이유, SIM
 카드 안, 코어망의 조각들, 가입자 인증, IP 할당과 터널, 전화와 문자.</p>
 <p><strong>Part III. 구축과 실험</strong> (9~18장) 실험실 구성, 기지국
-설정 한 줄씩, **모뎀 제어 여섯 장(11~16)**, 시험과 측정, 그리고 막혔던
-스물네 번의 사례집.</p>
+설정 한 줄씩, <strong>모뎀 제어 여섯 장</strong>(11~16), 시험과 측정,
+그리고 막혔던 스물네 번의 사례집.</p>
 <p><strong>Part IV. 부록</strong> 용어집, 명령 레퍼런스, 설정 파일 맵,
 전파법 고지.</p>
 <p>처음 읽는다면 순서대로 읽는 것이 낫다. 뒤 장은 앞 장의 숫자와 용어를
@@ -670,9 +673,9 @@ Asynchronous Receiver/Transmitter — 송신·수신·접지 세 핀으로 시�
 빨리 나아가는가. 이 셋은 서로 묶여 있어서 둘을 알면 나머지 하나가
 정해진다.</p>
 <p>첫 번째 숫자는 <strong>주파수</strong>다. 1초 동안 파동이 몇 번
-오르락내리락하는지를 센 것이고, 단위는 **헤르츠(Hz)**다. 박수를 1초에 두
-번 치면 2 Hz 다. 헤르츠 앞에 붙는 k·M·G 는 천·백만·십억 배를 뜻해서,
-kHz(킬로헤르츠)는 1초에 천 번, MHz(메가헤르츠)는 백만 번,
+오르락내리락하는지를 센 것이고, 단위는 <strong>헤르츠</strong>(Hz)다.
+박수를 1초에 두 번 치면 2 Hz 다. 헤르츠 앞에 붙는 k·M·G 는 천·백만·십억
+배를 뜻해서, kHz(킬로헤르츠)는 1초에 천 번, MHz(메가헤르츠)는 백만 번,
 GHz(기가헤르츠)는 십억 번이다. 우리 실험의 기지국은 3.35 GHz 로
 송신하는데, 이것은 1초에 33억 5천만 번 흔들린다는 뜻이다. 이 숫자가 너무
 커서 감이 안 올 텐데, 그 감이 안 오는 것 자체가 중요하다. 이렇게 빠른
@@ -686,7 +689,7 @@ GHz(기가헤르츠)는 십억 번이다. 우리 실험의 기지국은 3.35 GHz
 중에서도 거의 같다.</p>
 <p>이 셋의 관계는 곱셈 하나다. 1초에 f 번 흔들리고 한 번에 λ 만큼
 가니까, 1초에 가는 거리는 f 곱하기 λ 이고 그것이 속도 c 다.</p>
-<pre><code>c = f × λ        따라서        λ = c / f</code></pre>
+<pre class="code"><code>c = f × λ        따라서        λ = c / f</code></pre>
 <p>이 식에 우리 숫자를 넣어 보자. 속도 3×10⁸ 을 주파수 3.35×10⁹ 으로
 나누면 약 0.09 m, 즉 <strong>9 cm</strong> 가 나온다. 우리 기지국이 쏘는
 전파는 마루와 마루 사이가 9 cm 라는 뜻이다. 이 9 cm 라는 숫자는 뒤에서
@@ -696,7 +699,7 @@ GHz(기가헤르츠)는 십억 번이다. 우리 실험의 기지국은 3.35 GHz
 밀리파(파장 1 cm 안쪽)가 손바닥에도 막히는 이유가 전부 이 파장 하나로
 설명된다.</p>
 <p>🔎 지금 당신의 장비에서. 파장은 나눗셈 한 번이다.</p>
-<pre class="bash"><code>python3 -c &quot;print(3e8/3.35e9)&quot;      # 0.0895… → 약 9 cm</code></pre>
+<pre class="code" class="bash"><code>python3 -c &quot;print(3e8/3.35e9)&quot;      # 0.0895… → 약 9 cm</code></pre>
 <p>그리고 자를 들고 와이파이 공유기 안테나를 재 보라. 2.4 GHz 의 파장은
 12.5 cm 이고 흔한 막대 안테나는 그 4 분의 1 인 <strong>약 3 cm</strong>
 다. 길이가 대충 그 근처면 이 절의 이야기가 당신 책상 위에서 이미
@@ -708,7 +711,7 @@ GHz(기가헤르츠)는 십억 번이다. 우리 실험의 기지국은 3.35 GHz
 알아듣는다. 이것은 기술 문제가 아니라 자리 다툼의 문제이고, 그래서
 해결책도 기술이 아니라 <strong>규칙</strong>이다. 각 나라의 정부가
 주파수를 구간으로 잘라 용도와 주인을 정해 둔다. 이 구간 하나를
-**대역(band)**이라 한다.</p>
+<strong>대역</strong>(band)이라 한다.</p>
 <p>독자가 매일 쓰는 것에 대면 <strong>포트 번호</strong>다. 1~65535 라는
 번호 공간이 있고, 22 는 SSH, 443 은 HTTPS 로 <strong>이미 주인이 정해져
 있다.</strong> 아무 포트나 열면 충돌하고, 1024 미만은 루트만 열 수 있다.
@@ -736,7 +739,7 @@ GHz(기가헤르츠)는 십억 번이다. 우리 실험의 기지국은 3.35 GHz
 결정한다.</p>
 <p><strong>그래서 이 절은 설정 한 줄로 끝난다.</strong> 지금까지의
 이야기가 <code>gnb.yml</code> 의 이 줄이 된다.</p>
-<pre class="yaml"><code>dl_arfcn: 623334        # 3350.01 MHz — n78 안, 상용 할당 아래 빈 자리</code></pre>
+<pre class="code" class="yaml"><code>dl_arfcn: 623334        # 3350.01 MHz — n78 안, 상용 할당 아래 빈 자리</code></pre>
 <p><code>623334</code> 라는 번호가 어떻게 3350.01 MHz 가 되는지는 3.6
 에서 계산한다. 지금 가져갈 것은 하나다. <strong>이 숫자를 고르는 일은
 "비어 있는 포트를 고르는 일"과 같고, 예제 설정을 그대로 복사하는 것은
@@ -813,8 +816,8 @@ cm 였으니 다이폴 한쪽 팔은 약 2.2 cm, 전체 4.5 cm 다. 5G 단말 �
 곱셈이 덧셈이 된다.</strong> 로그의 성질이 그렇다. 10배를 1 이라 하고
 100배를 2 라 하면, 10배 곱하기 100배는 1 더하기 2 로 1000배, 즉 3 이
 된다. 이렇게 배수를 로그로 바꾼 값에 10을 곱한 것이
-**데시벨(dB)**이다.</p>
-<pre><code>dB = 10 × log₁₀(나중 전력 / 처음 전력)</code></pre>
+<strong>데시벨</strong>(dB)이다.</p>
+<pre class="code"><code>dB = 10 × log₁₀(나중 전력 / 처음 전력)</code></pre>
 <p>이 정의에서 바로 따라 나오는 숫자 몇 개만 외우면 평생 쓴다. 10배는 10
 dB 다. 100배는 20 dB 다. 2배는 약 3 dB 다(log₁₀2 ≈ 0.3 이니까). 반대로
 절반은 −3 dB, 10분의 1은 −10 dB 다.</p>
@@ -862,14 +865,14 @@ W 가 되고, 아무도 읽을 수 없다. dBm 은 그 숫자를 사람이 읽�
 올리자 찾았다. 15 dB 는 약 30배다. 그런데 그다음 기록이 이상했다. 게인
 80 으로 기지국을 다시 띄우고 모뎀이 처음 등록한 직후(한국 시간 23시
 20분), 모뎀이 보고한 값은 이랬다.</p>
-<pre><code>+QENG: &quot;servingcell&quot;,&quot;NOCONN&quot;,&quot;NR5G-SA&quot;,&quot;TDD&quot;,001,01,00066C000,1,1,623040,78,3,-110,-10,11,1,30</code></pre>
+<pre class="code w3"><code>+QENG: &quot;servingcell&quot;,&quot;NOCONN&quot;,&quot;NR5G-SA&quot;,&quot;TDD&quot;,001,01,00066C000,1,1,623040,78,3,-110,-10,11,1,30</code></pre>
 <p>뒤에서 다섯째 칸이 RSRP 로 −110 dBm 이다. 그 뒤의 −10 은
 RSRQ(Reference Signal Received Quality, 받은 기준 신호가 채널 전체
 전력에서 차지하는 비율 — 간섭이 많을수록 나빠진다), 11 은 SINR(신호가
 잡음과 간섭의 합보다 몇 dB 큰가, 1.7절에서 푼다), 마지막 30 은 셀 선택
 여유(srxlev)다. 칸 하나하나는 16 에서 전부 푼다. 3분 뒤 23시 23분에 같은
 명령을 쳤더니 이랬다.</p>
-<pre><code>+QENG: &quot;servingcell&quot;,&quot;NOCONN&quot;,&quot;NR5G-SA&quot;,&quot;TDD&quot;,001,01,00066C000,1,1,623040,78,3,-71,-10,18,1,-</code></pre>
+<pre class="code w3"><code>+QENG: &quot;servingcell&quot;,&quot;NOCONN&quot;,&quot;NR5G-SA&quot;,&quot;TDD&quot;,001,01,00066C000,1,1,623040,78,3,-71,-10,18,1,-</code></pre>
 <p>RSRP 가 −110 에서 −71 로, 39 dB 올랐다. 8천 배다. 케이블도 게인도
 그대로였다. 처음 우리는 이것을 "등록 직후의 첫 값이라 측정이
 부정확했다"로, 한때는 "게인을 올린 효과"로 적었다. 둘 다 틀렸다.</p>
@@ -947,7 +950,7 @@ RSRQ(Reference Signal Received Quality, 받은 기준 신호가 채널 전체
 직결이 공기를 흉내 내게 만드는 부품"이고, 값은 송신 출력과 수신 감도를
 보고 정한다.</p>
 <p>🔎 지금 당신의 장비에서. dB 가 몸에 붙었는지 한 줄로 확인한다.</p>
-<pre class="bash"><code>python3 -c &quot;import math; print(10*math.log10(2), 10*math.log10(1/10000))&quot;
+<pre class="code" class="bash"><code>python3 -c &quot;import math; print(10*math.log10(2), 10*math.log10(1/10000))&quot;
 #  3.0102…   -40.0      → 2 배는 3 dB, 만분의 일은 −40 dB</code></pre>
 <p>우리가 케이블에 물린 <strong>40 dB 감쇠기</strong>가 전력을 만분의
 일로 줄인다는 뜻이다. 1 mW 가 0.0001 mW 가 된다. 이 숫자가 1.8 절 링크
@@ -1021,7 +1024,7 @@ and Coding Scheme — 기지국이 고른 "한 칸에 몇 비트" 등급 번호)
 12.3 에 있다.</p>
 </blockquote>
 <p>🔎 지금 당신의 장비에서. SINR 은 모뎀에게 물으면 바로 나온다.</p>
-<pre class="bash"><code>at &#39;AT+QSINR&#39;      # 경로별로 네 칸.  19 근처면 256QAM 을 쓸 만한 자리다</code></pre>
+<pre class="code w2" class="bash"><code>at &#39;AT+QSINR&#39;      # 경로별로 네 칸.  19 근처면 256QAM 을 쓸 만한 자리다</code></pre>
 <p>이 숫자가 17.3 에서 "실측 55 Mbps 가 상한 72 에 비해 타당한가"를
 판정하는 근거다.</p>
 <h2
@@ -1031,7 +1034,7 @@ tx_gain 80 에서 수신 세기까지: 링크 예산과, 숫자를 잘못 읽은
 더하고 빼 가는 이 계산을 <strong>링크 예산</strong>이라 한다. 가계부처럼
 버는 것(증폭, 안테나 이득)과 쓰는 것(케이블, 감쇠기, 공기)을 한 줄씩
 적는다. 우리 경로는 공기가 없으니 단순하다.</p>
-<pre><code>                     [추정] B210 송신 출력, tx_gain 80          ≈   0 dBm   (20 MHz 전체, 셀이 꽉 찼을 때)
+<pre class="code w4"><code>                     [추정] B210 송신 출력, tx_gain 80          ≈   0 dBm   (20 MHz 전체, 셀이 꽉 찼을 때)
   − 동축 케이블·커넥터                                        −  2~3 dB
   − 감쇠기                                                    − 40   dB
   ─────────────────────────────────────────────────────────────────────
@@ -1075,7 +1078,7 @@ dBm</strong> 이었다. 우리는 이것을 "계산과 측정이 맞아떨어졌
 개 중 어느 것인가.</p>
 <p>Quectel 에는 경로별로 따로 묻는 명령이 있다. 책을 검수하며 처음 쳐
 봤다.</p>
-<pre><code>AT+QRSRP  -&gt;  +QRSRP: -112,-103,-102,-71,NR5G
+<pre class="code"><code>AT+QRSRP  -&gt;  +QRSRP: -112,-103,-102,-71,NR5G
 AT+QSINR  -&gt;  +QSINR: 11,19,-20,-20,NR5G</code></pre>
 <p>매뉴얼의 칸 순서는
 <code>&lt;PRX&gt;,&lt;DRX&gt;,&lt;RX2&gt;,&lt;RX3&gt;</code> 다.
@@ -1328,7 +1331,7 @@ RSSI(Received Signal Strength Indicator, 수신 신호 세기 표시값)라는
 소프트웨어의 영역이다. 반대로 숫자 목록을 다시 전압으로 되돌려 안테나에
 넣으면 전파가 나간다. 이 두 변환만 하드웨어가 하고, 그 사이의 모든 일 —
 어떤 파형을 만들지, 받은 파형에서 무엇을 읽어낼지 — 을 소프트웨어가 하는
-무선 장치를 **SDR(Software Defined Radio)**이라 부른다.</p>
+무선 장치를 <strong>SDR</strong>(Software Defined Radio)이라 부른다.</p>
 <p>이 발상이 왜 혁명적이었는지는 예전 라디오와 비교하면 보인다. 옛
 라디오는 주파수를 바꾸려면 다이얼을 돌려 코일과 축전기의 값을 바꿨고,
 변조 방식은 회로 자체가 정했다. 변조란 소리 같은 정보를 전파의 어느
@@ -1365,9 +1368,9 @@ MPEG-2 만 재생했고, 새 코덱이 나오면 보드를 바꿔야 했다. 지
 몇 번 재는지를 <strong>샘플링 레이트</strong>라 한다. 단위는 Hz 이지만
 전파 쪽에서는 보통 "초당 백만 샘플"을 뜻하는 <strong>MS/s</strong> 로
 적는다.</p>
-<p>이 변환을 하는 칩이 **ADC(아날로그-디지털 변환기)**다. 반대로 숫자를
-전압으로 되돌리는 칩이 <strong>DAC</strong> 다. B210 안에는 둘 다 들어
-있고, 각각 61.44 MS/s 까지 돌릴 수 있다.</p>
+<p>이 변환을 하는 칩이 <strong>ADC</strong>(아날로그-디지털 변환기)다.
+반대로 숫자를 전압으로 되돌리는 칩이 <strong>DAC</strong> 다. B210
+안에는 둘 다 들어 있고, 각각 61.44 MS/s 까지 돌릴 수 있다.</p>
 <p>여기서 자연스러운 질문이 나온다. 얼마나 촘촘히 재야 원래 파형을 잃지
 않는가. 너무 띄엄띄엄 재면 그 사이에서 파형이 어떻게 움직였는지 모르게
 된다. 이 질문에 대한 답이 <strong>나이퀴스트 정리</strong>다. 파형에
@@ -1383,7 +1386,7 @@ MPEG-2 만 재생했고, 새 코덱이 나오면 보드를 바꿔야 했다. 지
 그런데 우리 설정은 23.04 MS/s 다. 두 배가 아니라 1.15배다. 이것이 가능한
 이유는 다음 절의 I/Q 에 있다.</p>
 <p>🔎 지금 당신의 장비에서. 샘플링 레이트는 설정에 그대로 있다.</p>
-<pre class="bash"><code>grep -E &#39;srate|channel_bandwidth&#39; $P5/configs/srsran/gnb.yml</code></pre>
+<pre class="code" class="bash"><code>grep -E &#39;srate|channel_bandwidth&#39; $P5/configs/srsran/gnb.yml</code></pre>
 <p><code>srate</code> 와 대역폭은 <strong>짝이 맞아야</strong> 기지국이
 뜬다. 대역폭을 바꾸면 이 값도 같이 바꿔야 하고, 그 곱이 2.6 의 USB
 대역폭 계산으로 이어진다.</p>
@@ -1419,12 +1422,13 @@ MPEG-2 만 재생했고, 새 코덱이 나오면 보드를 바꿔야 했다. 지
 <p>이제 기계적인 정의로 돌아간다. 위상을 함께 재는 방법은 기준 파동 두
 개를 쓰는 것이다. 하나는 그냥 기준 파동이고, 다른 하나는 그것을 90도
 밀어 놓은 파동이다. 들어온 신호를 첫 번째 기준과 곱해서 평균 낸 값을
-<strong>I(In-phase, 동위상)</strong>, 두 번째 기준과 곱해서 평균 낸 값을
-**Q(Quadrature, 직교)**라 부른다. 이 두 숫자가 있으면 신호의 세기는
-√(I²+Q²) 로, 위상은 atan2(Q, I) 로 되찾을 수 있다. 세기와 위상을 2차원
-평면의 한 점으로 표현한 것이고, 그 평면을 복소평면으로 보면 I 가 실수부,
-Q 가 허수부다. 그래서 <code>I + jQ</code> 라는 복소수로 적는다.</p>
-<pre class="c"><code>// 샘플 하나의 모양. 실수 둘이 한 쌍이다.
+<strong>I</strong>(In-phase, 동위상), 두 번째 기준과 곱해서 평균 낸 값을
+<strong>Q</strong>(Quadrature, 직교)라 부른다. 이 두 숫자가 있으면
+신호의 세기는 √(I²+Q²) 로, 위상은 atan2(Q, I) 로 되찾을 수 있다. 세기와
+위상을 2차원 평면의 한 점으로 표현한 것이고, 그 평면을 복소평면으로 보면
+I 가 실수부, Q 가 허수부다. 그래서 <code>I + jQ</code> 라는 복소수로
+적는다.</p>
+<pre class="code" class="c"><code>// 샘플 하나의 모양. 실수 둘이 한 쌍이다.
 typedef struct { int16_t i; int16_t q; } iq_sample_t;</code></pre>
 <p><img src="images/fig-2-1-constellation.png"
 alt="QPSK·16QAM·256QAM 성상도. 같은 잡음을 뿌렸을 때 256QAM 만 점들이 뭉개진다" /></p>
@@ -1481,7 +1485,7 @@ ANT1 을 케이블로 묶었다.</p>
 한다.</p>
 <p>🔎 지금 당신의 장비에서. 안에 어떤 칩이 들었는지는 드라이버가 알려
 준다.</p>
-<pre class="bash"><code>uhd_usrp_probe 2&gt;&amp;1 | grep -iE &quot;name|product|revision|fw|fpga&quot;</code></pre>
+<pre class="code" class="bash"><code>uhd_usrp_probe 2&gt;&amp;1 | grep -iE &quot;name|product|revision|fw|fpga&quot;</code></pre>
 <p>복제품을 샀다면 여기서 나온 이름으로 FPGA 이미지를 고른다. 이름이
 다른데 정품 이미지를 올리면 2.5 의 <code>fx3 state 5</code> 로
 멈춘다.</p>
@@ -1505,12 +1509,13 @@ WestBridge" 라는 이름이 뜬다. Ettus 도 B210 도 아니다. FX3 칩이 �
 USB 3.0 속도로 붙는다. 그 다음 FPGA 에 <strong>비트스트림</strong>을
 넣는다. 여기가 대응물이 없는 곳이다. 펌웨어는 "CPU 에 줄 프로그램"이라
 익숙하지만, 비트스트림은 <strong>프로그램이 아니라 배선도</strong>다.
-펌웨어가 "이거 실행해"라면 비트스트림은 **"너 이제 이렇게 생겨라"**다.
-CPU 에 코드를 주는 것이 아니라 CPU 를 그 코드 모양의 회로로 다시 만드는
-쪽에 가깝다. 그래서 FPGA 에는 "실행 속도"라는 말보다 "몇 개를 동시에
-하느냐"가 어울린다. FPGA 는 프로그램을 실행하는 칩이 아니라 <strong>회로
-자체를 설계대로 바꾸는 칩</strong>이고, 그 설계도가 비트스트림이다.
-이것이 들어가야 샘플이 흐른다.</p>
+펌웨어가 "이거 실행해"라면 비트스트림은 <strong>너 이제 이렇게
+생겨라</strong>, 즉 회로를 새로 깔라는 말이다. CPU 에 코드를 주는 것이
+아니라 CPU 를 그 코드 모양의 회로로 다시 만드는 쪽에 가깝다. 그래서 FPGA
+에는 "실행 속도"라는 말보다 "몇 개를 동시에 하느냐"가 어울린다. FPGA 는
+프로그램을 실행하는 칩이 아니라 <strong>회로 자체를 설계대로 바꾸는
+칩</strong>이고, 그 설계도가 비트스트림이다. 이것이 들어가야 샘플이
+흐른다.</p>
 <p>이 두 단계는 전원이 꺼지면 사라진다. 그래서 USB 를 뽑았다 꽂으면 다시
 WestBridge 로 돌아간다. 우리 실험에서 같은 장치가 어떤 때는 "USRP B200 /
 USB 3.00" 으로, 어떤 때는 "WestBridge / USB 2.00" 으로 보였던 것은
@@ -1592,7 +1597,7 @@ Micro-B 를 품고 있어서 <strong>2.0 케이블도 물리적으로 꽂힌다.
 하나가 안테나 단자에 전압으로 나타나기까지, 그리고
 <code>tx_gain: 80</code> 이라는 숫자가 그 길의 어디에 작용하는지를 한
 장에 놓는다.</p>
-<pre><code>[호스트]  srsgnb 컨테이너 안 gnb 프로세스
+<pre class="code w4"><code>[호스트]  srsgnb 컨테이너 안 gnb 프로세스
   lower_phy_tx 스레드   OFDM 심볼을 IFFT 로 만들어 complex&lt;float&gt; 배열로 (3장)
         │  UHD 의 tx_streamer::send()  — 여기서 float → sc12(3바이트) 변환, 송신 예정 시각 붙임
         ▼
@@ -1613,7 +1618,7 @@ Micro-B 를 품고 있어서 <strong>2.0 케이블도 물리적으로 꽂힌다.
 아니다. UHD
 소스(<code>host/lib/usrp/common/ad9361_driver/ad9361_device.cpp</code>)를
 열면 이렇게 되어 있다.</p>
-<pre class="cpp"><code>/* Each gain step is -0.25dB. ... Max gain (so zero attenuation) is 89.75. */
+<pre class="code w2" class="cpp"><code>/* Each gain step is -0.25dB. ... Max gain (so zero attenuation) is 89.75. */
 const double atten      = AD9361_MAX_GAIN - value;
 const uint32_t attenreg = uint32_t(atten * 4);
 _io_iface-&gt;poke8(0x073, attenreg &amp; 0xFF);
@@ -1650,7 +1655,7 @@ FX3·FPGA 에 올리는 이미지뿐이다. 그 아래는 전부 칩이다. 그�
 — 업스트림 예제의 3.6 GHz 설정이었다면 — 상용망 한가운데였다.</p>
 <p>그래서 이 책의 첫 번째 안전 원칙은 이것이다. <strong>송신 장치는 설정
 파일에 시리얼로 못 박는다.</strong></p>
-<pre><code>device_args: type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,...</code></pre>
+<pre class="code w2"><code>device_args: type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,...</code></pre>
 <p>그리고 송신 전에 반드시 <code>lsusb | grep -i ettus</code> 로 장치가
 몇 대 붙어 있는지 세고, 시리얼이 설정과 같은지 본다. 안테나 달린 장치는
 실험 중 USB 에서 아예 분리해 두는 것이 가장 확실하다. 설정 실수가 있어도
@@ -1781,7 +1786,7 @@ OFDM과 5G NR 물리 계층: 한 줄기 전파에 수백 명을 태우는 법</h
 기지국은 매 순간 "이 칸들은 A 에게, 저 칸들은 B 에게" 하고 나눠 준다. 이
 격자가 5G 물리 계층의 전부이고, 이 장의 나머지는 그 격자의 칸 크기와
 이름을 정하는 이야기다.</p>
-<pre><code>            시간 →  슬롯 0      슬롯 1      슬롯 2      슬롯 3     (슬롯 하나 = 0.5 ms = 심볼 14개)
+<pre class="code w3"><code>            시간 →  슬롯 0      슬롯 1      슬롯 2      슬롯 3     (슬롯 하나 = 0.5 ms = 심볼 14개)
 주파수 ↑  ┌──────────┬──────────┬──────────┬──────────┐
  PRB 50   │    C     │    A     │    A     │    B     │
   …       │    C     │    A     │    A     │    B     │
@@ -1792,7 +1797,7 @@ OFDM과 5G NR 물리 계층: 한 줄기 전파에 수백 명을 태우는 법</h
   한 칸을 확대하면:  부반송파 12개 × 심볼 14개 = 자원 요소(RE) 168개
   기지국은 &quot;이 슬롯의 PRB 몇 번부터 몇 번까지는 누구&quot; 단위로 나눠 준다 (3.5)</code></pre>
 <p>🔎 지금 당신의 장비에서. 이 격자의 크기는 설정 두 줄이 정한다.</p>
-<pre class="bash"><code>grep -E &#39;channel_bandwidth_MHz|common_scs&#39; $P5/configs/srsran/gnb.yml</code></pre>
+<pre class="code w2" class="bash"><code>grep -E &#39;channel_bandwidth_MHz|common_scs&#39; $P5/configs/srsran/gnb.yml</code></pre>
 <p>대역폭이 주파수 축(PRB 수), <code>common_scs</code> 가 시간 축(슬롯
 길이)을 정한다. 3.8 의 속도 상한이 이 둘의 곱에서 나온다.</p>
 <h2 id="33-주파수를-촘촘히-나누는-기술-ofdm직교-주파수-분할-다중">3.3
@@ -1806,9 +1811,10 @@ OFDM과 5G NR 물리 계층: 한 줄기 전파에 수백 명을 태우는 법</h
 신호를 받아서 정해진 시간 동안 적분했을 때 옆 구간의 신호는
 <strong>정확히 0</strong> 이 되게 할 수 있다. 서로 영향을 주지 않는 이
 관계를 수학에서 <strong>직교</strong>라 한다. 직교하는 구간들은 아무리
-바싹 붙여도, 심지어 서로 겹쳐도 분리된다. 이 방식이 **OFDM(Orthogonal
-Frequency-Division Multiplexing, 직교 주파수 분할 다중)**이고, 이때 각
-구간을 <strong>부반송파</strong>라 부른다.</p>
+바싹 붙여도, 심지어 서로 겹쳐도 분리된다. 이 방식이
+<strong>OFDM</strong>(Orthogonal Frequency-Division Multiplexing, 직교
+주파수 분할 다중)이고, 이때 각 구간을 <strong>부반송파</strong>라
+부른다.</p>
 <p>독자에게 가장 가까운 그림은 <strong>큰 파일을 조각내서 동시에 받는
 것</strong>이다. 큰 파일을 한 줄로 받지 않고 여덟 조각으로 나눠 여덟 개
 연결로 동시에 받은 뒤 이어 붙이는 것 — 다운로드 가속기가 하는 일이고, 큰
@@ -1835,11 +1841,11 @@ Frequency-Division Multiplexing, 직교 주파수 분할 다중)**이고, 이때
 조금이라도 어긋나면 웅웅거리며 섞인다. OFDM 의 부반송파는 그 "정수 배
 관계"를 정확히 지키는 노래들이다.</p>
 <p>이 노래들을 한꺼번에 만드는 방법이 놀랍도록 간단하다. 각 부반송파에
-실을 값을 배열에 넣고 **역 푸리에 변환(IFFT)**을 한 번 돌리면, 모든
-부반송파가 합쳐진 시간 파형이 나온다. 수신 쪽은 그 파형에 **푸리에
-변환(FFT)**을 돌려 배열을 되찾는다. 소프트웨어 엔지니어에게는 이렇게
-보인다.</p>
-<pre><code>송신:  data[0..N-1]  --IFFT--&gt;  시간 샘플 N개  --DAC--&gt;  전파
+실을 값을 배열에 넣고 <strong>역 푸리에 변환</strong>(IFFT)을 한 번
+돌리면, 모든 부반송파가 합쳐진 시간 파형이 나온다. 수신 쪽은 그 파형에
+<strong>푸리에 변환</strong>(FFT)을 돌려 배열을 되찾는다. 소프트웨어
+엔지니어에게는 이렇게 보인다.</p>
+<pre class="code"><code>송신:  data[0..N-1]  --IFFT--&gt;  시간 샘플 N개  --DAC--&gt;  전파
 수신:  전파  --ADC--&gt;  시간 샘플 N개  --FFT--&gt;  data[0..N-1]</code></pre>
 <p>2장의 I/Q 샘플이 여기서 쓰인다. <code>data[k]</code> 는 복소수이고,
 그 세기와 위상이 k 번째 부반송파에 실린 데이터다. 복소수 하나에 몇
@@ -1853,10 +1859,10 @@ QAM 은 2장에서 말한 직교 진폭 변조이고 앞의 숫자가 조합 수
 <h2 id="34-칸의-폭을-정하는-값-부반송파-간격">3.4 칸의 폭을 정하는 값:
 부반송파 간격</h2>
 <p>부반송파를 얼마나 촘촘히 둘 것인가. 이웃한 두 부반송파의 주파수
-차이를 <strong>부반송파 간격</strong>, 영어 약자로 **SCS(Subcarrier
-Spacing)**라 한다. 4G LTE 는 이것을 15 kHz 하나로 고정했다. 5G 는
-<strong>여러 값 중에서 고를 수 있게</strong> 했고, 그것이 5G 물리 계층의
-가장 큰 변화다.</p>
+차이를 <strong>부반송파 간격</strong>, 영어 약자로
+<strong>SCS</strong>(Subcarrier Spacing)라 한다. 4G LTE 는 이것을 15 kHz
+하나로 고정했다. 5G 는 <strong>여러 값 중에서 고를 수 있게</strong>
+했고, 그것이 5G 물리 계층의 가장 큰 변화다.</p>
 <p>이 선택의 성격은 <strong>스케줄러의 타임슬라이스</strong>를 고르는
 것과 같다. 퀀텀을 길게 잡으면 문맥 전환이 줄어 처리량이 좋지만 응답이
 굼뜨고, 짧게 잡으면 반응은 빨라지는데 전환 오버헤드가 커진다. 정답이
@@ -1870,8 +1876,8 @@ Spacing)**라 한다. 4G LTE 는 이것을 15 kHz 하나로 고정했다. 5G 는
 주파수 흔들림(도플러)에 강하고, 한 번 보내고 답을 받는 시간도 짧아진다.
 5G 는 이 둘을 한 망에서 다 하고 싶었다. 그래서 15 kHz 를 기준으로 2배씩
 올린 15, 30, 60, 120 kHz 를 두고 대역과 용도에 따라 고르게 했다. 이
-선택지에 번호를 붙여 **뉴머롤로지(μ)**라 하고, 15 kHz 가 μ=0, 30 kHz 가
-μ=1 이다.</p>
+선택지에 번호를 붙여 <strong>뉴머롤로지</strong>(μ)라 하고, 15 kHz 가
+μ=0, 30 kHz 가 μ=1 이다.</p>
 <p>간격을 2배로 하면 파동이 절반으로 짧아지므로, 시간 쪽 단위도 전부
 절반이 된다. 스케줄링의 기본 시간 단위를 <strong>슬롯</strong>이라
 하는데, 15 kHz 에서 1 ms 인 슬롯이 30 kHz 에서는 0.5 ms 가 된다. 슬롯
@@ -1896,41 +1902,42 @@ Spacing)**라 한다. 4G LTE 는 이것을 15 kHz 하나로 고정했다. 5G 는
 휴대폰·모뎀 같은 단말을 부르는 이름이다. <strong>기지국과 단말은 같은
 SCS 를 써야 하고, 그것은 설정이 아니라 구현의 문제</strong>였다.</p>
 <p>심볼 앞에는 짧은 복사본이 하나 붙는다. 심볼의 끝부분을 잘라 앞에 붙인
-것인데 **순환 전치(CP)**라 한다. 전파는 직진하는 것과 벽에 튕겨 오는
-것이 시간차를 두고 겹쳐 도착하고, 그 시간차만큼 앞 심볼의 꼬리가 다음
-심볼의 머리를 덮친다. CP 는 그 덮치는 구간을 <strong>버리는 용도로 미리
-비워 둔 완충지</strong>다. 말하는 사람들 사이에 잠깐 침묵을 둬서
-메아리가 다음 말을 가리지 않게 하는 것과 같다. 30 kHz 에서 CP 는 약 2.3
-μs 이고, 전파가 700 m 를 더 돌아와도 버틴다.</p>
+것인데 <strong>순환 전치</strong>(CP)라 한다. 전파는 직진하는 것과 벽에
+튕겨 오는 것이 시간차를 두고 겹쳐 도착하고, 그 시간차만큼 앞 심볼의
+꼬리가 다음 심볼의 머리를 덮친다. CP 는 그 덮치는 구간을 <strong>버리는
+용도로 미리 비워 둔 완충지</strong>다. 말하는 사람들 사이에 잠깐 침묵을
+둬서 메아리가 다음 말을 가리지 않게 하는 것과 같다. 30 kHz 에서 CP 는 약
+2.3 μs 이고, 전파가 700 m 를 더 돌아와도 버틴다.</p>
 <p><strong>그래서 이 절도 설정 한 줄로 끝난다.</strong> 지금까지의
 트레이드오프가 <code>gnb.yml</code> 의 이 줄이다.</p>
-<pre class="yaml"><code>common_scs: 30          # μ=1. 슬롯 0.5 ms, 심볼 약 36 μs</code></pre>
+<pre class="code" class="yaml"><code>common_scs: 30          # μ=1. 슬롯 0.5 ms, 심볼 약 36 μs</code></pre>
 <p>이 값을 바꾸면 따라 움직이는 것이 셋이다 — 같은 대역폭에 들어가는
 자원 블록의 수(바로 다음 절), 1 초에 지나가는 슬롯 수(3.8 의 속도 계산),
 그리고 <strong>단말이 이 셀을 볼 수 있는가</strong>(바로 위 문단의 srsUE
 사건). 혼자 바꿀 수 있는 손잡이가 아니다.</p>
 <h2 id="35-기지국이-세는-단위-자원-블록">3.5 기지국이 세는 단위: 자원
 블록</h2>
-<p>격자의 한 칸(부반송파 하나 × 심볼 하나)을 **자원 요소(RE)**라 했다.
-그런데 기지국이 단말에게 자원을 나눠 줄 때 칸 하나씩 세면 너무 잘다. 20
-MHz 에 부반송파가 600개 넘게 있고 슬롯마다 14심볼이니 칸이 9천 개
-가깝다. <code>malloc(1)</code> 을 불러도 커널이 1 바이트를 주지 않는
-것과 같은 사정이다. 페이지 단위로 줘야 관리 비용이 감당된다. 기지국도 칸
-하나씩은 못 나눠 준다. 그래서 부반송파 <strong>12개</strong>를 한
-묶음으로 세고, 이것을 **자원 블록(RB)**이라 한다. 주파수 방향으로 12 ×
-30 kHz = 360 kHz 폭이다. 12 라는 숫자는 너무 잘게 쪼개면 관리 비용이
-크고 너무 굵으면 낭비가 커지는 사이의 절충이다.</p>
+<p>격자의 한 칸(부반송파 하나 × 심볼 하나)을 <strong>자원
+요소</strong>(RE)라 했다. 그런데 기지국이 단말에게 자원을 나눠 줄 때 칸
+하나씩 세면 너무 잘다. 20 MHz 에 부반송파가 600개 넘게 있고 슬롯마다
+14심볼이니 칸이 9천 개 가깝다. <code>malloc(1)</code> 을 불러도 커널이 1
+바이트를 주지 않는 것과 같은 사정이다. 페이지 단위로 줘야 관리 비용이
+감당된다. 기지국도 칸 하나씩은 못 나눠 준다. 그래서 부반송파
+<strong>12개</strong>를 한 묶음으로 세고, 이것을 <strong>자원
+블록</strong>(RB)이라 한다. 주파수 방향으로 12 × 30 kHz = 360 kHz
+폭이다. 12 라는 숫자는 너무 잘게 쪼개면 관리 비용이 크고 너무 굵으면
+낭비가 커지는 사이의 절충이다.</p>
 <p><img src="images/fig-3-1-grid.png"
 alt="자원 블록 하나는 부반송파 12 × 심볼 14 이고, 그것이 세로로 51 개 쌓여 20 MHz 셀이 된다" /></p>
 <p><em>그림 3-1. 3.2 의 격자를 한 블록만 확대한 것. 붉은 칸 하나가
-<strong>자원 요소(RE)</strong>, 즉 2 장에서 본 복소수 하나가 실리는
+<strong>자원 요소</strong>(RE), 즉 2 장에서 본 복소수 하나가 실리는
 자리다. 가로 14 칸이 슬롯 하나(0.5 ms), 세로 12 칸이 자원 블록 하나다.
 이 블록이 세로로 <strong>51 개</strong> 쌓인 것이 우리 20 MHz 셀이고,
 그래서 부반송파가 612 개다. 3.8 의 속도 계산은 이 그림의 칸 수를 세는
 일이다.</em></p>
 <p>자원 블록에 대역 맨 아래부터 0, 1, 2, … 번호를 붙인 것을
-**PRB(Physical Resource Block)**라 한다. 기지국이 "PRB 0 번부터 10
-번까지는 A 에게"라고 말할 때의 그 번호다.</p>
+<strong>PRB</strong>(Physical Resource Block)라 한다. 기지국이 "PRB 0
+번부터 10 번까지는 A 에게"라고 말할 때의 그 번호다.</p>
 <p>우리 20 MHz 에 PRB 가 몇 개 들어가는지 세어 보자. 20 MHz 를 360 kHz
 로 나누면 약 55 가 나온다. 그런데 기지국 로그는 <strong>51</strong>
 이라고 했다. 4개가 어디 갔는가. 2장에서 본 보호 대역이다. 20 MHz 의 양
@@ -1944,7 +1951,7 @@ MHz 는 273 이고, 15 kHz 로 가면 20 MHz 가 106 이다. 3.8절과 10 장의
 데이터가 흐르는 폭이다.</p>
 <p>🔎 지금 당신의 장비에서. 우리 대역폭에 PRB 가 몇 개인지는 기지국이
 기동 로그에 찍는다.</p>
-<pre class="bash"><code>docker logs srsgnb 2&gt;&amp;1 | grep -iE &quot;prb|bandwidth&quot; | head -3</code></pre>
+<pre class="code" class="bash"><code>docker logs srsgnb 2&gt;&amp;1 | grep -iE &quot;prb|bandwidth&quot; | head -3</code></pre>
 <p>20 MHz·30 kHz 에서 <strong>51</strong> 이 나와야 한다. 다른 숫자가
 나오면 설정의 대역폭이나 SCS 가 생각과 다른 것이고, 그러면 3.8 의 계산도
 전부 달라진다.</p>
@@ -1954,19 +1961,20 @@ SSB</h2>
 전원을 막 켠 단말은 아무것도 모른다. 어느 주파수에 기지국이 있는지, 그
 기지국의 슬롯이 언제 시작하는지, 그 기지국이 누구인지 모른다. 그 단말이
 처음 찾아야 하는 것이 <strong>동기 신호 블록</strong>, 영어 약자로
-**SSB(Synchronization Signal Block)**다.</p>
+<strong>SSB</strong>(Synchronization Signal Block)다.</p>
 <p>역할만 보면 <strong>mDNS 비콘</strong>이다. 아무것도 모르는 기계가
 망에 꽂혔을 때 "여기 누가 있나요"를 알아내는 방법은 어디나 같다 — 누군가
 주기적으로 자기를 떠들어야 한다. SSB 가 그 떠드는 소리이고, 와이파이
 비콘 프레임과 같은 자리에 있다.</p>
 <p>SSB 는 시간으로 심볼 4개, 주파수로 부반송파 240개(PRB 20개 폭)를
 차지하는 작은 묶음이고, 기지국이 주기적으로(보통 20 ms 마다) 같은 자리에
-내보낸다. 안에 세 가지가 들어 있다. 첫째는 **PSS(1차 동기 신호)**다. 세
-가지 패턴 중 하나이고, 단말은 이것을 찾아 "여기 기지국이 있고 심볼
-경계는 여기다"를 안다. 둘째는 **SSS(2차 동기 신호)**다. 336 가지 패턴 중
-하나이고, PSS 의 3 가지와 곱하면 1008 가지가 되는데, 이 번호가
-**PCI(Physical Cell ID)**다. 근처 셀을 구별하는 번호이고, 우리 기지국은
-1 번이다. 셋째는 **PBCH(방송 채널)**인데, 이 셀의 가장 기본적인 정보 —
+내보낸다. 안에 세 가지가 들어 있다. 첫째는 <strong>PSS</strong>(1차 동기
+신호)다. 세 가지 패턴 중 하나이고, 단말은 이것을 찾아 "여기 기지국이
+있고 심볼 경계는 여기다"를 안다. 둘째는 <strong>SSS</strong>(2차 동기
+신호)다. 336 가지 패턴 중 하나이고, PSS 의 3 가지와 곱하면 1008 가지가
+되는데, 이 번호가 <strong>PCI</strong>(Physical Cell ID)다. 근처 셀을
+구별하는 번호이고, 우리 기지국은 1 번이다. 셋째는
+<strong>PBCH</strong>(방송 채널)인데, 이 셀의 가장 기본적인 정보 —
 프레임 번호, 그리고 더 자세한 정보(SIB1)를 어디서 읽을지 — 가 들어
 있다.</p>
 <p>단말은 이 순서로 셀을 안다. PSS 로 시간을 맞추고, SSS 로 셀 번호를
@@ -1985,7 +1993,7 @@ SSB</h2>
 <code>dl_ssb_arfcn=623040</code> 이 SSB 의 번호이고
 <code>dl_arfcn=623334</code> 가 채널 중심의 번호다. 번호와 주파수는
 공식으로 잇는다. 3 GHz 에서 24 GHz 사이에서는 이렇다.</p>
-<pre><code>F(MHz) = 3000 + 0.015 × (N − 600000)</code></pre>
+<pre class="code"><code>F(MHz) = 3000 + 0.015 × (N − 600000)</code></pre>
 <p>623334 를 넣으면 3000 + 0.015 × 23334 = 3350.01 MHz 가 나오고, 로그의
 <code>dl_freq=3350.01 MHz</code> 와 맞는다. 623040 을 넣으면 3345.6 MHz
 다. 이 공식을 알면 설정 파일의 숫자를 <strong>스스로 검산</strong>할 수
@@ -2010,11 +2018,11 @@ Channel Number)이다. 3 GHz 이상에서는 격자 점의 주파수가 3000 MHz
 </blockquote>
 <p>🔎 지금 당신의 장비에서. 채널 번호를 주파수로 바꾸는 식은 한 줄이다.
 3.6 절의 두 번호를 넣어 본다.</p>
-<pre class="bash"><code>python3 -c &quot;f=lambda N: 3000+0.015*(N-600000); print(f(623334), f(623040))&quot;
+<pre class="code" class="bash"><code>python3 -c &quot;f=lambda N: 3000+0.015*(N-600000); print(f(623334), f(623040))&quot;
 #  3350.01   3345.6     → 캐리어 중심과 SSB</code></pre>
 <p>그다음 설정 파일과 맞는지 본다. 둘이 다르면 기지국은 뜨는데 단말이 못
 찾는다(10.6).</p>
-<pre class="bash"><code>grep -E &#39;dl_arfcn|channel_bandwidth|common_scs&#39; $P5/configs/srsran/gnb.yml
+<pre class="code w2" class="bash"><code>grep -E &#39;dl_arfcn|channel_bandwidth|common_scs&#39; $P5/configs/srsran/gnb.yml
 docker logs srsgnb 2&gt;&amp;1 | grep -i -m2 &#39;ssb\|arfcn&#39;</code></pre>
 <h2 id="37-같은-주파수를-양방향으로-tdd">3.7 같은 주파수를 양방향으로:
 TDD</h2>
@@ -2109,7 +2117,7 @@ Scheme — 변조 방식과 코드율 조합에 매긴 번호. 번호가 높을�
 속도를 정의하는 공식(TS 38.306 4.1.2절)에서 <strong>하향 14%, 상향
 8%</strong> 로 정해 둔다. 그 공식을 우리 셀에 그대로 적용하면
 이렇다.</p>
-<pre><code>속도 = 레이어 수 × 변조 비트 × 코드율 × (PRB 수 × 12) / 심볼 시간 × (1 − 오버헤드) × TDD 하향 비율
+<pre class="code w3"><code>속도 = 레이어 수 × 변조 비트 × 코드율 × (PRB 수 × 12) / 심볼 시간 × (1 − 오버헤드) × TDD 하향 비율
      = 1 × 8 × 0.926 × 612 / 35.7 μs × (1 − 0.14) × 0.657
      ≈ 109 Mbps (송수신을 동시에 한다고 칠 때) × 0.657  ≈  72 Mbps</code></pre>
 <p>심볼 시간 35.7 μs 는 1 ms ÷ (14 심볼 × 슬롯 2 개)다 — 순환 전치까지
@@ -2136,7 +2144,7 @@ Receive)이다. 20 MHz 1T1R 로 초당 기가비트를, 하물며 그 8 배인 �
 기가바이트(GBps)를 말하는 것은 계산을 안 해 본 것이다.</p>
 <p>🔎 지금 당신의 장비에서. 이 장의 격자가 실제 숫자로 맞는지 곱셈 두
 번으로 검산한다.</p>
-<pre class="bash"><code>python3 -c &quot;print(51*12, 14*2*1000)&quot;
+<pre class="code" class="bash"><code>python3 -c &quot;print(51*12, 14*2*1000)&quot;
 #  612   28000   → 부반송파 612 개, 초당 OFDM 심볼 28,000 개(30 kHz)</code></pre>
 <p>612 는 3.5 절의 51 PRB 에서, 28,000 은 3.4 절의 "30 kHz 면 1 ms 에
 슬롯 둘"에서 나온다. 이 두 숫자가 3.8 절 상한 계산의 입력 전부다. 당신
@@ -2370,9 +2378,9 @@ SUCI(5G) 가 <strong>모두</strong> 들어 있다. 2G 와 3G 의 차이는 인�
 IP 의 세계</h2>
 <p>이동통신망은 크게 두 덩어리다. 단말과 기지국 사이, 즉 <strong>전파로
 이어진 부분</strong>과, 기지국 뒤쪽의 <strong>IP 로 이어진
-부분</strong>이다. 앞쪽을 <strong>RAN(Radio Access Network, 무선
-접속망)</strong>, 뒤쪽을 <strong>코어망</strong>이라 부른다.</p>
-<pre><code>  [단말 UE] ◀══ 전파 ══▶ [기지국 gNB] ◀══ IP (SCTP, GTP-U) ══▶ [코어망 5GC] ◀══▶ 인터넷/IMS
+부분</strong>이다. 앞쪽을 <strong>RAN</strong>(Radio Access Network,
+무선 접속망), 뒤쪽을 <strong>코어망</strong>이라 부른다.</p>
+<pre class="code w3"><code>  [단말 UE] ◀══ 전파 ══▶ [기지국 gNB] ◀══ IP (SCTP, GTP-U) ══▶ [코어망 5GC] ◀══▶ 인터넷/IMS
             └──────── RAN ────────┘                        └── Core ──┘</code></pre>
 <p><strong>UE(User Equipment)</strong> 는 단말이다. 폰, 모뎀, 우리
 실험의 Quectel 모듈과 OAI 소프트 단말이 전부 UE 다. <strong>gNB</strong>
@@ -2393,7 +2401,7 @@ Transmission Protocol, 메시지 경계를 보존하는 전송 프로토콜)로 
 쪽인지를 먼저 가르는 것이 모든 디버깅의 시작이다.</p>
 <p>🔎 지금 당신의 장비에서. "기지국 뒤부터는 그냥 IP" 는 패킷으로
 확인된다.</p>
-<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -c 5 sctp      # N2: 기지국 ↔ AMF</code></pre>
+<pre class="code" class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -c 5 sctp      # N2: 기지국 ↔ AMF</code></pre>
 <p>SCTP 패킷이 잡히면 이 문장이 당신 장비에서 참이다. 브리지 이름은
 <code>docker network ls</code> 로 찾는다(9.8).</p>
 <h2 id="44-코어는-왜-조각조각인가">4.4 코어는 왜 조각조각인가</h2>
@@ -2473,7 +2481,7 @@ Protocol, 패킷 전달 규칙을 설치하는 프로토콜. 7장)를 쓴다. �
 암호키로 구현한 것이고, 15 의 신뢰 경계가 같은 말이다.</p>
 <p>🔎 지금 당신의 장비에서. 조각들의 이름을 전부 꺼내 놓고 위 설명과
 맞춰 본다.</p>
-<pre class="bash"><code>docker ps --format &#39;{{.Names}}&#39; | sort | tr &#39;\n&#39; &#39; &#39;</code></pre>
+<pre class="code" class="bash"><code>docker ps --format &#39;{{.Names}}&#39; | sort | tr &#39;\n&#39; &#39; &#39;</code></pre>
 <p>모르는 이름이 하나도 없어야 한다. 하나라도 모르면 5.5 의 분류표로
 돌아간다.</p>
 <h2 id="45-시그널링의-세대-ss7-에서-http2-까지">4.5 시그널링의 세대: SS7
@@ -2605,7 +2613,7 @@ Center, 문자를 받아 두었다가 수신자에게 넘겨 주는 문자 교�
 <p>지금까지의 그림 위에 우리 실험실의 실제 구성을 올리면 이렇게 된다. 이
 그림이 Part II(망의 구조, 4~8장)와 Part III(구축과 실험, 9~18장)의
 목차다.</p>
-<pre><code> [Quectel 모뎀] ══ RF 케이블 + 40 dB 감쇠기 ══ [B210] ── USB 3.0 ── [srsRAN gNB 컨테이너]
+<pre class="code w4"><code> [Quectel 모뎀] ══ RF 케이블 + 40 dB 감쇠기 ══ [B210] ── USB 3.0 ── [srsRAN gNB 컨테이너]
    UE (IMSI 001011234567895)                              RAN
                                                            │ N2 (NGAP/SCTP)     │ N3 (GTP-U)
                                                            ▼                    ▼
@@ -2622,7 +2630,7 @@ SIM 카드 안이다. 5 장은 가운데 코어 상자다. 6 장은 그 안의 �
 장은 UPF 와 터널이며, 8 장은 아래 IMS 상자다.</p>
 <p>🔎 지금 당신의 장비에서. 이 장의 그림이 당신 호스트에서 어떻게
 생겼는지 두 줄로 본다.</p>
-<pre class="bash"><code>docker ps --format &#39;{{.Names}}&#39; | sort | tr &#39;\n&#39; &#39; &#39;     # 코어·IMS 조각의 이름 전부
+<pre class="code w3" class="bash"><code>docker ps --format &#39;{{.Names}}&#39; | sort | tr &#39;\n&#39; &#39; &#39;     # 코어·IMS 조각의 이름 전부
 sudo tcpdump -i &lt;브리지&gt; -n -c 5 sctp                      # 기지국↔AMF 의 N2</code></pre>
 <p>첫 줄의 이름 중 모르는 것이 있으면 5.5 절의 분류표로 돌아가면 된다.
 둘째 줄에서 SCTP 패킷이 잡히면 "기지국 뒤부터는 그냥 IP 망"이라는 4.3
@@ -2755,7 +2763,7 @@ PC 가 모뎀에게 AT 명령(모뎀이 알아듣는 글자 명령. 11 에서 �
 푼다)으로 말을 거는 것을 보게 되는데, 정확히 같은 구조가 모뎀과 SIM
 사이에 <strong>한 번 더</strong> 있다. PC 에서 카드까지 가는 말은 두
 겹의 통역을 거친다.</p>
-<pre><code>[PC] ──AT 명령(글자)──▶ [모뎀 펌웨어] ──APDU(바이트)──▶ [SIM 카드 OS]
+<pre class="code w2"><code>[PC] ──AT 명령(글자)──▶ [모뎀 펌웨어] ──APDU(바이트)──▶ [SIM 카드 OS]
                               ▲                              │
                               └──────── 응답 (SW 90 00) ─────┘</code></pre>
 <p>실험에서 우리는 이 두 경로를 다 썼다. 카드를 처음 쓸 때는 모뎀이
@@ -2781,7 +2789,7 @@ ISO(International Organization for Standardization)의 스마트카드 표준
 와이어샤크로 처음 보는 프로토콜을 열었을 때처럼 머리 몇 바이트와
 몸통으로 나뉘는데, 명령 쪽은 고정 머리 네 바이트와 선택적인 데이터, 응답
 쪽은 선택적인 데이터와 꼬리 두 바이트다.</p>
-<pre><code>명령 APDU:   CLA  INS  P1  P2  [Lc  데이터...]  [Le]
+<pre class="code w2"><code>명령 APDU:   CLA  INS  P1  P2  [Lc  데이터...]  [Le]
               │    │    │   │    │                └ 받고 싶은 응답 길이
               │    │    │   │    └ 뒤에 붙는 데이터 길이
               │    │    └───┴ 명령마다 뜻이 다른 인자 두 바이트
@@ -2826,7 +2834,7 @@ RECORD</strong>/<strong>UPDATE RECORD</strong>(레코드 단위 읽기·쓰기),
 <p>우리가 실험에서 <strong>직접 손으로 친</strong> APDU 가 있다. 관리자
 비밀번호를 한 번도 시도하지 않고, 남은 시도 횟수만 알아내려고 친 것이다.
 알리 카드에서 데인 뒤라 sysmocom 카드에는 이것부터 했다.</p>
-<pre class="python"><code>from smartcard.System import readers
+<pre class="code w4" class="python"><code>from smartcard.System import readers
 c = readers()[0].createConnection(); c.connect()
 def apdu(l):
     d, s1, s2 = c.transmit(l)
@@ -2835,7 +2843,7 @@ print(&#39;MF  &#39;, apdu([0x00, 0xA4, 0x00, 0x0C, 0x02, 0x3F, 0x00]))   # 루�
 for name, p2 in [(&#39;PIN1&#39;,0x01), (&#39;PIN2&#39;,0x81), (&#39;ADM1&#39;,0x0A), (&#39;ADM2&#39;,0x0B), (&#39;ADM4&#39;,0x0D)]:
     print(name, apdu([0x00, 0x20, 0x00, p2]))                     # VERIFY, 데이터 없음</code></pre>
 <p>실제 출력은 이랬다.</p>
-<pre><code>MF     (&#39;&#39;, &#39;9000&#39;)
+<pre class="code"><code>MF     (&#39;&#39;, &#39;9000&#39;)
 PIN1   (&#39;&#39;, &#39;63C3&#39;)
 PIN2   (&#39;&#39;, &#39;63C3&#39;)
 ADM1   (&#39;&#39;, &#39;63C3&#39;)
@@ -2879,7 +2887,7 @@ Identifier, 파일 식별자)</strong> 라 한다. 우리가
 pySim-shell 은 실제로 프롬프트에 현재 경로를
 <code>pySIM-shell (00:MF/ADF.USIM/EF.IMSI)&gt;</code> 처럼 보여
 준다.</p>
-<pre><code>MF (3F00)  ─ 루트
+<pre class="code w2"><code>MF (3F00)  ─ 루트
 ├── EF.ICCID (2FE2)            카드 자체의 일련번호
 ├── EF.DIR (2F00)              이 카드에 든 응용 목록 ← 알리 카드에선 없었다
 ├── DF.GSM (7F20)              2G 시대의 디렉터리. 호환용으로 남아 있다
@@ -2932,7 +2940,7 @@ fixed)</strong> 파일은 같은 길이의 레코드가 여러 개 늘어선 것
 하는데, <code>stat</code> 의 결과라고 보면 된다. 우리가
 <code>select EF.IMSI</code> 했을 때 pySim 이 해석해 보여 준 속성의
 끝부분은 이랬다.</p>
-<pre class="json"><code>    &quot;file_identifier&quot;: &quot;6f07&quot;,
+<pre class="code" class="json"><code>    &quot;file_identifier&quot;: &quot;6f07&quot;,
     &quot;life_cycle_status_integer&quot;: &quot;operational_activated&quot;,
     &quot;security_attrib_referenced&quot;: {
         &quot;ef_arr_file_id&quot;: &quot;6f06&quot;,
@@ -2962,7 +2970,7 @@ fixed)</strong> 파일은 같은 길이의 레코드가 여러 개 늘어선 것
 "이것은 IMSI 이고 자릿수가 홀수다"라는 표시이고, 높은 반 바이트
 <code>0</code> 이 IMSI 의 첫 자리다. 15 자리가 첫 바이트의 반쪽과 나머지
 일곱 바이트에 들어간다.</p>
-<pre><code>바이트:  08 | 09 | 10 | 10 | 21 | 43 | 65 | 87 | 59
+<pre class="code"><code>바이트:  08 | 09 | 10 | 10 | 21 | 43 | 65 | 87 | 59
 뜻:      길이| 0+표시| 0 1| 0 1| 1 2| 3 4| 5 6| 7 8| 9 5
 IMSI:          0    01   01   12   34   56   78   95  → 001011234567895</code></pre>
 <p>왜 이렇게 했을까. 1980 년대 GSM 의 칩은 8 비트였고, 숫자를 반
@@ -3077,11 +3085,11 @@ IMS(전화·문자를 처리하는 별도 시스템. 8장)의 가입자 서버 P
 보낸다. 망은 자기도 같은 키와 같은 난수로 같은 계산을 미리 해 두었으니,
 두 결과가 같으면 "이 단말은 내가 아는 키를 가진 카드를 갖고 있다"고
 안다. 이 방식을 <strong>챌린지-응답(challenge-response)</strong> 이라
-하고, 이동통신에서 쓰는 구체적인 절차를 <strong>AKA(Authentication and
-Key Agreement, 인증과 키 합의)</strong>, 그 안의 계산 알고리즘을
-<strong>MILENAGE</strong> 라 한다. AKA 는 단말이 망을 확인하는 반대 방향
-검사와, 이후 암호화에 쓸 세션 키를 만드는 일까지 한 번에 한다. 6 장에서
-바이트 단위로 따라간다.</p>
+하고, 이동통신에서 쓰는 구체적인 절차를
+<strong>AKA</strong>(Authentication and Key Agreement, 인증과 키 합의),
+그 안의 계산 알고리즘을 <strong>MILENAGE</strong> 라 한다. AKA 는 단말이
+망을 확인하는 반대 방향 검사와, 이후 암호화에 쓸 세션 키를 만드는 일까지
+한 번에 한다. 6 장에서 바이트 단위로 따라간다.</p>
 <p>와이어샤크로 이 교환을 보면(6 장에서 실제로 본다) 전파에 나가는 것은
 난수와 계산 결과뿐이다. 둘 다 키 없이는 쓸모가 없다. 공격자가 단말을
 통째로 뺏어도 키는 못 꺼낸다. 카드 OS 가 읽기를 거부하도록 접근 규칙이
@@ -3111,7 +3119,7 @@ variant, 사업자 상수)</strong> 라는 128 비트 값을 섞는다. 같은 �
 소스(<code>pySim/sysmocom_sja2.py</code> 의
 <code>EF_USIM_AUTH_KEY</code>)를 열면 이 바이트의 비트 배치가 그대로
 나온다.</p>
-<pre class="python"><code>Algorithm = Enum(Nibble, milenage=4, sha1_aka=5, tuak=6, xor=15)
+<pre class="code w3" class="python"><code>Algorithm = Enum(Nibble, milenage=4, sha1_aka=5, tuak=6, xor=15)
 CfgByte = BitStruct(Padding(1), &#39;only_4bytes_res_in_3g&#39;/Flag,
                     &#39;sres_deriv_func_in_2g&#39;/Mapping(Bit, {1:0, 2:1}),
                     &#39;use_opc_instead_of_op&#39;/Mapping(Bit, {False:0, True:1}),
@@ -3133,16 +3141,16 @@ USIM 과 ISIM</h2>
 <strong>별도의 신원</strong>을 쓴다. 그래서 카드에 응용이 둘 있다.
 <strong>USIM(Universal SIM)</strong> 은 IMSI 와 키를 가지고 5G 코어에
 등록할 때 쓴다. <strong>ISIM(IMS SIM)</strong> 은 IMS 전용으로, 인증용
-비공개 ID 인 <strong>IMPI(IMS Private Identity, IMS 비공개 신원 — 로그인
-아이디에 해당)</strong>, 남이 나를 부르는 공개 주소인 <strong>IMPU(IMS
-Public Identity, IMS 공개 신원 — 이메일 주소처럼 여러 개 가질 수
-있다)</strong>, 그리고 홈 도메인 이름을 가진다. IMPU 는 SIP(인터넷
-전화의 신호 프로토콜. 8장) 주소 형식이라 <code>sip:</code> 이나
-<code>tel:</code> 로 시작하는 <strong>URI(Uniform Resource Identifier,
-웹 주소와 같은 형식의 자원 식별자)</strong> 다.</p>
+비공개 ID 인 <strong>IMPI</strong>(IMS Private Identity, IMS 비공개 신원
+— 로그인 아이디에 해당), 남이 나를 부르는 공개 주소인
+<strong>IMPU</strong>(IMS Public Identity, IMS 공개 신원 — 이메일
+주소처럼 여러 개 가질 수 있다), 그리고 홈 도메인 이름을 가진다. IMPU 는
+SIP(인터넷 전화의 신호 프로토콜. 8장) 주소 형식이라 <code>sip:</code>
+이나 <code>tel:</code> 로 시작하는 <strong>URI(Uniform Resource
+Identifier, 웹 주소와 같은 형식의 자원 식별자)</strong> 다.</p>
 <p>우리 카드를 처음 <code>pySim-read.py</code> 로 읽었을 때 ISIM 쪽
 출력은 이랬다.</p>
-<pre><code>Home Network Domain Name: Not available
+<pre class="code"><code>Home Network Domain Name: Not available
 IMS private user identity: Not available
 IMS public user identity:
     Not available
@@ -3177,7 +3185,7 @@ ISIM Service Table: 190208
 로 파일을 먹였다. 실수로 엔터를 잘못 쳐서 관리자 키를 두 번 보내는 일을
 막기 위해서다. 스크립트는 이랬다(키와 관리자 번호는 자리표시자로
 바꿨다).</p>
-<pre><code>verify_adm &lt;ADM1&gt;
+<pre class="code w4"><code>verify_adm &lt;ADM1&gt;
 select ADF.USIM
 select EF.IMSI
 update_binary_decoded {&quot;imsi&quot;:&quot;001011234567895&quot;}
@@ -3211,7 +3219,7 @@ IMSI 가 있었다. 우리는 망을 카드에 맞출지(망 설정을 999/70 �
 설정 바이트 <code>14</code>, 키 16 바이트, OPc 16 바이트, 합
 33(<code>0x21</code>) 바이트를 쓴 것이다. 이때 pySim 이 경고를 하나
 냈다.</p>
-<pre><code>WARNING: Data length (33) less than file size (67), leaving 34 unwritten bytes at the end of the file</code></pre>
+<pre class="code w3"><code>WARNING: Data length (33) less than file size (67), leaving 34 unwritten bytes at the end of the file</code></pre>
 <p>파일은 67 바이트인데 우리는 앞 33 바이트만 썼다는 뜻이다. 처음엔
 놀랐지만 소스의 구조체 정의(앞 절)가 33 바이트뿐이고, 나머지는 sysmocom
 이 다른 알고리즘(TUAK, 256 비트 키)용으로 남겨 둔 공간이다. 경고는
@@ -3249,7 +3257,7 @@ IMSI 가 있었다. 우리는 망을 카드에 맞출지(망 설정을 999/70 �
 번째 함정</h3>
 <p>카드를 리더에서 빼서 모뎀에 꽂고 AT 포트로 상태를 물었다. 답은
 이랬다.</p>
-<pre><code>AT+CPIN?     -&gt; +CME ERROR: 13
+<pre class="code"><code>AT+CPIN?     -&gt; +CME ERROR: 13
 AT+QCCID     -&gt; +CME ERROR: 13
 AT+CIMI      -&gt; +CME ERROR: 3</code></pre>
 <p><code>+CME ERROR: 13</code> 은 3GPP 표준(TS 27.007)의 오류 번호로
@@ -3258,7 +3266,7 @@ AT+CIMI      -&gt; +CME ERROR: 3</code></pre>
 모뎀은 <strong>켜질 때 한 번</strong> 카드를 읽고, 카드를 갈아 끼우는
 것(hot-swap)을 감지하지 않는다. 모뎀의 무선 기능을 껐다 켜는 명령으로
 재초기화하자 바로 살아났다.</p>
-<pre><code>AT+CFUN=0  -&gt; OK
+<pre class="code w2"><code>AT+CFUN=0  -&gt; OK
 AT+CFUN=1  -&gt; OK
 AT+CPIN?   -&gt; +CPIN: READY  +QUSIM: 1  +QIND: SMS DONE  +QIND: PB DONE  +CPIN: READY  OK</code></pre>
 <p><code>+QUSIM: 1</code> 은 "USIM 응용을 찾았다",
@@ -3368,8 +3376,8 @@ id="05-5g-코어와-서비스-기반-구조-조각들이-서로를-찾고-말하
 묶음이다</h2>
 <p>4 장에서 5G 코어가 "제어 평면을 역할별로 쪼갠 것"이라고 했다.
 쪼갰으면 서로 말을 해야 한다. 그 말하는 방식이 이 장의 주제이고, 이름은
-**SBI(Service Based Interface, 서비스 기반 인터페이스)**다. 이름이
-거창하지만 뜻은 독자가 매일 하는 일이다.</p>
+<strong>SBI</strong>(Service Based Interface, 서비스 기반 인터페이스)다.
+이름이 거창하지만 뜻은 독자가 매일 하는 일이다.</p>
 <p>각 조각(이제부터 <strong>NF, Network Function</strong> 이라 부른다)은
 <strong>HTTP/2 서버</strong>가 되어 자기가 할 수 있는 일을 REST API 로
 내놓는다. 다른 조각이 그 일이 필요하면 <strong>HTTP/2
@@ -3382,13 +3390,13 @@ Rx(IMS 가 정책 서버에 통화용 품질을 요청하는 선)처럼 말이�
 넣으려면 새 인터페이스를 정의해야 했다. 5G 는 "B 가 API 를 열어 두면
 누구든 부른다"로 바꿨다. 그래서 구성도가 선으로 이어진 그림이 아니라
 <strong>버스</strong>에 조각들이 매달린 그림으로 바뀌었다.</p>
-<pre><code>   AMF    SMF    PCF    AUSF    UDM    UDR    NSSF    BSF
+<pre class="code w4"><code>   AMF    SMF    PCF    AUSF    UDM    UDR    NSSF    BSF
     │      │      │      │       │      │      │       │
  ═══╧══════╧══════╧══════╧═══════╧══════╧══════╧═══════╧═══  SBI (HTTP/2, 이 배포에서는 TCP 7777)
                                  │
                                 NRF  ← 전화번호부</code></pre>
 <p>우리 로그에 찍힌 경로를 보면 이것이 정말 REST 라는 것이 보인다.</p>
-<pre><code>/nsmf-pdusession/v1/sm-contexts/{smContextRef}/modify
+<pre class="code"><code>/nsmf-pdusession/v1/sm-contexts/{smContextRef}/modify
 /npcf-policyauthorization/v1/app-sessions
 /nnrf-nfm/v1/nf-instances/{nfInstanceId}</code></pre>
 <p>경로의 첫 조각에 규칙이 있다. <code>n</code> 다음에 <strong>그 API 를
@@ -3422,7 +3430,7 @@ Function)</strong> 이고, Consul 이나 etcd, 쿠버네티스의 서비스
 <p>동작은 세 단계이고, 세 단계가 전부 우리 로그에 있다.</p>
 <p>실제 AMF 의 기동 로그(10월 13일 23:28 기동분, 시각과 소스 위치는
 줄였다)로 따라간다.</p>
-<pre><code>11.285  Setup NF EndPoint(addr) [172.22.0.12:7777]      ← NRF
+<pre class="code"><code>11.285  Setup NF EndPoint(addr) [172.22.0.12:7777]      ← NRF
 11.285  Setup NF EndPoint(addr) [172.22.0.35:7777]      ← SCP
 11.287  [5151d970-…] NF registered [Heartbeat:10s]
 11.289  [5120ef54-…] (NRF-profile-get) NF registered
@@ -3477,7 +3485,7 @@ PCF</strong> 가 담당하고 있나"를 기억한다. 이것이 필요한 이�
 그래서 BSF 에 IP 로 묻는다.</p>
 <p>🔎 지금 당신의 장비에서. NRF 가 전화번호부 노릇을 했는지는 AMF 쪽
 로그 한 줄로 안다.</p>
-<pre class="bash"><code>docker logs amf 2&gt;&amp;1 | grep -c &#39;NFInstance associated&#39;     # 5 가 나와야 한다</code></pre>
+<pre class="code w2" class="bash"><code>docker logs amf 2&gt;&amp;1 | grep -c &#39;NFInstance associated&#39;     # 5 가 나와야 한다</code></pre>
 <p>다섯이 안 되면 조각 하나가 아직 등록하지 못한 것이고, 그 상태로
 단말을 붙이면 9.7 절의 <code>504</code> 를 만난다. <strong>컨테이너가
 떴다는 것과 망이 준비됐다는 것은 다르다.</strong></p>
@@ -3496,7 +3504,7 @@ PCF</strong> 가 담당하고 있나"를 기억한다. 이것이 필요한 이�
 <code>+C5GREG: 1</code> 이 뜰 때까지, 코어 조각들이 <strong>어떤 순서로
 누구를 부르는지</strong>를 AMF 로그와 함께 따라간다. 이 순서를 알면
 어디서 멈췄는지를 로그 한 줄로 짚을 수 있다.</p>
-<pre><code> UE         gNB        AMF         AUSF       UDM/UDR      SMF       UPF       PCF
+<pre class="code w4"><code> UE         gNB        AMF         AUSF       UDM/UDR      SMF       UPF       PCF
  │─RRC 연결─▶│                                                              
  │─NAS Registration Request (SUCI)─▶│                                       
  │           │ N2 InitialUEMessage  │                                       
@@ -3618,7 +3626,7 @@ Management)</strong> 은 SMF 와의 대화로, PDU 세션을 만들고 바꾸고
 <strong>자기 일만 본다</strong>는 원칙이 끝까지 가는 것이다.</p>
 <p>🔎 지금 당신의 장비에서. NAS 가 기지국을 투명하게 지난다는 것은
 캡처에서 보인다.</p>
-<pre class="bash"><code># 표시 필터:  ngap           ← 기지국↔AMF 의 봉투
+<pre class="code" class="bash"><code># 표시 필터:  ngap           ← 기지국↔AMF 의 봉투
 # 표시 필터:  nas-5gs        ← 그 안에 든 단말↔코어의 내용</code></pre>
 <p>같은 패킷을 두 필터로 보면, 바깥은 기지국이 만든 것이고 안은 기지국이
 손대지 않은 것이다. 보안 모드 뒤부터 안이 안 보이는 것은 6.6 에서
@@ -3789,7 +3797,7 @@ SIP 프록시들을 통틀어 부르는 이름이고, 앞에 붙는 P·I·S 한 
 보안 설정이나 세션 쪽이다. <code>0x44</code>(reject)가 오면 그 안에
 <strong>사유 코드</strong>가 함께 온다.</p>
 <p>🔎 지금 당신의 장비에서.</p>
-<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w nas.pcap sctp        # N2 를 통째로 잡고
+<pre class="code" class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w nas.pcap sctp        # N2 를 통째로 잡고
 # 와이어샤크 표시 필터:  nas-5gs
 docker logs amf 2&gt;&amp;1 | grep -E &#39;\[gmm\]|\[gsm\]&#39; | tail -20</code></pre>
 <h2 id="56b-와이어샤크로-보기">5.6b 와이어샤크로 보기</h2>
@@ -3811,7 +3819,7 @@ SMF 를 부른 <code>POST /nsmf-pdusession/v1/sm-contexts</code> 와 JSON
 안에서 REST 몇 번으로 번지는지"가 눈에 들어온다.</p>
 <p>🔎 지금 당신의 장비에서. SBI 가 정말 HTTP/2 인지 패킷으로
 확인한다.</p>
-<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -A -c 40 &#39;tcp port 7777&#39; | grep -i -m5 &#39;:path\|:status\|nnrf\|namf&#39;</code></pre>
+<pre class="code w4" class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -A -c 40 &#39;tcp port 7777&#39; | grep -i -m5 &#39;:path\|:status\|nnrf\|namf&#39;</code></pre>
 <p><code>:path</code> 와 <code>:status</code> 는 HTTP/2 의 의사
 헤더(pseudo-header)다. REST 경로가 <code>/nnrf-nfm/...</code>,
 <code>/namf-comm/...</code> 처럼 <strong>조각 이름으로 시작</strong>하는
@@ -4038,7 +4046,7 @@ SUPI 를 숨긴 형태이고, 전파에 나가는 것은 항상 이것이다.
 다음부터는 이것으로 부른다. 4G 의 GUTI, 2G 의 TMSI(Temporary Mobile
 Subscriber Identity)의 후손이다. 세션 쿠키와 같다.</p>
 <p>SUCI 의 구조는 하이픈으로 나뉜 여덟 조각이다.</p>
-<pre><code>suci - 0 - 001 - 01 - 0 - 0 - 0 - 1234567895
+<pre class="code w2"><code>suci - 0 - 001 - 01 - 0 - 0 - 0 - 1234567895
        │   │     │    │   │   │   └ 암호화 결과 (또는 평문 MSIN)
        │   │     │    │   │   └ 어느 공개키로 암호화했나 (키 ID)
        │   │     │    │   └ 보호 방식: 0 = 안 함, 1 = ECIES 곡선 A, 2 = ECIES 곡선 B
@@ -4066,14 +4074,14 @@ SNI 를 떠올리면 된다. 그 필드가 평문이어서 암호화된 통신�
 취약하다. 설계와 배포는 다른 문제라는 예다.</p>
 <p>🔎 지금 당신의 장비에서. 전파에 나간 것이 IMSI 인지 SUCI 인지, 그리고
 그것이 암호화됐는지는 코어 로그에 그대로 찍힌다.</p>
-<pre class="bash"><code>docker logs amf 2&gt;&amp;1 | grep -o &#39;suci-[0-9-]*&#39; | head -3</code></pre>
+<pre class="code" class="bash"><code>docker logs amf 2&gt;&amp;1 | grep -o &#39;suci-[0-9-]*&#39; | head -3</code></pre>
 <p>나온 값의 <strong>다섯 번째 조각</strong>을 보라. <code>0</code> 이면
 보호를 안 한 것이고, 뒤에 붙은 번호가 가입자 일련번호
 <strong>평문</strong>이다. 시험망이라 그래도 되지만, 그 자리에
 <code>1</code> 이나 <code>2</code> 가 찍히는 망이 상용망이다.</p>
 <h2 id="64-aka-한-번의-왕복으로-네-가지를-끝내기">6.4 AKA: 한 번의
 왕복으로 네 가지를 끝내기</h2>
-<pre><code>                 SIM / 단말                                    AMF / AUSF / UDM
+<pre class="code w3"><code>                 SIM / 단말                                    AMF / AUSF / UDM
                      │                                                 │
                      │                       UDM: 난수 RAND 생성, SQN 을 하나 올림
                      │                       UDM: Ki, OPc, RAND, SQN 으로 MILENAGE 계산
@@ -4183,7 +4191,7 @@ RAND, AUTN, RES 셋뿐이고 셋 다 Ki 없이는 쓸모가 없다.</p>
 </table>
 <p>🔎 지금 당신의 장비에서. 이 왕복은 <strong>두 곳</strong>에서 볼 수
 있고, 둘을 같이 보는 것이 중요하다.</p>
-<pre class="bash"><code>docker logs amf 2&gt;&amp;1 | grep -iE &quot;authentication (request|response)&quot; | tail -4
+<pre class="code w2" class="bash"><code>docker logs amf 2&gt;&amp;1 | grep -iE &quot;authentication (request|response)&quot; | tail -4
 docker logs pyhss 2&gt;&amp;1 | grep -iE &quot;rand|autn|xres&quot; | tail -6</code></pre>
 <p>망 쪽 로그는 "보냈다/받았다"만 말한다. <strong>그 값이 맞는지는
 카드에게 직접 물어야</strong> 알 수 있고, 그 방법이 6.5 의 끝에
@@ -4199,13 +4207,13 @@ RES, CK, IK, AK, 그리고 재동기에만 쓰는 MAC-S(카드가 재동기 요�
 AES 호출 여섯 번과 XOR, 비트 회전으로 끝난다.</p>
 <p>공통 재료를 먼저 만든다. RAND 와 OPc 를 XOR 한 것을 Ki 로 AES
 암호화하면 <strong>TEMP</strong> 가 나온다.</p>
-<pre><code>TEMP = AES_Ki( RAND ⊕ OPc )</code></pre>
+<pre class="code"><code>TEMP = AES_Ki( RAND ⊕ OPc )</code></pre>
 <p>그 다음 함수가 다섯 개인데 모양이 전부 같다. TEMP 와 OPc 를 XOR 하고,
 정해진 비트 수만큼 회전시키고, 정해진 상수를 XOR 하고, Ki 로 AES 를 한
 번 더 돌리고, OPc 를 다시 XOR 한다. 함수마다 회전 양(r1~r5)과
 상수(c1~c5)만 다르다. 우리 코드의 <code>R=[64,0,32,64,96]</code> 과
 <code>C=[…]</code> 가 그 상수다.</p>
-<pre><code>f1 (MAC-A):  IN1 = SQN‖AMF‖SQN‖AMF (128bit)
+<pre class="code w4"><code>f1 (MAC-A):  IN1 = SQN‖AMF‖SQN‖AMF (128bit)
              OUT1 = AES_Ki( TEMP ⊕ rot(IN1 ⊕ OPc, r1) ⊕ c1 ) ⊕ OPc  →  앞 64bit 가 MAC-A, 뒤 64bit 가 MAC-S(재동기용)
 
 f2 (RES), f5 (AK):   OUT2 = AES_Ki( rot(TEMP ⊕ OPc, r2) ⊕ c2 ) ⊕ OPc
@@ -4214,7 +4222,7 @@ f3 (CK):             OUT3 = 같은 모양, r3·c3  →  128bit 전부
 f4 (IK):             OUT4 = 같은 모양, r4·c4  →  128bit 전부
 f5* (AK*):           OUT5 = 같은 모양, r5·c5  →  앞 48bit (재동기용)</code></pre>
 <p>우리 코드가 정확히 이 모양이다.</p>
-<pre class="python"><code>def f2345(ki, opc, rand):
+<pre class="code w2" class="python"><code>def f2345(ki, opc, rand):
     t = aes(ki, xor(rand, opc))                       # TEMP
     o = [xor(aes(ki, xor(rot(xor(t, opc), R[i]), C[i])), opc) for i in range(1, 5)]
     return o[0][8:], o[1], o[2], o[0][:6]             # RES, CK, IK, AK</code></pre>
@@ -4224,7 +4232,7 @@ HMAC 과 비교해 다른 점은 출력이 여섯 갈래라는 것, 그리고 �
 가 모든 단계에 섞인다는 것이다. OPc 가 섞이기 때문에 같은 Ki, 같은 RAND
 라도 사업자가 다르면 결과가 다르다.</p>
 <p>우리가 "망 인증 OK" 를 찍은 코드는 카드가 하는 일 그대로다.</p>
-<pre class="python"><code>RES, CK, IK, AK = f2345(KI, OPC, RAND)
+<pre class="code w2" class="python"><code>RES, CK, IK, AK = f2345(KI, OPC, RAND)
 sqn = xor(AUTN[:6], AK)            # AUTN 앞 48비트에서 가리개를 벗겨 SQN 복원
 amf = AUTN[6:8]
 mac = f1(KI, OPC, RAND, sqn, amf)  # 우리가 다시 계산한 MAC-A
@@ -4241,7 +4249,7 @@ PyHSS 가 로그에 찍은 CK/IK 와 바이트가 <strong>정확히 일치</stro
 <strong>직접 돌려서 맞춰 보는 것</strong>이다. 이 책의
 <code>tools/milenage.py</code> 는 외부 라이브러리 없이 openssl 만
 쓴다.</p>
-<pre class="bash"><code>python3 -c &quot;
+<pre class="code w3" class="bash"><code>python3 -c &quot;
 import sys; sys.path.insert(0,&#39;tools&#39;)
 from milenage import f2345
 KI  = bytes.fromhex(&#39;&lt;KI&gt;&#39;)
@@ -4260,7 +4268,7 @@ RES* 와 TLS 같은 키 파생</h2>
 <strong>RES*</strong>(RES 스타)를 보낸다. RES 에 <strong>"지금 어느
 망에서 인증하는가"</strong> 라는 문자열을 섞어 한 번 더 해시한
 것이다.</p>
-<pre><code>RES* = KDF( 키 = CK‖IK,  FC = 0x6B,  P0 = &quot;5G:mnc001.mcc001.3gppnetwork.org&quot;,  P1 = RAND,  P2 = RES )  의 하위 128bit
+<pre class="code w4"><code>RES* = KDF( 키 = CK‖IK,  FC = 0x6B,  P0 = &quot;5G:mnc001.mcc001.3gppnetwork.org&quot;,  P1 = RAND,  P2 = RES )  의 하위 128bit
        (KDF 는 HMAC-SHA-256. 각 Pn 뒤에 그 길이 2 바이트가 붙는다. TS 33.501 Annex A.4)</code></pre>
 <p>왜 섞는가. 로밍 사기 때문이다. 4G 에서는 인증 응답을 <strong>방문한
 망</strong>이 혼자 검사했고, 홈 사업자는 "그 가입자가 정말 거기서
@@ -4279,7 +4287,7 @@ RES* 와 TLS 같은 키 파생</h2>
 있다. 그래서 뿌리에서 <strong>단방향 함수(KDF)</strong> 로 자식 키를
 만들고, 자식에서 부모를 되짚을 수 없게 한다. 그러면 자식 키만 받은
 장비는 자기 몫만 푼다.</p>
-<pre><code>CK, IK
+<pre class="code w2"><code>CK, IK
   └─ K_AUSF
        └─ K_SEAF   (서빙망의 앵커 키)
             └─ K_AMF
@@ -4305,7 +4313,7 @@ RES* 와 TLS 같은 키 파생</h2>
 받는다.</p>
 <p>🔎 지금 당신의 장비에서. 키 계층이 실제로 섰는지는 <strong>갑자기 안
 보이게 되는 것</strong>으로 확인한다.</p>
-<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w nas.pcap sctp          # 등록 한 번을 통째로
+<pre class="code" class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w nas.pcap sctp          # 등록 한 번을 통째로
 # 와이어샤크 표시 필터: nas-5gs</code></pre>
 <p><code>Security mode command</code>(5.6a 의 <code>0x5D</code>)
 전까지는 NAS 필드가 전부 풀려 보이고, <strong>그 뒤부터는 안이 안
@@ -4346,7 +4354,7 @@ IND(index)라는 5 비트 인덱스로 고른다. 5G 코어, IMS, 로밍 망이 
 <p>이 절이 이 장에서 가장 자주 쓰이는 자리다. 가입자 DB 가
 <strong>둘</strong>이므로(mongo 와 PyHSS) 양쪽을 같은 값으로 올려
 둔다.</p>
-<pre class="bash"><code>docker exec mongo mongosh --quiet open5gs --eval \
+<pre class="code w4" class="bash"><code>docker exec mongo mongosh --quiet open5gs --eval \
  &#39;db.subscribers.updateOne({imsi:&quot;&lt;IMSI&gt;&quot;},{$set:{&quot;security.sqn&quot;:NumberLong(&quot;64&quot;)}})&#39;
 curl -s -X PATCH http://127.0.0.1:8080/auc/&lt;id&gt; -H &#39;Content-Type: application/json&#39; -d &#39;{&quot;sqn&quot;:64}&#39;</code></pre>
 <p>🔎 지금 당신의 장비에서 — <strong>그리고 이것이 "Ki 가 제대로
@@ -4355,7 +4363,7 @@ curl -s -X PATCH http://127.0.0.1:8080/auc/&lt;id&gt; -H &#39;Content-Type: appl
 길이 없다. 단말에 꽂아 보고 "안 붙네" 하는 것보다 훨씬 빠르고 원인이
 분명하다.</p>
 <p>먼저 임의의 RAND·SQN 으로 기대값을 계산한다.</p>
-<pre class="bash"><code>python3 - &lt;&lt;&#39;PY&#39;
+<pre class="code w3" class="bash"><code>python3 - &lt;&lt;&#39;PY&#39;
 import sys; sys.path.insert(0, &#39;tools&#39;)
 from milenage import f1, f2345, xor
 ki, opc = bytes.fromhex(&#39;&lt;KI&gt;&#39;), bytes.fromhex(&#39;&lt;OPC&gt;&#39;)
@@ -4368,7 +4376,7 @@ print(&#39;AUTN&#39;, (xor(sqn, ak) + amf + maca).hex())
 print(&#39;기대 RES&#39;, res.hex(), &#39;\n기대 CK &#39;, ck.hex(), &#39;\n기대 IK &#39;, ik.hex())
 PY</code></pre>
 <p>그 값을 카드에 넣는다.</p>
-<pre class="bash"><code>printf &#39;select ADF.USIM\nauthenticate &lt;RAND&gt; &lt;AUTN&gt;\n&#39; &gt; /tmp/auth.script
+<pre class="code w2" class="bash"><code>printf &#39;select ADF.USIM\nauthenticate &lt;RAND&gt; &lt;AUTN&gt;\n&#39; &gt; /tmp/auth.script
 sudo python3 pySim-shell.py -p0 --script /tmp/auth.script</code></pre>
 <p>카드가 돌려준 <code>res</code>·<code>ck</code>·<code>ik</code> 가
 계산값과 <strong>같으면 Ki 와 OPc 가 정확히 들어간 것</strong>이다.</p>
@@ -4422,7 +4430,7 @@ SIP 메시지를 보호한다(TS 33.203). 우리 소프트 UA 는 IPsec 없이 �
 로 등록했고 우리 P-CSCF 설정이 그것을 허용했다 [검증 필요: P-CSCF 의
 IPsec 사용 여부 설정].</p>
 <p>🔎 지금 당신의 장비에서. IMS 쪽 인증은 SIP 헤더에 그대로 보인다.</p>
-<pre class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; reg-a
+<pre class="code" class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; reg-a
 docker logs pcscf 2&gt;&amp;1 | grep -iE &quot;AKAv1-MD5|nonce|401&quot; | tail -5</code></pre>
 <p><code>401</code> 과 함께 오는 <code>nonce</code> 가 <strong>RAND +
 AUTN 을 base64 로 담은 것</strong>이고, 단말이 돌려주는
@@ -4430,7 +4438,7 @@ AUTN 을 base64 로 담은 것</strong>이고, 단말이 돌려주는
 MILENAGE 가 전파 구간(NAS)과 IMS(SIP) 두 곳에서 각각 한 번씩 돈다는 것을
 여기서 눈으로 확인한다.</p>
 <h2 id="68a-와이어샤크로-보기">6.8a 와이어샤크로 보기</h2>
-<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w reg.pcap sctp     # 등록 한 번을 잡고
+<pre class="code" class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w reg.pcap sctp     # 등록 한 번을 잡고
 # 표시 필터:  nas-5gs.mm.message_type == 0x56</code></pre>
 <p>5 장의 <code>reg.pcap</code> 에서 필터
 <code>nas-5gs.mm.message_type == 0x56</code> 을 치면 Authentication
@@ -4616,7 +4624,7 @@ SST 1 은 일반 광대역(eMBB)이고 SD <code>0xffffff</code> 는 "세부 구�
 없음"이다. 우리 가입자 설정의 <code>sst: 1</code> 이 여기 나온
 것이다.</p>
 <p>🔎 지금 당신의 장비에서. 이 순서는 SMF 로그에 그대로 찍힌다.</p>
-<pre class="bash"><code>docker logs smf 2&gt;&amp;1 | grep -iE &quot;session|ipv4|pfcp&quot; | tail -10</code></pre>
+<pre class="code" class="bash"><code>docker logs smf 2&gt;&amp;1 | grep -iE &quot;session|ipv4|pfcp&quot; | tail -10</code></pre>
 <p>세션 생성 → IP 할당 → PFCP 규칙 설치가 순서대로 보이면 7.3 의 그림이
 돈 것이다. 중간에서 멈추면 그 줄이 가리키는 조각부터 본다.</p>
 <h2 id="74-ip-는-누가-주는가-smf-가-dhcp-다-단-dhcp-프로토콜-없이">7.4
@@ -4694,8 +4702,8 @@ Endpoint ID)</strong> 로 구분한다. 차이는 VXLAN 안에 이더넷 프레�
 구간이 광케이블 수십 킬로미터라서 보통 IPsec 으로 다시 싼다. 실험실은
 도커 브리지 안이라 안 쌌다.</p>
 <p>기지국과 UPF 는 터널을 <strong>누가 세워 주는가.</strong> SMF 다. SMF
-가 UPF 에게 규칙을 내리는 프로토콜이 <strong>PFCP(Packet Forwarding
-Control Protocol)</strong>, 즉 N4 다. UDP 8805 를 쓴다. 독자가 아는
+가 UPF 에게 규칙을 내리는 프로토콜이 <strong>PFCP</strong>(Packet
+Forwarding Control Protocol), 즉 N4 다. UDP 8805 를 쓴다. 독자가 아는
 것으로는 <strong>OpenFlow</strong> 와 같은 자리다. 컨트롤러가 스위치에
 "이런 패킷은 이렇게 처리해라"를 설치하듯, SMF 가 UPF 에 규칙을 설치한다.
 규칙은 네 종류로 쪼개져 있다. 어떤 패킷인지 고르는 <strong>PDR(Packet
@@ -4727,7 +4735,7 @@ iptables 의 POSTROUTING 을 지나고, 거기에 MASQUERADE 규칙이 있어서
 <code>10.45.0.3</code> 행으로 ogstun 에 보내면 UPF 가 읽어서 GTP 로 싸고
 기지국으로 보낸다.</p>
 <p>그 NAT 규칙을 그대로 옮기면 이렇다.</p>
-<pre><code>-A POSTROUTING -s 10.45.0.0/16 ! -d 172.22.0.21/32 ! -o ogstun -j MASQUERADE</code></pre>
+<pre class="code"><code>-A POSTROUTING -s 10.45.0.0/16 ! -d 172.22.0.21/32 ! -o ogstun -j MASQUERADE</code></pre>
 <p>읽으면 "10.45.x 에서 나가는 패킷은, <strong>P-CSCF(172.22.0.21) 로
 가는 것만 빼고</strong>, 소스를 UPF 주소로 바꿔라" 다. 세 번째 의문이
 여기서 풀린다. 왜 P-CSCF 만 예외인가. <strong>IMS 는 단말의 진짜 IP 를
@@ -4744,7 +4752,7 @@ iptables 의 POSTROUTING 을 지나고, 거기에 MASQUERADE 규칙이 있어서
 NAT 규칙과 UPF 의 라우트를 가장 먼저 본다. 두 DNN 의 서브넷이 각각 어느
 TUN 에 붙어 있고 어느 규칙을 타는지가 거기 다 있다.</p>
 <p>🔎 지금 당신의 장비에서. UPF 안을 직접 들여다본다.</p>
-<pre class="bash"><code>docker exec upf ip -br addr show ogstun      # 터널을 벗은 뒤의 장치. 10.45.0.1 이 보여야 한다
+<pre class="code w3" class="bash"><code>docker exec upf ip -br addr show ogstun      # 터널을 벗은 뒤의 장치. 10.45.0.1 이 보여야 한다
 docker exec upf iptables -t nat -S | grep MASQUERADE</code></pre>
 <p>둘째 줄의 NAT 규칙에 <strong>P-CSCF 주소
 예외</strong>(<code>! -d 172.22.0.21</code>)가 들어 있는지 본다. 그 한
@@ -4757,7 +4765,7 @@ docker exec upf iptables -t nat -S | grep MASQUERADE</code></pre>
 같은 종류의 함정이고, 여기서는 그 값이 <strong>서브넷
 마스크</strong>다.</p>
 <p>QMI 로 세션을 올리면 모뎀이 이렇게 알려 준다.</p>
-<pre><code>IPv4 address: 10.45.0.3   subnet mask: 255.255.255.248 (/29)   gateway: 10.45.0.4</code></pre>
+<pre class="code w2"><code>IPv4 address: 10.45.0.3   subnet mask: 255.255.255.248 (/29)   gateway: 10.45.0.4</code></pre>
 <p>그런데 SMF 는 <code>10.45.0.3</code> <strong>하나만</strong> 줬다.
 NAS 의 세션 수락 메시지에는 IP 와 DNS 만 있지 마스크와 게이트웨이는
 없다. 그러면 <code>/29</code> 와 <code>10.45.0.4</code> 는 어디서
@@ -4961,7 +4969,7 @@ SMF 가 UPF 에게 규칙을 설치할 때 쓰는 세션 손잡이이고, GTP-U 
 </tbody>
 </table>
 <p>🔎 지금 당신의 장비에서. 터널이 실제로 도는지는 한 줄로 확인된다.</p>
-<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n &#39;udp port 2152&#39; -c 5     # GTP-U. 포트 2152 가 터널이다
+<pre class="code w3" class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n &#39;udp port 2152&#39; -c 5     # GTP-U. 포트 2152 가 터널이다
 docker exec upf ip -br addr show ogstun               # 터널을 벗은 뒤의 장치</code></pre>
 <p>첫 줄에 패킷이 흐르고 둘째 줄에 <code>10.45.0.1</code> 이 떠 있으면,
 7.5 의 그림이 당신 장비에서 실제로 돌고 있는 것이다.</p>
@@ -5173,7 +5181,7 @@ IMS 의 P·I·S 가 각각 그 자리다. <strong>P</strong>-CSCF 가 엣지(단
 서버(가입자별 규칙 iFC 를 들고 있다)다. 한 덩어리로 만들지 않은 이유도
 웹과 같다 — 바깥에 노출되는 것과 가입자 데이터를 쥔 것을 <strong>같은
 프로세스에 두지 않는다.</strong></p>
-<pre><code>                        [HSS / PyHSS]  ← 가입자 DB + 인증 벡터 (Diameter Cx)
+<pre class="code w3"><code>                        [HSS / PyHSS]  ← 가입자 DB + 인증 벡터 (Diameter Cx)
                           ▲        ▲
                      UAR  │        │  MAR, SAR, LIR
  [단말] ──SIP──▶ [P-CSCF] ──▶ [I-CSCF] ──▶ [S-CSCF] ──▶ (착신 S-CSCF → P-CSCF → 단말)
@@ -5228,7 +5236,7 @@ RES 를 얻고, Digest 응답을 넣은 REGISTER 를 다시 보낸다. S-CSCF �
 를 보낸다. 그리고 iFC 가 시키는 응용서버들에 "이 가입자 등록됐다"는
 3rd-party REGISTER 를 보낸다.</p>
 <p>우리가 받은 200 OK 의 두 헤더가 이 흐름의 결과다.</p>
-<pre><code>P-Associated-URI: &lt;sip:821099994531@ims.mnc001.mcc001.3gppnetwork.org&gt;, &lt;tel:821099994531&gt;, &lt;sip:001011234567895@…&gt;
+<pre class="code w4"><code>P-Associated-URI: &lt;sip:821099994531@ims.mnc001.mcc001.3gppnetwork.org&gt;, &lt;tel:821099994531&gt;, &lt;sip:001011234567895@…&gt;
 Service-Route: &lt;sip:orig@scscf.ims.mnc001.mcc001.3gppnetwork.org:6060;lr&gt;</code></pre>
 <p><strong>P-Associated-URI</strong> 는 "당신은 이 세 이름으로
 불린다"다. 전화번호 형식의 sip 주소, <code>tel:</code> 주소, 그리고 IMSI
@@ -5365,7 +5373,7 @@ alt="차폐함 안 갤럭시 S22+ 의 통화 화면. 통화 시간 00:07, 상대
 역방향이 아예 안 열린 것도 latch 가 완성되지 않아서였다.</p>
 <p>🔎 지금 당신의 장비에서. 미디어가 실제로 rtpengine 을 지나는지
 본다.</p>
-<pre class="bash"><code>docker logs rtpengine 2&gt;&amp;1 | tail -20</code></pre>
+<pre class="code" class="bash"><code>docker logs rtpengine 2&gt;&amp;1 | tail -20</code></pre>
 <p>스트림이 쌍으로 잡히고 양방향 패킷 수가 올라가면 통화가 성립한
 것이다. 한쪽만 올라가면 latch 가 안 된 것이고, 원인은 대개 ACK 나 Route
 set 이다(18 장 사례 9).</p>
@@ -5374,7 +5382,7 @@ set 이다(18 장 사례 9).</p>
 <p>영상통화는 새 프로토콜이 아니다. <strong>INVITE 의 SDP 에 미디어 줄이
 하나 더 붙은 것</strong>이 전부다. 우리 도구를 <code>VIDEO=1</code> 로
 돌리면 오디오 줄 아래에 이것이 붙는다.</p>
-<pre><code>m=video 40002 RTP/AVP 96
+<pre class="code"><code>m=video 40002 RTP/AVP 96
 a=rtpmap:96 H264/90000</code></pre>
 <p><code>96</code> 은 8.8a 의 RTP 해부에서 본 동적 payload type 이고,
 <code>H264/90000</code> 은 "이 번호는 H.264 영상이며 타임스탬프 눈금은
@@ -5401,7 +5409,7 @@ rtpengine 중계, 같은 PCF 질의. 실물 단말에 걸 때 음성에서 넘�
 초를 통화했을 때는 오디오 399/399, 비디오 133/133 으로 양방향이 깔끔하게
 맞았다 [측정] (7.8). 그런데 차폐함 안의 실물 단말에 걸었을 때는 이렇게
 나왔다.</p>
-<pre><code>오디오  송신 996 / 수신 129
+<pre class="code"><code>오디오  송신 996 / 수신 129
 비디오  송신 332 / 수신 2697        (20 초)</code></pre>
 <p>둘 다 [측정] 이다.</p>
 <p>비디오 수신 2697 은 초당 약 135 패킷이다. <strong>단말이 자기 카메라
@@ -5434,7 +5442,7 @@ alt="연결된 영상통화. 00:06, 화면 가운데에 &quot;상대방 영상 �
 <p>실물 단말이 영상통화를 받아 주는지는 <strong>등록할 때 이미
 드러난다.</strong> 단말이 REGISTER 의 Contact 헤더에 자기 능력을
 광고하기 때문이다.</p>
-<pre><code>sip:821099994533@10.46.0.15:6200
+<pre class="code w2"><code>sip:821099994533@10.46.0.15:6200
   +g.3gpp.icsi-ref=&quot;urn:urn-7:3gpp-service.ims.icsi.mmtel&quot;  audio  video  +g.3gpp.smsip</code></pre>
 <p><code>audio</code> 와 <code>video</code> 가 미디어 능력이고
 <code>+g.3gpp.smsip</code> 가 "IMS 로 문자를 받을 수 있다"는
@@ -5527,7 +5535,7 @@ alt="문자 목록. +001011234567895 에서 온 &quot;TEST&quot; 한 통" /></p>
 <code>+g.3gpp.smsip</code> 를 광고했는지) 보고 OTT 형식으로 내려 준
 것이다. 한글 본문이 그대로 도착했다.</p>
 <p>🔎 지금 당신의 장비에서. 문자는 SMSC 를 반드시 거친다.</p>
-<pre class="bash"><code>docker logs smsc 2&gt;&amp;1 | tail -20</code></pre>
+<pre class="code" class="bash"><code>docker logs smsc 2&gt;&amp;1 | tail -20</code></pre>
 <p><code>202 Accepted</code> 가 보이면 받아 둔 것이고, 그 뒤 전달 줄이
 없으면 큐에 남은 것이다(8.7 의 벽 ⑦). 길이에서 막히면
 <code>exceeds maximum length</code> 가 찍힌다.</p>
@@ -5556,7 +5564,7 @@ URL</strong>(<code>X-Mms-Content-Location</code>)과 크기와 발신자뿐이�
 PDU 조립(WSP 푸시 헤더 + MMS 인캡슐레이션)과 본문을 내려 주는 HTTP
 서버를 한 도구가 같이 한다. 알림을 실어 보내는 것은
 <code>tools/ims_sms_mt.py</code> 의 WAP 푸시 모드다.</p>
-<pre class="bash"><code># 본문 서버 (같은 TID 를 알림과 맞춘다)
+<pre class="code w3" class="bash"><code># 본문 서버 (같은 TID 를 알림과 맞춘다)
 MMS_TID=T1 python3 tools/mmsc.py serve 0.0.0.0 8099 image.jpg &lt;A_MSISDN&gt; &lt;B_MSISDN&gt; &quot;제목&quot;
 # 알림 전송 — URL 경로를 매번 다르게 (사례 21)
 PUSH=$(MMS_TID=T1 python3 tools/mmsc.py notify &quot;http://&lt;호스트&gt;:8099/m/$(date +%s)&quot; &lt;본문크기&gt; &lt;A_MSISDN&gt;)
@@ -5618,7 +5626,7 @@ SIP 메시지, Diameter 헤더, RTP 헤더</h2>
 <code>10.45.0.6</code>)의 INVITE 가 P-CSCF(<code>172.22.0.21</code>)를
 지나 S-CSCF(<code>172.22.0.20</code>)로 가는 순간이고, UDP 페이로드 1220
 바이트다.</p>
-<pre><code>INVITE sip:001011234567896@ims.mnc001.mcc001.3gppnetwork.org SIP/2.0     ← 요청 줄: 메서드, Request-URI(착신), 버전
+<pre class="code w4"><code>INVITE sip:001011234567896@ims.mnc001.mcc001.3gppnetwork.org SIP/2.0     ← 요청 줄: 메서드, Request-URI(착신), 버전
 Route: &lt;sip:orig@scscf.ims.mnc001.mcc001.3gppnetwork.org:6060;lr&gt;          ← 단말이 등록 때 받은 Service-Route(8.4)를 넣은 것
 Record-Route: &lt;sip:mo@172.22.0.21;lr=on;ftag=pdvxg2d0qf;rm=8;did=161.25f2&gt; ← P-CSCF 가 쌓음. &quot;다이얼로그 안 요청은 나를 거쳐라&quot;
 Via: SIP/2.0/UDP 172.22.0.21;branch=z9hG4bK891c.42e4…                     ← P-CSCF 가 쌓음 (응답이 되돌아올 길)
@@ -5662,7 +5670,7 @@ Kamailio 가 다이얼로그를 다시 찾으려고 자기 Record-Route 에 심�
 를 홉마다 재 보면: 벽 ②와 ③의 실제 모습</h3>
 <p>같은 캡처에서 이 통화의 패킷만 시간순으로 뽑으면 벽 ②와 ③이 한 화면에
 나온다. (마지막 칸은 UDP 페이로드 바이트, 시각은 초 단위 끝자리.)</p>
-<pre><code>:18  P-CSCF(.21) → S-CSCF(.20)   INVITE  1220   ← 위의 패킷
+<pre class="code w4"><code>:18  P-CSCF(.21) → S-CSCF(.20)   INVITE  1220   ← 위의 패킷
 :18  S-CSCF(.20) → I-CSCF(.19)   INVITE  1317   ← S-CSCF(A)가 발신 처리 후 I-CSCF 로. 여기서 1300 을 넘었다
 :18  I-CSCF(.19) → S-CSCF(.20)   INVITE  1465   ← LIR 로 B 의 S-CSCF 를 찾아 넘김 (LIR 은 성공했다)
 :18  S-CSCF(.20) → P-CSCF(.21)   INVITE  1636   ← S-CSCF(B)가 B 의 등록 경로로. Request-URI 가 B 의 Contact 로 바뀜
@@ -5740,12 +5748,12 @@ TCP 였다.</strong> 이 표 한 장이 벽 ②와 ③을 같이 설명한다.</
 숫자 하나만 보면 그 왕복이 됐는지 안 됐는지 갈린다.</p>
 <p>🔎 지금 당신의 장비에서. 문자열 AVP 는 평문이라
 <code>tcpdump -A</code> 로도 읽힌다.</p>
-<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -A &#39;tcp port 3875&#39; | grep -a -o -E &quot;(UAR|MAR|SAR|LIR)|scscf[^ ]*|2001&quot;</code></pre>
+<pre class="code w3" class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -A &#39;tcp port 3875&#39; | grep -a -o -E &quot;(UAR|MAR|SAR|LIR)|scscf[^ ]*|2001&quot;</code></pre>
 <p><code>LIR</code> 가 나가고 <code>scscf…</code> 가 돌아오면 그 번호의
 담당 서버를 찾은 것이다. 18 장 사례 23 의 <code>500</code> 은 바로 이
 자리에서 <strong>찾을 IMPU 가 없어서</strong> 생겼다.</p>
 <h3 id="rtp-헤더-rfc-3550">RTP 헤더 (RFC 3550)</h3>
-<pre><code>  0                   1                   2                   3
+<pre class="code"><code>  0                   1                   2                   3
   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
  +-+-+-+-+-+-+-+-+-+-------------+-------------------------------+
  |V=2|P|X|  CC   |M|     PT      |          일련번호 (16)           |
@@ -5821,7 +5829,7 @@ A-law), <code>96~127</code> 동적(SDP 의 rtpmap 이 정의). 우리 비디오�
 분석해 보지는 않았다. 캡처해서 열면 같은 통화가
 <code>Lost: 3 (1.5%)</code> 같은 줄로 보일 것이다.</p>
 <h2 id="88b-와이어샤크로-보기">8.8b 와이어샤크로 보기</h2>
-<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w call.pcap &#39;udp port 5060 or tcp port 5060 or tcp port 5062 or udp portrange 40000-40100&#39;
+<pre class="code w4" class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w call.pcap &#39;udp port 5060 or tcp port 5060 or tcp port 5062 or udp portrange 40000-40100&#39;
 # 표시 필터:  sip           ← 시그널링
 #            rtp            ← 미디어
 #            diameter       ← HSS 왕복(포트 3875)</code></pre>
@@ -6021,7 +6029,7 @@ set 은 §12.1.2, AKAv1-MD5 는 RFC 3310. 모든 코드·로그·캡처는 이 �
 PyHSS 같은 이름들이 머릿속에 지도처럼 놓였다면, 이 장은 그 지도를
 <strong>실제 기계 위에 까는 작업</strong>이다. 다 끝나면 책상 위에 이런
 것이 있게 된다.</p>
-<pre><code> ┌─────────────────────────── 리눅스 호스트 한 대 ─────────────────────────────┐
+<pre class="code w4"><code> ┌─────────────────────────── 리눅스 호스트 한 대 ─────────────────────────────┐
  │                                                                              │
  │   도커 브리지 br-b33ecd87724d  (네트워크 이름 docker_open5gs_default,        │
  │   │                             172.22.0.0/24, 컨테이너마다 고정 주소 하나)  │
@@ -6163,7 +6171,7 @@ alt="차폐함 안 갤럭시 S22+ 의 홈 화면. 앱 목록에 Magisk 가 보�
 뜬다. 이것은 정상이다. UHD 가 펌웨어와 FPGA 이미지를 올리면 장치가 USB
 에서 한 번 빠졌다가 <strong>다시 열거</strong>되면서 USB 3.0 으로
 붙는다. 우리가 확인하는 것은 그 뒤의 모습이다.</p>
-<pre><code>$ lsusb -t
+<pre class="code w2"><code>$ lsusb -t
 /:  Bus 002.Port 001: Dev 001, Class=root_hub, Driver=xhci_hcd/1p, 10000M
     |__ Port 001: Dev 002, If 0, Class=Vendor Specific Class, Driver=usbfs, 5000M
 $ lsusb | grep Ettus
@@ -6186,7 +6194,7 @@ inhibit 를 풀 때마다 ModemManager 가 모뎀을 다시 잡으면서 <strong
 데이터가 몇 초 뒤 끊기는 현상을 세 번 반복한 뒤에야 패턴이 보였다(18장).
 정답은 udev 규칙으로 이 모뎀만 관리 대상에서 빼는 것이다. 우리가 실제로
 둔 파일이다.</p>
-<pre><code># /etc/udev/rules.d/99-private5g-modem-ignore.rules
+<pre class="code w4"><code># /etc/udev/rules.d/99-private5g-modem-ignore.rules
 # 사설 5G 랩 모뎀(Quectel RM520N-GL)을 ModemManager 관리에서 제외한다.
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;usb&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;
@@ -6221,7 +6229,7 @@ PyHSS, srsRAN, UHD — 는 전부 컨테이너 안에 있다. 호스트에 직�
 github.com/herlesupreeth/docker_open5gs)가 GitHub 컨테이너 레지스트리에
 올려 둔 것을 받았다. 저장소의 안내 문서(README, 깃허브 저장소 첫 화면에
 보이는 설명서)가 안내하는 방식 그대로다.</p>
-<pre class="bash"><code>docker pull ghcr.io/herlesupreeth/docker_open5gs:master
+<pre class="code" class="bash"><code>docker pull ghcr.io/herlesupreeth/docker_open5gs:master
 docker tag  ghcr.io/herlesupreeth/docker_open5gs:master docker_open5gs
 # docker_kamailio, docker_pyhss, docker_mysql, docker_dns,
 # docker_rtpengine, docker_metrics, docker_srsran 도 같은 방식</code></pre>
@@ -6231,7 +6239,7 @@ compose 파일이 <code>image: docker_open5gs</code> 처럼 <strong>짧은
 가 그 이름의 이미지를 못 찾아 직접 빌드하려 들고, 그러면 수십 분짜리
 빌드가 시작된다. 우리 호스트의 이미지 목록을 보면 같은 이미지가 두
 이름으로 나란히 있다.</p>
-<pre><code>docker_srsran:latest                          3.55GB
+<pre class="code"><code>docker_srsran:latest                          3.55GB
 ghcr.io/herlesupreeth/docker_srsran:master    3.55GB
 docker_open5gs:latest                         1.55GB
 ghcr.io/herlesupreeth/docker_open5gs:master   1.55GB</code></pre>
@@ -6250,7 +6258,7 @@ ghcr.io/herlesupreeth/docker_open5gs:master   1.55GB</code></pre>
 사흘쯤 지나자 어느 파일을 우리가 고쳤고 어느 것이 원본인지 아무도
 몰랐고, 클론을 갱신(<code>git pull</code>)하는 순간 우리 수정이
 충돌하거나 사라질 판이었다. 그래서 둘을 갈랐다.</p>
-<pre><code>work/
+<pre class="code w2"><code>work/
 ├── private5g/            ← 우리 것. git 으로 관리. 여기만 고친다
 │   ├── bin/              제어 스크립트 (core-ctl, ran-ctl, deploy-configs, selftest)
 │   ├── configs/          설정 정본
@@ -6268,7 +6276,7 @@ ghcr.io/herlesupreeth/docker_open5gs:master   1.55GB</code></pre>
 마운트한다. 그래서 설정은 결국 클론 안에 있어야 한다. 해법은 "정본은
 우리 쪽, 클론 쪽은 배포 사본"으로 정하고 복사 스크립트를 두는 것이었다.
 <code>bin/deploy-configs.sh</code> 의 핵심은 매핑 표 하나다.</p>
-<pre class="bash"><code># 정본경로:배포경로
+<pre class="code" class="bash"><code># 정본경로:배포경로
 MAP=(
   &quot;env/env:.env&quot;
   &quot;pcscf/route/mo.cfg:pcscf/route/mo.cfg&quot;
@@ -6287,7 +6295,7 @@ MAP=(
 자가진단(9.8절)의 마지막 항목이 "정본과 런타임의 차이 0 건"이다.</p>
 <p>스크립트들이 공유하는 설정은 <code>bin/_common.sh</code> 한 곳에
 있다. 여기서 눈여겨볼 줄은 둘이다.</p>
-<pre class="bash"><code>: &quot;${CORE_PROJECT:=docker_open5gs}&quot;
+<pre class="code" class="bash"><code>: &quot;${CORE_PROJECT:=docker_open5gs}&quot;
 : &quot;${UPSTREAM_DIR:=$P5/../sdr-tools/docker/docker_open5gs}&quot;</code></pre>
 <p><code>: "${X:=기본값}"</code> 은 "환경변수 X 가 비어 있으면 기본값을
 넣어라"라는 셸 관용구다. 첫 줄이 중요하다. docker compose 는 프로젝트
@@ -6306,7 +6314,7 @@ gnb.yml, uhd.conf</h2>
 기동 스크립트가 이 값으로 자기 설정 파일의 자리표시자를 <code>sed</code>
 로 치환한다(5.6절). 그래서 이 파일 하나가 망 전체의 정체성을 정한다.
 우리 파일에서 의미 있는 줄만 뽑는다.</p>
-<pre><code>MCC=001
+<pre class="code"><code>MCC=001
 MNC=01
 TAC=1
 TEST_NETWORK=172.22.0.0/24
@@ -6356,7 +6364,7 @@ PLMN(Public Land Mobile Network, "어느 나라 어느 통신사 망인가")
 해부하는 파일</h3>
 <p>기지국 설정은 10장 전체가 다루므로 여기서는 이 실험실 구성에 관련된
 두 줄만 본다.</p>
-<pre class="yaml"><code>  device_args: type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,num_recv_frames=64,num_send_frames=64</code></pre>
+<pre class="code w4" class="yaml"><code>  device_args: type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,num_recv_frames=64,num_send_frames=64</code></pre>
 <p><code>serial=5JKRCXX</code> 가 9.2절의 첫 번째 규칙이다.
 <code>fpga=</code> 는 LibreSDR 전용 이미지를 컨테이너 안 경로로 준다. 이
 파일이 컨테이너 안 <code>/mnt/srsran/</code> 에 있는 이유는
@@ -6367,7 +6375,7 @@ compose 에서 <code>/mnt/srsran</code> 으로 마운트되기 때문이다. 경
 흐름 전체가 보인다.</p>
 <h3 id="uhdconf--호스트에서-uhd-를-직접-쓸-때">uhd.conf — 호스트에서 UHD
 를 직접 쓸 때</h3>
-<pre><code>; LibreSDR B220 Mini (XC7A200T) — 시리얼별 FPGA 비트스트림 지정
+<pre class="code"><code>; LibreSDR B220 Mini (XC7A200T) — 시리얼별 FPGA 비트스트림 지정
 [serial=5JKRCXX]
 fpga=/home/user/work/LibreSDR_B200/images/libresdr_alphafox02.bin
 [serial=RF01FPI]
@@ -6383,7 +6391,7 @@ id="97-기동-순서와-경쟁-상태-컨테이너가-떴다는-망이-준비됐
 <p>망을 올리는 순서는 코어 → 기지국 → 단말이다. 거꾸로 가면 각자 상대를
 못 찾고 재시도하다 시간이 걸리거나 포기한다. 코어는
 <code>bin/core-ctl.sh START</code> 한 줄이다.</p>
-<pre class="bash"><code>&quot;$P5/bin/deploy-configs.sh&quot;          # 정본 -&gt; 런타임 트리 동기화 후 기동
+<pre class="code" class="bash"><code>&quot;$P5/bin/deploy-configs.sh&quot;          # 정본 -&gt; 런타임 트리 동기화 후 기동
 cd &quot;$UP&quot; &amp;&amp; docker compose -p &quot;${CORE_PROJECT}&quot; -f &quot;$FILE&quot; up -d
 wait_core_ready 120</code></pre>
 <p>마지막 줄이 이 스크립트를 쓴 이유다. 처음에는
@@ -6407,7 +6415,7 @@ wait_core_ready 120</code></pre>
 <p><code>wait_core_ready</code> 는 그래서 AMF 의 로그를 읽어 <strong>AMF
 가 다섯 조각과 실제로 연결됐다는 줄</strong>이 다 나올 때까지
 기다린다.</p>
-<pre class="bash"><code>have=$(printf &#39;%s\n&#39; &quot;$log&quot; \
+<pre class="code w2" class="bash"><code>have=$(printf &#39;%s\n&#39; &quot;$log&quot; \
   | grep -oE &quot;\[(AUSF|UDM|PCF|SMF|NSSF)\] NFInstance associated&quot; | sort -u | wc -l)</code></pre>
 <p>"NFInstance associated" 는 Open5GS 가 NRF 에서 상대 조각의 주소를
 받아 연결을 맺었을 때 찍는 줄이다. 다섯 개가 다 나오면 단말을 받아도
@@ -6419,7 +6427,7 @@ wait_core_ready 120</code></pre>
 기동 시각을 얻어 <code>--since</code> 로 그 뒤만 본다.</p>
 <p>기지국은 아직 제어 스크립트에 실장비 프로파일이 없어서(남은 과제)
 손으로 띄운다.</p>
-<pre class="bash"><code>cd ~/work/private5g/upstream
+<pre class="code w3" class="bash"><code>cd ~/work/private5g/upstream
 grep -q &#39;serial=5JKRCXX&#39; srsran/gnb.yml || { echo &quot;serial 없음 — 띄우지 말 것&quot;; exit 1; }
 docker compose -p docker_open5gs -f srsgnb.yaml up -d
 docker logs -f srsgnb      # &quot;==== gNB started ===&quot; 와 N2 연결 확인 (10.4 절)</code></pre>
@@ -6446,7 +6454,7 @@ docker logs -f srsgnb      # &quot;==== gNB started ===&quot; 와 N2 연결 확�
 조각끼리의 HTTP/2(TCP 7777), IMS 의 SIP 와 Diameter — 가 여기를 지난다.
 이름의 <code>b33ecd87724d</code> 는 도커가 네트워크를 만들 때 붙인 ID 의
 앞부분이다.</p>
-<pre><code>$ docker network ls | grep open5gs
+<pre class="code"><code>$ docker network ls | grep open5gs
 b33ecd87724d   docker_open5gs_default    bridge    local</code></pre>
 <p>네트워크를 지우고 다시 만들면 ID 가 바뀌므로 이 이름은 실험실마다
 다르다. 위 명령으로 각자의 이름을 확인한다. 캡처는
@@ -6459,7 +6467,7 @@ b33ecd87724d   docker_open5gs_default    bridge    local</code></pre>
 패킷을 보고 싶으면 UPF 컨테이너 안의 TUN 장치를 잡는다.
 <code>docker exec upf tcpdump -i ogstun -w - &gt; ue.pcap</code> 처럼
 하면 단말이 보낸 패킷이 출발지 <code>10.45.0.x</code> 그대로 보인다.</p>
-<pre><code>$ docker exec upf ip -br addr
+<pre class="code"><code>$ docker exec upf ip -br addr
 eth0@if99   UP   172.22.0.8/24
 ogstun      UP   10.45.0.1/16   ← internet DNN 의 게이트웨이
 ogstun2     UP   10.46.0.1/16   ← ims DNN 의 게이트웨이</code></pre>
@@ -6472,7 +6480,7 @@ ogstun2     UP   10.46.0.1/16   ← ims DNN 의 게이트웨이</code></pre>
 인터넷으로 나가려면 사설 주소 <code>10.45.x.x</code> 를 UPF 의 주소로
 바꿔야 한다(7장). UPF 컨테이너의 기동 스크립트
 <code>upf/tun_if.py</code> 가 이 규칙을 넣는다.</p>
-<pre><code>$ docker exec upf iptables -t nat -S | grep MASQ
+<pre class="code"><code>$ docker exec upf iptables -t nat -S | grep MASQ
 -A POSTROUTING -s 10.45.0.0/16 ! -d 172.22.0.21/32 ! -o ogstun -j MASQUERADE</code></pre>
 <p>왼쪽부터 읽으면 "출발지가 단말 풀이고, 목적지가 172.22.0.21 이
 <strong>아니고</strong>, 나가는 장치가 ogstun 이 아니면, 출발지를 내
@@ -6490,7 +6498,7 @@ ogstun2     UP   10.46.0.1/16   ← ims DNN 의 게이트웨이</code></pre>
 기지국 + OAI 소프트 단말, 무선 대신 TCP 로 샘플을 주고받아
 <strong>전파를 한 번도 내지 않는다</strong>)로 망 전체를 처음부터 올려
 여섯 단계를 확인한다.</p>
-<pre><code>=== selftest: n78 ===
+<pre class="code"><code>=== selftest: n78 ===
 1. 코어 기동 + 준비 대기                  OK   코어 준비 완료 (NF 5/5, 10초)
 2. RAN 기동 (n78)                         OK
 3. UE 접속 (최대 60초)                    OK   IP: 10.45.0.x
@@ -6511,7 +6519,7 @@ ogstun2     UP   10.46.0.1/16   ← ims DNN 의 게이트웨이</code></pre>
 <h2 id="910-지금-당신의-장비에서">9.10 지금 당신의 장비에서</h2>
 <p>이 장을 다 읽었으면 다음을 순서대로 치고, 각 줄의 기대값과
 비교한다.</p>
-<pre class="bash"><code>lsusb | grep -E &#39;2500:0020|2c7c:0801&#39;          # B210 과 RM520N-GL 이 둘 다 보이는가
+<pre class="code w3" class="bash"><code>lsusb | grep -E &#39;2500:0020|2c7c:0801&#39;          # B210 과 RM520N-GL 이 둘 다 보이는가
 lsusb -t | grep -B1 usbfs | grep 5000M         # B210 이 5000M(USB 3.0)인가
 udevadm info /dev/cdc-wdm0 | grep MM_DEVICE_IGNORE   # ID_MM_DEVICE_IGNORE=1 인가
 mmcli -L                                        # 우리 모뎀이 목록에 없어야 정상
@@ -6665,7 +6673,7 @@ B210 이 낸다. 이 장을 다 읽으면 <code>gnb.yml</code> 의 모든 줄이
 아래층을 믿고 자기 일만 한다. 다만 TCP/IP 가 네 층이라면 여기는
 <strong>아래 세 층이 전파를 다루느라 더 쪼개져 있다.</strong> 그 쪼갠
 자리마다 이름이 붙어 있을 뿐이다. 아래부터 위로 올라간다.</p>
-<pre><code>                        srsRAN gNB 프로세스 안
+<pre class="code w4"><code>                        srsRAN gNB 프로세스 안
    ┌─────────────────────────────────────────────────────────────────┐
    │  CU-CP   RRC (연결 관리)  ──────▶  NGAP ──────▶ AMF (N2, SCTP)    │  제어
    │          PDCP-C (제어 메시지 암호화)                              │
@@ -6717,7 +6725,7 @@ PCI, TDD 패턴), CU-CP(PLMN, TAC, AMF 주소)다. RLC, PDCP, SDAP 는
 설명한다. 플레이스홀더(<code>AMF_IP</code>, <code>PLMN</code>,
 <code>TAC</code>)는 컨테이너 기동 시 <code>srsran_init.sh</code> 가
 <code>.env</code> 값으로 치환한다(5.6).</p>
-<pre class="yaml"><code>cu_cp:
+<pre class="code w4" class="yaml"><code>cu_cp:
   amf:
     addr: AMF_IP                     # → 172.22.0.10
     bind_addr: SRS_GNB_IP            # → 172.22.0.37
@@ -6906,11 +6914,11 @@ srsRAN 은 세 조각을 한 프로세스에 넣었으므로 함수 호출로 �
 <p><code>docker compose -f srsgnb.yaml up -d</code> 뒤
 <code>docker logs srsgnb</code> 가 보여 준 것이다. 전부 싣고 전부
 읽는다.</p>
-<pre><code>--== srsRAN gNB (commit 11c9bbabb6) ==--</code></pre>
+<pre class="code"><code>--== srsRAN gNB (commit 11c9bbabb6) ==--</code></pre>
 <p>빌드 커밋이다. 문제가 나면 이 해시로 소스를 연다. 우리 컨테이너
 이미지는 <code>docker_srsran</code> 이고
 <code>upstream/srsran/Dockerfile</code> 이 이 커밋을 체크아웃한다.</p>
-<pre><code>Lower PHY in triple executor mode.</code></pre>
+<pre class="code"><code>Lower PHY in triple executor mode.</code></pre>
 <p>하위 PHY(OFDM 변복조와 샘플 입출력을 맡는 맨 아래층)가 전용 스레드 세
 개로 돈다는 뜻이다.
 소스(<code>apps/services/worker_manager/worker_manager.cpp</code> 의
@@ -6927,7 +6935,7 @@ srsRAN 은 세 조각을 한 프로세스에 넣었으므로 함수 호출로 �
 <code>late</code>/<code>underflow</code> 가 찍힌다. 우리 32 스레드
 박스는 당연히 <code>triple</code> 이었다. 이 결정은 컨테이너에 CPU
 제한(<code>--cpus</code>)을 걸면 바뀐다는 점을 기억해 둘 만하다.</p>
-<pre><code>Available radio types: uhd and zmq.
+<pre class="code"><code>Available radio types: uhd and zmq.
 [INFO] [UHD] linux; GNU C++ version 11.2.0; Boost_107400; UHD_4.1.0.5-3</code></pre>
 <p>UHD 가 자기 빌드 환경을 밝히는 줄이다. <code>linux</code> 는
 운영체제, <code>GNU C++ version 11.2.0</code> 은 UHD 를 컴파일한 g++
@@ -6940,14 +6948,14 @@ srsRAN 은 세 조각을 한 프로세스에 넣었으므로 함수 호출로 �
 로 FPGA 를 올린 뒤 컨테이너의 gNB 가 그 장치를 쓰면, 컨테이너의 UHD 가
 "내 버전과 FPGA 이미지가 맞나"를 검사한다. 복제 보드 이미지는 버전
 검사를 느슨하게 통과하지만, 정품 이미지를 섞어 쓰면 여기서 거부된다.</p>
-<pre><code>Making USRP object with args &#39;type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,num_recv_frames=64,num_send_frames=64&#39;
+<pre class="code w4"><code>Making USRP object with args &#39;type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,num_recv_frames=64,num_send_frames=64&#39;
 [INFO] [B200] Detected Device: B210
 [INFO] [B200] Operating over USB 3.</code></pre>
 <p>세 줄이 2 장의 전부다. <code>device_args</code> 가 그대로 UHD 에
 넘어가고, 시리얼이 맞는 장치를 찾았고, <strong>USB 3 이다.</strong> 이
 줄이 <code>USB 2.</code> 이면 더 읽을 필요 없이 멈추고 케이블을 본다.
 우리는 그 줄을 보고도 포트를 의심하며 반나절을 썼다(10.7).</p>
-<pre><code>[INFO] [B200] Initialize CODEC control...
+<pre class="code w2"><code>[INFO] [B200] Initialize CODEC control...
 [INFO] [B200] Initialize Radio control...
 [INFO] [B200] Performing register loopback test... Register loopback test passed
 [INFO] [B200] Performing register loopback test... Register loopback test passed</code></pre>
@@ -6958,7 +6966,7 @@ srsRAN 은 세 조각을 한 프로세스에 넣었으므로 함수 호출로 �
 미리 약속할 필요가 없다. 플래시 칩 덤프하려고 SPI 클립을 물려 본 적이
 있다면 바로 그 버스다. 두 번인 것은 채널 A 와 B 다. 여기서 실패하면 FPGA
 이미지가 보드에 안 맞는 것이다.</p>
-<pre><code>[INFO] [B200] Setting master clock rate selection to &#39;automatic&#39;.
+<pre class="code w3"><code>[INFO] [B200] Setting master clock rate selection to &#39;automatic&#39;.
 [INFO] [B200] Asking for clock rate 16.000000 MHz... Actually got clock rate 16.000000 MHz.
 [INFO] [MULTI_USRP] Setting master clock rate selection to &#39;manual&#39;.
 [INFO] [B200] Asking for clock rate 23.040000 MHz... Actually got clock rate 23.040000 MHz.</code></pre>
@@ -6979,14 +6987,14 @@ srsRAN 은 세 조각을 한 프로세스에 넣었으므로 함수 호출로 �
 장치다. 그런데 23.04 MHz 는 정확히 맞는 값이다.
 <code>Actually got</code> 이 요구값과 다르면 샘플레이트가 어긋나 단말이
 주파수 오프셋으로 못 붙는다.</p>
-<pre><code>Cell pci=1, bw=20 MHz, 1T1R, dl_arfcn=623334 (n78), dl_freq=3350.01 MHz, dl_ssb_arfcn=623040, ul_freq=3350.01 MHz</code></pre>
+<pre class="code w4"><code>Cell pci=1, bw=20 MHz, 1T1R, dl_arfcn=623334 (n78), dl_freq=3350.01 MHz, dl_ssb_arfcn=623040, ul_freq=3350.01 MHz</code></pre>
 <p>이 한 줄이 <code>cell_cfg</code> 의 <strong>해석 결과</strong>다. 3
 장과 16 의 모든 값이 여기 있다. <code>1T1R</code> 은 송신 안테나 하나,
 수신 안테나 하나 — B210 은 2T2R 이 가능하지만 우리 설정이 안테나를
 하나만 썼다. <code>ul_freq</code> 가 <code>dl_freq</code> 와 같은 것이
 TDD 의 표시다. <code>dl_ssb_arfcn</code> 이 <code>dl_arfcn</code> 과
 다른 것은 위에서 말한 자동 계산이다.</p>
-<pre><code>N2: Connection to AMF on 172.22.0.10:38412 completed
+<pre class="code"><code>N2: Connection to AMF on 172.22.0.10:38412 completed
 ==== gNB started ===</code></pre>
 <p>SCTP 연결과 NG Setup 이 끝났다. AMF 로그에는 같은 순간
 <code>gNB-N2 accepted[172.22.0.37]</code> 가 찍힌다(5.3). 이 줄 뒤부터
@@ -6998,7 +7006,7 @@ B210 은 <strong>SSB 를 20 ms 마다 쏘고 있다.</strong> 로그에는 아�
 <p>침묵이 깨지는 경우가 있다. 이 실험실의 10월 4~5일 기동분
 로그(<code>upstream/srsran/gnb.log.2026-10-05</code>, 106만 줄)가 그
 견본이다. 처음 몇 줄은 이렇다.</p>
-<pre><code>2026-10-04T18:10:58.341735 [GNB     ] [I] Built in Release mode using commit 11c9bbabb6 on branch HEAD
+<pre class="code w4"><code>2026-10-04T18:10:58.341735 [GNB     ] [I] Built in Release mode using commit 11c9bbabb6 on branch HEAD
 2026-10-04T18:10:58.744341 [GNB     ] [W] DRM KMS polling is enabled, which may hinder performance. You can disable it using the &quot;srsran_performance&quot; script
 2026-10-04T18:12:30.147605 [RF      ] [W] Real-time failure in RF: underflow
 2026-10-04T18:12:30.150721 [RF      ] [W] Real-time failure in RF: late</code></pre>
@@ -7020,7 +7028,7 @@ CPU 를 붙잡아 실시간 스레드의 마감을 흔들 수 있어서 srsRAN �
 끝났다.</p>
 <p>문제는 그다음이었다. 10월 5일 01:53 부터 이 로그는 같은 줄로
 채워졌다.</p>
-<pre><code>2026-10-05T01:53:19.868026 [PHY     ] [W] [    3.19] Real-time failure in low-phy: PRACH request overflow for sector 0, slot 3.19 and start symbol 0.
+<pre class="code w4"><code>2026-10-05T01:53:19.868026 [PHY     ] [W] [    3.19] Real-time failure in low-phy: PRACH request overflow for sector 0, slot 3.19 and start symbol 0.
 2026-10-05T01:53:19.883383 [PHY     ] [W] [    4.19] Real-time failure in low-phy: PRACH request overflow for sector 0, slot 4.19 and start symbol 0.</code></pre>
 <p>대괄호 안 <code>3.19</code> 는 "시스템 프레임 3 의 슬롯 19"다(10 ms
 프레임 하나에 30 kHz 슬롯 20개, 0~19). 프레임 번호가 하나씩 오르며 매번
@@ -7533,7 +7541,7 @@ AT 명령: 글자 한 줄이 모뎀 안까지 가는 길</h1>
 50~200 mA 를 먹지만 전파를 쏘는 순간에는 3.3 V 에서 2~3 A, 즉 7~10 W 를
 순간적으로 당긴다. USB 3.0 포트가 주는 것은 4.5 W 뿐이다. 어댑터를 꽂자
 그제야 이렇게 떴다.</p>
-<pre><code>usb 7-1: Product: RM520N-GL
+<pre class="code w2"><code>usb 7-1: Product: RM520N-GL
 usb 7-1: Manufacturer: Quectel
 option 7-1:1.1: GSM modem (1-port) converter detected
 usb 7-1: GSM modem (1-port) converter now attached to ttyUSB1
@@ -7545,7 +7553,7 @@ qmi_wwan 7-1:1.4: cdc-wdm0: USB WDM device
 qmi_wwan 7-1:1.4 wwan0: register &#39;qmi_wwan&#39; at usb-0000:c8:00.4-1, WWAN/QMI device</code></pre>
 <p>이제 모뎀에게 말을 걸 차례다. 우리 실험 머신에는 <code>minicom</code>
 같은 터미널 프로그램이 없어서, 셸 함수 하나로 시작했다.</p>
-<pre class="bash"><code>PORT=/dev/ttyUSB3
+<pre class="code w3" class="bash"><code>PORT=/dev/ttyUSB3
 at() {
   sudo stty -F $PORT 115200 raw -echo 2&gt;/dev/null
   { printf &#39;%s\r&#39; &quot;$1&quot; | sudo tee $PORT &gt;/dev/null; sudo timeout 2 cat $PORT; } 2&gt;/dev/null \
@@ -7553,7 +7561,7 @@ at() {
 }
 at &quot;ATI&quot;</code></pre>
 <p>돌아온 답은 이랬다.</p>
-<pre><code>Quectel
+<pre class="code"><code>Quectel
 RM520N-GL
 Revision: RM520NGLAAR03A03M4G
 
@@ -7564,7 +7572,7 @@ OK</code></pre>
 상태를 알려 달라는 명령)를 8 초마다 보냈을 때다. 모뎀은 <strong>아무
 대답도 하지 않았다.</strong> <code>OK</code> 도 <code>ERROR</code> 도
 아닌 빈 문자열이 80 초 동안 이어졌다.</p>
-<pre><code>CIMI      -&gt;
+<pre class="code"><code>CIMI      -&gt;
 [  0s] C5GREG -&gt;
 [  8s] C5GREG -&gt;
 ...
@@ -7615,7 +7623,7 @@ Management Interface)다. 중요한 것은 이것이 <strong>서버 안의 또 �
 전체 — 3 장의 물리 계층부터 5 장의 망 등록 메시지까지 — 를 돌린다 [칩
 모델은 제조사 공개 자료 기준, 우리가 열어 확인하지 않음]. 스마트폰에서는
 이 구조가 더 분명하게 갈라진다. 앱이 도는 프로세서를
-<strong>AP(Application Processor, 응용 프로세서)</strong>, 전파를 다루는
+<strong>AP</strong>(Application Processor, 응용 프로세서), 전파를 다루는
 프로세서를 <strong>BP(Baseband Processor, 베이스밴드 프로세서)</strong>
 라 부르고, 둘은 각자의 OS 를 돌리며 정해진 통로로만 대화한다. 그 통로
 가운데 가장 오래된 것이 이 장의 주제인 AT 명령이다.</p>
@@ -7666,7 +7674,7 @@ TX(송신)·RX(수신)·GND(접지) 세 핀을 찾아 USB-시리얼 어댑터를
 <p>글자 <code>A</code>(16 진수 <code>41</code>, 이진수
 <code>0100 0001</code>)가 선 위에서 어떻게 보이는지 그려 보면
 이렇다.</p>
-<pre><code>선의 전압   ‾‾‾‾‾|___|‾‾‾|___|___|___|___|___|‾‾‾|___|‾‾‾|‾‾‾‾‾
+<pre class="code w2"><code>선의 전압   ‾‾‾‾‾|___|‾‾‾|___|___|___|___|___|‾‾‾|___|‾‾‾|‾‾‾‾‾
 비트          쉼  시작  b0  b1  b2  b3  b4  b5  b6  b7  정지  쉼
 값                  0    1   0   0   0   0   0   1   0   1
                          └─ 41h = 0100 0001 을 낮은 비트부터 ─┘</code></pre>
@@ -7731,7 +7739,7 @@ USB 패킷에 실려 모뎀에 가고, 모뎀의 답은 반대로 파일에서 �
 <h3 id="같은-모뎀-다섯-개의-문">같은 모뎀, 다섯 개의 문</h3>
 <p>다섯 인터페이스의 용도는 모뎀 관리 데몬 ModemManager 가 알아내
 보고했다.</p>
-<pre><code>ports: cdc-wdm0 (qmi), ttyUSB0 (ignored), ttyUSB1 (gps),
+<pre class="code"><code>ports: cdc-wdm0 (qmi), ttyUSB0 (ignored), ttyUSB1 (gps),
        ttyUSB2 (at), ttyUSB3 (at), wwan0 (net)</code></pre>
 <p>같은 모뎀이 <strong>용도별로 다른 문</strong>을 연 것이다.
 <code>ttyUSB0</code> 은 퀄컴 칩의 <strong>진단 포트(DM, Diagnostic
@@ -7846,7 +7854,7 @@ Union – Telecommunication, 국제전기통신연합의 표준화 부문) V.250
 문자)을 3GPP(이동통신 표준을 만드는 국제 협력체) 가 TS 27.007 과 TS
 27.005 라는 문서로 덧붙였다(13).</p>
 <h3 id="명령의-생김새">명령의 생김새</h3>
-<pre><code>AT+CPIN?
+<pre class="code"><code>AT+CPIN?
 │ │ │   └─ ? : &quot;지금 값을 알려 줘&quot; (읽기 형식)
 │ │ └───── CPIN : 명령 이름 (SIM 카드 PIN 상태)
 │ └─────── + : 확장 명령 표시 (V.250 기본 명령과 구분)
@@ -7871,7 +7879,7 @@ Union – Telecommunication, 국제전기통신연합의 표준화 부문) V.250
 <strong>정보 줄</strong>과, 명령이 끝났음을 알리는 <strong>최종 결과
 코드</strong>다. 각 줄은 앞뒤를 CR 과 <strong>LF(Line Feed, 줄바꿈 문자,
 <code>\n</code>, 바이트 <code>0A</code>)</strong> 로 감싼다.</p>
-<pre><code>\r\n+CPIN: READY\r\n        ← 정보 줄
+<pre class="code"><code>\r\n+CPIN: READY\r\n        ← 정보 줄
 \r\nOK\r\n                  ← 최종 결과 코드</code></pre>
 <p>최종 결과 코드는 보통 <code>OK</code>(성공) 아니면
 <code>ERROR</code>(실패)다. 3GPP 확장 명령이 실패하면 그냥
@@ -7897,7 +7905,7 @@ failure", 카드와 통신이 안 된다는 뜻이었다(4a장 끝에서 모뎀�
 이것을 <strong>URC(Unsolicited Result Code, 요청하지 않은 결과
 코드)</strong> 라 한다. 우리 모뎀을 재초기화했을 때
 <code>AT+CPIN?</code> 의 답 사이에 끼어든 줄들이 그것이다.</p>
-<pre><code>+CPIN: READY
+<pre class="code"><code>+CPIN: READY
 +QUSIM: 1
 +QIND: SMS DONE
 +QIND: PB DONE
@@ -7929,7 +7937,7 @@ OK</code></pre>
 갈렸다.</p>
 <p>AT 명령 한 줄이 동작하는 과정은 세 층을 거친다. 이 층을 나눠 보는
 습관이 있으면 문제가 어느 층에서 생겼는지 바로 짚을 수 있다.</p>
-<pre><code>┌──────────────────────────────────────────┐
+<pre class="code w3"><code>┌──────────────────────────────────────────┐
 │ 1층: PC 의 사용자 프로그램                    │  셸 함수, pyserial, minicom, ModemManager
 │      &quot;AT+CPIN?\r&quot; 를 /dev/ttyUSB3 에 write() │
 ├──────────────────────────────────────────┤
@@ -7993,7 +8001,7 @@ Quectel 의 다른 모뎀 문서에 있던 <code>AT+QNETDEVCTL</code>(모뎀이
 는 "International Mobile subscriber Identity 를 요청한다(Request
 IMSI)"는 3GPP 명령이다. 카드의 가입자 번호(4a 장의 <code>EF.IMSI</code>
 에 우리가 쓴 그 값)를 읽어 온다.</p>
-<pre><code>PC → 모뎀
+<pre class="code w3"><code>PC → 모뎀
   바이트: 41 54 2B 43 49 4D 49 0D
   글자:   A  T  +  C  I  M  I  CR
 
@@ -8035,7 +8043,7 @@ IMSI)"는 3GPP 명령이다. 카드의 가입자 번호(4a 장의 <code>EF.IMSI<
 상태를 멀쩡히 보여 주고 있었다. 2 층(커널)이 바이트를 버렸을 리는 없다.
 그러면 1 층, 즉 <strong>이 포트를 누가 또 열고 있는가</strong>를 봐야
 한다.</p>
-<pre><code>$ sudo fuser -v /dev/ttyUSB*
+<pre class="code"><code>$ sudo fuser -v /dev/ttyUSB*
                      사용자      PID 접근 명령
 /dev/ttyUSB2:        root       1416 F.... ModemManager
 /dev/ttyUSB3:        root       1416 F.... ModemManager</code></pre>
@@ -8051,10 +8059,10 @@ ModemManager 의 명령과 우리 명령의 답이 뒤섞여 서로의 답을 �
 버그와 같은 모양이다.</p>
 <p>해결은 두 단계였다. 실험 중에는 ModemManager 에게 이 모뎀에서 잠시
 손을 떼라고 했다.</p>
-<pre class="bash"><code>DEV=$(mmcli -m 1 --output-keyvalue | awk &#39;/modem.generic.device /{print $3}&#39;)
+<pre class="code w2" class="bash"><code>DEV=$(mmcli -m 1 --output-keyvalue | awk &#39;/modem.generic.device /{print $3}&#39;)
 sudo mmcli --inhibit-device=&quot;$DEV&quot; &amp;      # 이 프로세스가 살아 있는 동안만 손을 뗀다</code></pre>
 <p>그러자 같은 파이썬 코드가 바로 답을 받았다.</p>
-<pre><code>AT        -&gt; OK
+<pre class="code"><code>AT        -&gt; OK
 CPIN?     -&gt; +CPIN: READY
 CIMI      -&gt; 001011234567895</code></pre>
 <p>그런데 이 방식에는 함정이 있었다. <code>--inhibit-device</code> 를
@@ -8062,7 +8070,7 @@ CIMI      -&gt; 001011234567895</code></pre>
 맺어 둔 데이터 세션을 정리해 버렸다.</strong> 그래서 최종적으로는
 udev(장치가 꽂힐 때 규칙에 따라 속성을 붙이는 리눅스 데몬) 규칙으로 이
 모뎀 하나만 ModemManager 의 관리 대상에서 영구히 뺐다.</p>
-<pre><code># /etc/udev/rules.d/99-private5g-modem-ignore.rules
+<pre class="code w4"><code># /etc/udev/rules.d/99-private5g-modem-ignore.rules
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;usb&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;net&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;</code></pre>
@@ -8095,7 +8103,7 @@ RM520N-GL 의 USB 제조사·제품 번호다. 규칙을 다시 읽히고 ModemM
 <p>실험에서 이 분리는 그대로 드러났다. AT 로 데이터 세션을
 열자(<code>AT+CGACT=1,1</code>, 1 번 접속 설정을 활성화하라는 명령)
 모뎀은 망에서 IP 를 받아 왔고, 그 주소를 AT 로 물을 수 있었다.</p>
-<pre><code>CGACT=1,1  -&gt; OK
+<pre class="code"><code>CGACT=1,1  -&gt; OK
 CGPADDR    -&gt; +CGPADDR: 1,&quot;10.45.0.2&quot;</code></pre>
 <p>하지만 그 IP 로 패킷을 보내는 길은 AT 포트가 아니라
 <code>wwan0</code> 이었다. 우리는 그 주소를 <code>wwan0</code> 에 손으로
@@ -8269,7 +8277,7 @@ band)</strong> 이라 한다. 사람 말소리를 알아듣는 데 충분한 범
 <p>그래서 디지털 데이터를 전화선에 실으려면 <strong>데이터를 음성 대역
 안의 소리로 바꿔야</strong> 한다. 이것이 모뎀이 존재하는 이유 전부다. 0
 과 1 을 소리의 성질(높이, 세기, 위상)로 바꾸는 것을
-<strong>변조(modulation)</strong>, 소리에서 0 과 1 을 되찾는 것을
+<strong>변조</strong>(modulation), 소리에서 0 과 1 을 되찾는 것을
 <strong>복조(demodulation)</strong> 라 한다. 3 장에서 5G 가 부반송파
 위에 데이터를 싣는 것도 정확히 같은 일이다. 다만 5G 는 그 "소리"가 3.35
 GHz 의 전파이고 폭이 20 MHz 인 반면, 전화선 모뎀은 폭이 고작 3 kHz
@@ -8435,7 +8443,7 @@ USB 위의 가짜 시리얼로 바뀐 것뿐이다.</p>
 <h2 id="125-atdt01410-의-해부-소리와-상태를-따라간다">12.5
 <code>ATDT01410</code> 의 해부: 소리와 상태를 따라간다</h2>
 <p>이제 핵심이다. 터미널에서 이렇게 쳤다고 하자.</p>
-<pre><code>ATDT01410</code></pre>
+<pre class="code"><code>ATDT01410</code></pre>
 <p>이 아홉 글자와 CR 하나가 일으키는 일을 순서대로 따라간다. 각 단계에서
 <strong>모뎀이 어떤 상태에 있는지</strong>, 그리고 <strong>스피커에서
 무슨 소리가 났는지</strong>를 함께 본다. 당시 모뎀은 기본 설정으로
@@ -8524,7 +8532,7 @@ Multi-Frequency) — 버튼 하나에 두 개의 순수한 음을 동시에 내�
 그대로 따른다.</p>
 <h3 id="connect-데이터-모드로-전환">CONNECT: 데이터 모드로 전환</h3>
 <p>핸드셰이크가 끝나면 모뎀은 PC 에 결과 코드를 보낸다.</p>
-<pre><code>CONNECT 2400</code></pre>
+<pre class="code"><code>CONNECT 2400</code></pre>
 <p>뒤의 숫자는 협상된 속도다. 이 순간 모뎀은 <strong>데이터 모드(data
 mode)</strong> 로 바뀐다. 이제부터 포트로 들어오는 글자는 명령이 아니라
 <strong>상대에게 그대로 보낼 데이터</strong>다. 파서는 잠든다. 그래서 이
@@ -8581,14 +8589,14 @@ Independent Escape Sequence)가 나왔지만 바로 이 약점 때문에 평판�
 소리가 사라졌다는 뜻의 문자열이 지금 무선 데이터의 끊김을 알리는
 것이다.</p>
 <h3 id="전체-상태-그림">전체 상태 그림</h3>
-<pre><code> [명령 모드] ──ATDT──▶ [다이얼 중] ──응답음──▶ [핸드셰이크] ──CONNECT──▶ [데이터 모드]
+<pre class="code w4"><code> [명령 모드] ──ATDT──▶ [다이얼 중] ──응답음──▶ [핸드셰이크] ──CONNECT──▶ [데이터 모드]
       ▲                    │                      │                          │
       │            BUSY / NO ANSWER /         실패 → NO CARRIER         +++ (가드 타임)
       │              NO DIALTONE                  │                          │
       └────────────────────┴──────────────────────┴──── ATH / NO CARRIER ◀──┘</code></pre>
 <p>이 그림을 5G 로 바꾸면 이렇게 된다. 16 와 12 장에서 실제 로그로 다시
 본다.</p>
-<pre><code> [IDLE] ──셀 탐색(SSB)──▶ [RRC 연결] ──등록·인증──▶ [REGISTERED] ──PDU 세션──▶ [데이터 흐름]</code></pre>
+<pre class="code w3"><code> [IDLE] ──셀 탐색(SSB)──▶ [RRC 연결] ──등록·인증──▶ [REGISTERED] ──PDU 세션──▶ [데이터 흐름]</code></pre>
 <p>여기서 SSB 는 기지국이 셀을 알리려고 주기적으로 뿌리는 동기 신호
 묶음(3장), RRC 는 단말과 기지국 사이의 무선 연결을 관리하는 제어
 프로토콜(10장), PDU 세션은 단말이 IP 주소를 받아 데이터를 주고받는
@@ -8624,7 +8632,7 @@ Independent Escape Sequence)가 나왔지만 바로 이 약점 때문에 평판�
 다.</p>
 <p>그래서 옛 터미널 프로그램의 설정 창에는 <strong>초기화 문자열(init
 string)</strong> 칸이 있었고, 보통 이런 모양이었다.</p>
-<pre><code>AT&amp;F E1 V1 X4 M0 &amp;C1 &amp;D2 S0=0</code></pre>
+<pre class="code"><code>AT&amp;F E1 V1 X4 M0 &amp;C1 &amp;D2 S0=0</code></pre>
 <p>한 조각씩 읽으면 이 문자열이 모뎀을 어떤 상태로 만드는지가 보인다.
 <code>&amp;F</code> 로 공장값에서 출발하고, <code>E1</code> 로 내가 친
 글자를 되돌려 보여 주게 하고(Echo. 11.8 의 에코가 이것이다),
@@ -8657,14 +8665,14 @@ string)</strong> 칸이 있었고, 보통 이런 모양이었다.</p>
 있었고, 모뎀은 그것을 전부 썼다. 임베디드 보드가 그 선들을 생략하는 것은
 상대편이 그 신호를 필요로 하지 않기 때문이다. 모뎀은 필요로 했다.</p>
 <p>먼저 역할 이름부터 보자. RS-232 는 장치를 둘로 나눈다. 데이터를
-만들고 소비하는 쪽을 <strong>DTE(Data Terminal Equipment, 데이터 단말
-장치)</strong>, 그 데이터를 통신 회선에 실어 주는 쪽을 <strong>DCE(Data
-Circuit-terminating Equipment, 데이터 회선 종단 장치)</strong> 라 한다.
-PC 가 DTE, 모뎀이 DCE 다. 핀 이름이 전부 DTE 기준으로 붙어 있어서, PC 의
-TxD(송신 데이터) 핀은 모뎀의 TxD 핀으로 그대로 연결된다(모뎀 입장에선
-받는 핀이다). PC 두 대를 모뎀 없이 직접 이을 때 송수신 선을 엇갈려 꼬은
-"널 모뎀(null modem) 케이블"이 필요했던 이유가 이것이다. 두 DTE 사이에
-가상의 모뎀을 넣는다는 뜻이다.</p>
+만들고 소비하는 쪽을 <strong>DTE</strong>(Data Terminal Equipment,
+데이터 단말 장치), 그 데이터를 통신 회선에 실어 주는 쪽을
+<strong>DCE(Data Circuit-terminating Equipment, 데이터 회선 종단
+장치)</strong> 라 한다. PC 가 DTE, 모뎀이 DCE 다. 핀 이름이 전부 DTE
+기준으로 붙어 있어서, PC 의 TxD(송신 데이터) 핀은 모뎀의 TxD 핀으로
+그대로 연결된다(모뎀 입장에선 받는 핀이다). PC 두 대를 모뎀 없이 직접
+이을 때 송수신 선을 엇갈려 꼬은 "널 모뎀(null modem) 케이블"이 필요했던
+이유가 이것이다. 두 DTE 사이에 가상의 모뎀을 넣는다는 뜻이다.</p>
 <p>데이터 선 말고 나머지 선들은 <strong>상태 신호</strong>다.
 <strong>DTR(Data Terminal Ready, 단말 준비)</strong> 은 PC 가 모뎀에게
 "나 살아 있고 통신할 준비가 됐다"고 알리는 선이다. 터미널 프로그램을
@@ -8721,7 +8729,7 @@ Compression, 무선 구간에서 IP/UDP/RTP 헤더를 몇 바이트로 줄이는
 압축)</strong> 로 이어진다. 이름만 바뀌고 역할은 같다.</p>
 <p>🔎 지금 당신의 장비에서. 이 선들이 지금 어떻게 설정돼 있는지는 한
 줄로 보인다.</p>
-<pre class="bash"><code>stty -F /dev/ttyUSB3 -a | head -3</code></pre>
+<pre class="code" class="bash"><code>stty -F /dev/ttyUSB3 -a | head -3</code></pre>
 <p><code>crtscts</code> 가 켜져 있으면 하드웨어 흐름 제어,
 <code>-crtscts</code> 면 꺼진 것이다. USB 가짜 시리얼에서는 이 값이
 실제로 쓰이지 않는 경우가 많고(11.5), 그래서 11.4 의
@@ -8739,7 +8747,7 @@ BBS 프로그램이니 글자를 주고받는 것으로 충분했다. 그런데
 <p>PPP 는 HDLC 의 모양을 빌린 프레임으로 패킷을 감싼다. 와이어샤크에
 <code>ppp</code> 디섹터가 있고 PPP 캡처를 열면 이 필드들이 그대로
 펼쳐진다.</p>
-<pre><code>  7E      FF      03      C0 21        ...정보(가변)...       xx xx    7E
+<pre class="code w2"><code>  7E      FF      03      C0 21        ...정보(가변)...       xx xx    7E
   │       │       │       │                                   │       └ 끝 깃발
   │       │       │       └ 프로토콜: C021=LCP, C023=PAP,      └ FCS (16비트 체크섬)
   │       │       │                   C223=CHAP, 8021=IPCP, 0021=IPv4
@@ -9026,7 +9034,7 @@ AT 명령 체계 전부: 기본·확장·제조사·비공개, 그리고 AT 로 
 연다.</p>
 <p>모뎀을 USB 에 꽂고(외부 DC 전원을 넣은 뒤에야 열거됐다는 이야기는
 9장에 있다) 처음 친 명령은 <code>ATI</code> 였다.</p>
-<pre><code>ATI
+<pre class="code"><code>ATI
 Quectel
 RM520N-GL
 Revision: RM520NGLAAR03A03M4G
@@ -9034,18 +9042,18 @@ OK</code></pre>
 <p><code>I</code> 는 Information 이다. <code>AT</code> 바로 뒤에 글자
 하나가 붙는 이 모양은 1981년 Hayes 모뎀의 문법 그대로이고, 2026년에 만든
 5G 모뎀이 그 명령에 답했다. 이어서 SIM 상태를 물었다.</p>
-<pre><code>AT+CPIN?
+<pre class="code"><code>AT+CPIN?
 +CPIN: READY</code></pre>
 <p>이번에는 <code>AT</code> 뒤에 <code>+</code> 와 이름이 붙는다. 이
 명령은 Hayes 시절에는 없던 것으로, 휴대전화가 생기면서 3GPP 가 정했다.
 그다음 우리는 모뎀이 한국 상용 대역을 뒤지지 못하게 n78 만 보라고
 시켰다.</p>
-<pre><code>AT+QNWPREFCFG=&quot;nr5g_band&quot;,78
+<pre class="code"><code>AT+QNWPREFCFG=&quot;nr5g_band&quot;,78
 OK</code></pre>
 <p><code>+Q</code> 로 시작하는 이 명령은 어떤 표준 문서에도 없다.
 Quectel 이 자기 모뎀에만 만든 것이다. 그리고 IMS 등록 상태를 물으려고
 표준 명령을 쳤더니 이렇게 돌아왔다.</p>
-<pre><code>AT+CIREG?
+<pre class="code"><code>AT+CIREG?
 ERROR</code></pre>
 <p>표준(3GPP TS 27.007)에 분명히 있는 명령인데 이 펌웨어는 모른다고
 했다. 이 모뎀 변종이 IMS 기능을 빼고 나왔기 때문이다(그래서 8장의 전화
@@ -9055,7 +9063,7 @@ ERROR</code></pre>
 표준은 없다.</strong> 서로 다른 기관이 서로 다른 시기에 정한 명령들이
 같은 머리글자 <code>AT</code> 아래 층층이 쌓여 있고, 그 위에 각 펌웨어가
 "나는 이 중 무엇을 구현했다"를 따로 정한다. 층은 넷이다.</p>
-<pre><code>┌──────────────────────────────────────────────────────────────────┐
+<pre class="code w4"><code>┌──────────────────────────────────────────────────────────────────┐
 │ 4층  문서에 없는 명령     펌웨어 안에만 존재. 공장·디버그용          │ ← 보안 문제의 근원(15)
 ├──────────────────────────────────────────────────────────────────┤
 │ 3층  제조사 전용 명령     AT+Q… (Quectel)  AT!… (Sierra)  AT#… …  │ ← 제품 매뉴얼에만
@@ -9343,7 +9351,7 @@ Network Name)이라 부른다. 우리 코어의 SMF 가 <code>internet</code> DN
 먼저 보낸 푸시 메시지가 끼어 있는 것이다. 우리가 카드를 꽂고
 <code>AT+CFUN=1</code> 을 쳤을 때 돌아온 바이트를 줄바꿈을
 <code>||</code> 로 바꿔 한 줄로 보면 이렇다.</p>
-<pre><code>OK||+CPIN: READY||+QUSIM: 1||+QIND: SMS DONE||+C5GREG: 1,&quot;000001&quot;,&quot;00066C000&quot;,11,1,&quot;01&quot;||+QIND: PB DONE</code></pre>
+<pre class="code w3"><code>OK||+CPIN: READY||+QUSIM: 1||+QIND: SMS DONE||+C5GREG: 1,&quot;000001&quot;,&quot;00066C000&quot;,11,1,&quot;01&quot;||+QIND: PB DONE</code></pre>
 <p><code>OK</code> 가 <code>CFUN=1</code> 의 응답이고, 그 뒤 다섯 줄은
 전부 URC 다. 모뎀이 무선부를 켜면서 카드를
 읽고(<code>+CPIN: READY</code>, <code>+QUSIM: 1</code>), 문자 저장소와
@@ -9392,7 +9400,7 @@ Circuit Card Identifier, 카드 자체의 일련번호. 카드 뒷면에 인쇄�
 <p><code>AT+QMBNCFG="List"</code> 는 <strong>통신사
 프로파일</strong>(MBN, 모뎀 설정 묶음) 목록이다. 처음 받은 모뎀은 이렇게
 답했다.</p>
-<pre><code>+QMBNCFG: &quot;List&quot;,0,1,1,&quot;Commercial-KDDI&quot;
+<pre class="code"><code>+QMBNCFG: &quot;List&quot;,0,1,1,&quot;Commercial-KDDI&quot;
 +QMBNCFG: &quot;List&quot;,1,0,0,&quot;ROW_Commercial&quot;
 +QMBNCFG: &quot;List&quot;,5,0,0,&quot;ROW_Generic_3GPP_PTCRB_GCF&quot;</code></pre>
 <p>우리 모뎀은 일본 사업자 KDDI(au 브랜드를 쓰는 일본 2위 통신사)용
@@ -9516,7 +9524,7 @@ USB 로 노출된 바람에 휴대폰이 통째로 넘어간 실제 사례가 �
 전체 여정: 층을 가로질러 따라가기</h2>
 <p><code>AT+QNWPREFCFG="nr5g_band",78</code> 을 쳤을 때 바이트가 어디를
 지나는지, 11 의 그림 위에 이 장의 층 구분을 겹쳐 본다.</p>
-<pre><code>PC (파이썬 pyserial, 또는 셸의 printf &gt; /dev/ttyUSB3)
+<pre class="code"><code>PC (파이썬 pyserial, 또는 셸의 printf &gt; /dev/ttyUSB3)
   │  &quot;AT+QNWPREFCFG=\&quot;nr5g_band\&quot;,78\r&quot;        ← ASCII 31 바이트 + CR
   ▼
 리눅스 커널: tty 계층 → option 드라이버(USB 시리얼) → xHCI 컨트롤러
@@ -9546,7 +9554,7 @@ AT 파서 → &quot;\r\nOK\r\n&quot; → USB 벌크 IN → 커널 → PC</code><
 이고, Redis 로 치면 구독 중에 날아오는 푸시 메시지와 같은 자리다.</p>
 <p>우리가 실험 내내 쓴 것은 셸 함수 하나였다. <code>minicom</code> 이나
 <code>picocom</code> 이 그 머신에 없어서 즉석에서 만들었다.</p>
-<pre class="bash"><code>PORT=/dev/ttyUSB3
+<pre class="code w3" class="bash"><code>PORT=/dev/ttyUSB3
 at() {
   sudo stty -F $PORT 115200 raw -echo 2&gt;/dev/null
   { printf &#39;%s\r&#39; &quot;$1&quot; | sudo tee $PORT &gt;/dev/null; sudo timeout 2 cat $PORT; } 2&gt;/dev/null \
@@ -9572,7 +9580,7 @@ at &quot;ATI&quot;</code></pre>
 결과 코드가 오기 전에 다음을 보내지 않는다. <strong>타임아웃은 명령마다
 다르게</strong> 둔다. 그리고 <strong>시작할 때
 <code>ATE0</code></strong> 을 보낸다. 파이썬으로 쓰면 이 정도다.</p>
-<pre class="python"><code>import serial, re
+<pre class="code w3" class="python"><code>import serial, re
 FINAL = re.compile(rb&#39;^(OK|ERROR|\+CM[ES] ERROR:.*|NO CARRIER|CONNECT.*)$&#39;)
 
 def at(ser, cmd, timeout=5.0):
@@ -9616,7 +9624,7 @@ print(at(ser, &#39;AT+COPS=?&#39;, timeout=180))</code></pre>
 <p>아래는 V.250 과 TS 27.005 의 형식에 따라 <strong>우리가 적어 본
 예시</strong>다. 우리는 이 경로를 실제로 쓰지 않았다(이유는 이 절 끝에
 있다). 독자가 자기 모뎀에서 쳐 보면 번호만 다른 같은 모양이 나온다.</p>
-<pre><code>AT+CMGF=1
+<pre class="code"><code>AT+CMGF=1
 OK
 AT+CMGS=&quot;+8210xxxxxxxx&quot;
 &gt; 안녕하세요&lt;Ctrl-Z&gt;
@@ -9640,7 +9648,7 @@ OK</code></pre>
 <code>tools/ims_call.py</code> 의 <code>encode_sms_submit()</code> 으로
 바로 이것을 만들었다. 시험 번호 B(<code>821099994532</code>)로 "테스트
 ABC" 를 보낸 TPDU 를 헤더 해부하듯 열어 본다.</p>
-<pre><code>01 00 0C 91 28 01 99 99 54 23 00 08 0E D1 4C C2 A4 D2 B8 00 20 00 41 00 42 00 43
+<pre class="code w4"><code>01 00 0C 91 28 01 99 99 54 23 00 08 0E D1 4C C2 A4 D2 B8 00 20 00 41 00 42 00 43
 │  │  │  │  └──────┬───────┘  │  │  │  └────────────────────┬───────────────────┘
 │  │  │  │      TP-DA 번호     │  │  │          TP-UD 본문 14 바이트
 │  │  │  │  (니블 뒤집힌 BCD)  │  │  └ TP-UDL 본문 길이 0x0E = 14
@@ -9672,7 +9680,7 @@ Identifier) 0 은 일반 문자, <strong>TP-DCS</strong>(Data Coding Scheme)
 공백, <code>00 41 00 42 00 43</code> = ABC. 모두 27 바이트다.</p>
 <p>이 바이트를 AT PDU 모드로 보내면 이렇게 된다(역시 형식에 따라 적은
 예시다).</p>
-<pre><code>AT+CMGF=0
+<pre class="code"><code>AT+CMGF=0
 OK
 AT+CMGS=27
 &gt; 0001000C9128019999542300080ED14CC2A4D2B80020004100420043&lt;Ctrl-Z&gt;
@@ -9693,13 +9701,13 @@ SMSC 부분을 빼고 세라고 정해서, 문자열은 28 바이트인데 명�
 문자를 중계하는 계층. TS 24.011)(<code>00 01 00 00 1B</code> — 종류,
 참조 번호, 발신 주소 길이 0, 수신 주소 길이 0, 뒤 TPDU 길이 27)를 붙여
 SIP MESSAGE 의 본문에 넣었다.</p>
-<pre><code>MESSAGE sip:…@ims.mnc001.mcc001.3gppnetwork.org SIP/2.0
+<pre class="code"><code>MESSAGE sip:…@ims.mnc001.mcc001.3gppnetwork.org SIP/2.0
 Content-Type: application/vnd.3gpp.sms
 Content-Length: 32
 
 [RP-DATA 5 바이트][위와 같은 TPDU 27 바이트]</code></pre>
 <p>두 경로를 누가 어디서 처리하는지 나란히 놓으면 이렇다.</p>
-<pre><code>AT 경로 (SMS over NAS)                       IMS 경로 (SMS over IMS, 우리가 실제로 쓴 것)
+<pre class="code w4"><code>AT 경로 (SMS over NAS)                       IMS 경로 (SMS over IMS, 우리가 실제로 쓴 것)
 ───────────────────────────────              ─────────────────────────────────────────
 PC: AT+CMGS + 16진 문자열                    ims_call.py: TPDU + RP-DATA 를 SIP MESSAGE 본문으로
 모뎀 펌웨어: TPDU 를 RP → CP 계층으로 감쌈    호스트 IP 스택 → wwan0 → 모뎀은 그냥 IP 패킷으로 운반
@@ -9726,7 +9734,7 @@ SMSF 를 붙이고 <code>AT+CMGF=1</code>, <code>AT+CMGS</code> 로 보내 AMF
 <p>문자가 도착하면 모뎀은 URC 를 낸다. 아래도 형식 예시다 — 우리
 모뎀으로 문자를 받아 본 기록은 없다(IMS 경로로 받은 것은 8장의 소프트 UA
 였다).</p>
-<pre><code>+CMTI: &quot;SM&quot;,3                ← SIM 메모리 3번 칸에 새 문자
+<pre class="code"><code>+CMTI: &quot;SM&quot;,3                ← SIM 메모리 3번 칸에 새 문자
 AT+CMGR=3                    ← 3번 읽기
 +CMGR: &quot;REC UNREAD&quot;,&quot;+8210…&quot;,,&quot;26/10/14,01:08:51+36&quot;
 안녕하세요
@@ -9861,7 +9869,7 @@ PC 에 넘기는 길이 어떻게 진화했는지, 그리고 리눅스 데스크
 그대로, 데이터 세션을 켜고(<code>AT+CGACT=1,1</code>), 받은 주소를
 묻고(<code>AT+CGPADDR</code>), Quectel 전용 핑 명령으로 인터넷이 되는지
 확인했다.</p>
-<pre><code>CGACT  -&gt; OK
+<pre class="code w2"><code>CGACT  -&gt; OK
 CGPADDR-&gt; +CGPADDR: 1,&quot;10.45.0.2&quot;||OK
 ping   -&gt; OK||+QPING: 0,&quot;8.8.8.8&quot;,32,63,255||+QPING: 0,&quot;8.8.8.8&quot;,32,58,255||...
           ||+QPING: 0,4,4,0,58,70,62</code></pre>
@@ -9876,12 +9884,12 @@ ping   -&gt; OK||+QPING: 0,&quot;8.8.8.8&quot;,32,63,255||+QPING: 0,&quot;8.8.8.
 된다"이고, "PC 에서 인터넷이 된다"는 아직 아무것도 증명되지 않았다.</p>
 <p>PC 쪽을 보자. 커널은 모뎀이 꽂힐 때 이미 네트워크 장치 하나를 만들어
 두었다. 부팅 로그(<code>dmesg</code>)에 이렇게 찍혀 있었다.</p>
-<pre><code>qmi_wwan 7-1:1.4: cdc-wdm0: USB WDM device
+<pre class="code w4"><code>qmi_wwan 7-1:1.4: cdc-wdm0: USB WDM device
 qmi_wwan 7-1:1.4 wwan0: register &#39;qmi_wwan&#39; at usb-0000:c8:00.4-1, WWAN/QMI device, 5a:9c:6d:12:7c:c1</code></pre>
 <p><code>wwan0</code> 이 그 장치다. 상태를 보니 내려가 있었고, 옆의
 sysfs 파일 하나가 <code>Y</code> 를 말하고 있었다(이 <code>Y</code> 의
 뜻은 14.6 에서 푼다).</p>
-<pre><code>$ ip -br addr show wwan0
+<pre class="code"><code>$ ip -br addr show wwan0
 wwan0            DOWN
 $ cat /sys/class/net/wwan0/qmi/raw_ip
 Y</code></pre>
@@ -9889,12 +9897,12 @@ Y</code></pre>
 핑을 쳤다. 그 전에 Quectel 매뉴얼에서 "모뎀의 데이터 세션을 PC 의
 네트워크 장치에 연결하라"는 명령인 <code>AT+QNETDEVCTL</code> 을 찾아
 시도했는데, 이 펌웨어에서는 셋 다 <code>ERROR</code> 였다.</p>
-<pre><code>QNETDEVCTL? -&gt; ERROR
+<pre class="code"><code>QNETDEVCTL? -&gt; ERROR
 데이터콜 ON -&gt; ERROR          (AT+QNETDEVCTL=1,1,1)
 QNETDEVCTL? -&gt; ERROR</code></pre>
 <p>그래도 장치는 올라가 있으니 패킷이 흐를지 모른다고 생각하고 핑을
 쳤다.</p>
-<pre><code>--- 10.45.0.1 ping statistics ---
+<pre class="code"><code>--- 10.45.0.1 ping statistics ---
 3 packets transmitted, 0 received, 100% packet loss, time 2038ms
 
 wwan0 통계
@@ -10019,7 +10027,7 @@ Configuration)는 13 에서 <code>AT+QMBNCFG</code> 로 본 사업자 프로파�
 관리한다.</p>
 <p>우리가 직접 본 번호 발급 장면도 있다. <code>qmicli --verbose</code>
 를 붙이면 libqmi 가 CTL 과 주고받는 과정을 그대로 찍어 준다.</p>
-<pre><code>[Debug] [/dev/cdc-wdm0] allocating new client ID...
+<pre class="code"><code>[Debug] [/dev/cdc-wdm0] allocating new client ID...
 &lt;&lt;&lt;&lt;&lt;&lt; QMUX:
 &lt;&lt;&lt;&lt;&lt;&lt;   service = &quot;ctl&quot;
 &lt;&lt;&lt;&lt;&lt;&lt;   translated = [ service = &#39;dms&#39; cid = &#39;1&#39; ]
@@ -10037,7 +10045,7 @@ Configuration)는 13 에서 <code>AT+QMBNCFG</code> 로 본 사업자 프로파�
 <p>이제 QMI 메시지를 바이트 단위로 연다. 추상적인 예시 대신, 우리가
 실제로 받은 오류 하나를 기준으로 삼는다. AT 세션이 살아 있는 상태에서
 QMI 로 세션을 올리려 했을 때 <code>qmicli</code> 가 찍은 출력이다.</p>
-<pre><code>error: couldn&#39;t start network: QMI protocol error (14): &#39;CallFailed&#39;
+<pre class="code w2"><code>error: couldn&#39;t start network: QMI protocol error (14): &#39;CallFailed&#39;
 call end reason (1): generic-unspecified
 verbose call end reason (2,241): [internal] interface-in-use-config-match
 [/dev/cdc-wdm0] Client ID not released:
@@ -10051,7 +10059,7 @@ verbose call end reason (2,241): [internal] interface-in-use-config-match
 <p>먼저 요청이다.
 <code>--wds-start-network="ip-type=4,apn=internet"</code> 은 다음
 28바이트가 된다.</p>
-<pre><code> 오프셋  바이트                                        뜻
+<pre class="code w4"><code> 오프셋  바이트                                        뜻
  ─────  ───────────────────────────────────────────  ─────────────────────────────
  QMUX 헤더 (6바이트)
  00     01                                           I/F 종류 = QMUX
@@ -10090,7 +10098,7 @@ Network" 라는 메서드 이름이다. 마지막으로 TLV 들이 온다. APN �
 libqmi 열거형에서 IPv4 다.</p>
 <p>이제 모뎀의 응답이다. 우리가 받은 오류를 같은 방식으로 복원하면
 이렇다.</p>
-<pre><code> QMUX:  01 | 1F 00 | 80 | 01 | 0F                    길이 31, 서비스 → 제어점, WDS, 클라이언트 15
+<pre class="code w4"><code> QMUX:  01 | 1F 00 | 80 | 01 | 0F                    길이 31, 서비스 → 제어점, WDS, 클라이언트 15
  SDU :  02 | 01 00 | 20 00 | 13 00                   응답, 트랜잭션 1, Start Network, TLV 19바이트
  TLV :  02 | 04 00 | 01 00  0E 00                    T=0x02 결과: 실패(1), 오류 14 = CallFailed
         10 | 02 00 | 01 00                           T=0x10 Call End Reason = 1 generic-unspecified
@@ -10111,7 +10119,7 @@ libqmi 의 <code>qmi-errors.h</code> 에서 14번이
 APN(<code>internet</code>), 같은 IP 종류(IPv4)로 AT 가 이미 올려 둔
 세션이 모뎀 안에 살아 있고, 모뎀은 같은 설정의 세션을 두 개 만들지
 않는다. 우리는 이것을 AT 로 먼저 내리려 했다.</p>
-<pre><code>CGACT=0,1 -&gt; ERROR
+<pre class="code"><code>CGACT=0,1 -&gt; ERROR
 CGPADDR   -&gt; +CGPADDR: 1,&quot;10.45.0.2&quot;||OK
 === QMI 데이터콜 재시도 ===
 verbose call end reason (2,241): [internal] interface-in-use-config-match
@@ -10121,7 +10129,7 @@ verbose call end reason (2,241): [internal] interface-in-use-config-match
 16번으로 하나 더 늘었다. 결국 모뎀의 무선 부분을 통째로 껐다
 켜서(<code>AT+CFUN=0</code> → <code>AT+CFUN=1</code>) 모든 세션을 지운
 뒤 QMI 로만 올렸다.</p>
-<pre><code>CFUN=0 -&gt; OK||+QIURC: &quot;pdpdeact&quot;,1||+C5GREG: 0
+<pre class="code w4"><code>CFUN=0 -&gt; OK||+QIURC: &quot;pdpdeact&quot;,1||+C5GREG: 0
 CFUN=1 -&gt; OK||+CPIN: READY||+QUSIM: 1||+QIND: SMS DONE||+C5GREG: 1,&quot;000001&quot;,&quot;00066C000&quot;,11,1,&quot;01&quot;||+QIND: PB DONE
 CGPADDR-&gt; +CGPADDR: 1,&quot;0.0.0.0&quot;||OK
 === QMI start-network ===
@@ -10169,7 +10177,7 @@ QMI Start Network 가 성공했다. 성공 응답에는 결과 TLV(성공 0, 오
 <p>위 28바이트가 <code>qmicli</code> 에서 모뎀 안의 WDS 서버까지 가는
 동안 누가 손을 대는지를 우리 배포의 실제 이름으로 따라간다.
 <code>lsusb -t</code> 에 모뎀이 이렇게 보였다.</p>
-<pre><code>/:  Bus 007.Port 001: Dev 001, Class=root_hub, Driver=xhci_hcd/1p, 480M
+<pre class="code w2"><code>/:  Bus 007.Port 001: Dev 001, Class=root_hub, Driver=xhci_hcd/1p, 480M
     |__ Port 001: Dev 003, If 0, Class=Vendor Specific Class, Driver=option, 480M
     |__ Port 001: Dev 003, If 1, Class=Vendor Specific Class, Driver=option, 480M
     |__ Port 001: Dev 003, If 2, Class=Vendor Specific Class, Driver=option, 480M
@@ -10249,7 +10257,7 @@ USB 인터페이스(<code>...:1.4</code>)에서 나왔음을 확인한다.
 된다. 문제는 <code>qmicli</code> 가 기본적으로 <strong>명령이 끝나면
 번호표를 반납한다</strong>는 것이다. 그래서 세션을 올리는 명령에는
 반드시 이 옵션을 붙여야 한다.</p>
-<pre><code>qmicli -d /dev/cdc-wdm0 --wds-start-network=&quot;ip-type=4,apn=internet&quot; --client-no-release-cid</code></pre>
+<pre class="code w3"><code>qmicli -d /dev/cdc-wdm0 --wds-start-network=&quot;ip-type=4,apn=internet&quot; --client-no-release-cid</code></pre>
 <p><code>--client-no-release-cid</code> 가 없으면
 <code>Network started</code> 가 찍히고 <code>qmicli</code> 가 종료하는
 순간 세션이 내려간다. 옵션을 붙이면 <code>qmicli</code> 는 종료하면서
@@ -10269,7 +10277,7 @@ USB 인터페이스(<code>...:1.4</code>)에서 나왔음을 확인한다.
 <p>8장의 IMS 시험을 위해 모뎀에 IMS 전용 세션을 하나 더 올리려 했다.
 APN(5G 이름으로는 DNN, Data Network Name, "이 세션을 어느 데이터 망에
 붙일 것인가")을 <code>ims</code> 로 주고 Start Network 를 보냈다.</p>
-<pre><code>=== QMI: ims APN 세션 ===
+<pre class="code"><code>=== QMI: ims APN 세션 ===
 [/dev/cdc-wdm0] Network started
     Packet data handle: &#39;3797919664&#39;
         CID: &#39;18&#39;
@@ -10281,12 +10289,12 @@ IPv4 gateway address: 10.45.0.5</code></pre>
 <code>internet</code> 세션은 10.45.0.0/16, <code>ims</code> 세션은
 10.46.0.0/16 에서 주소를 받도록 SMF 를 설정해 두었다(7장). 코어 쪽
 기록을 열었다.</p>
-<pre><code>[smf] INFO: UE SUPI[imsi-001011234567895] DNN[internet] IPv4[10.45.0.4] IPv6[] (../src/smf/npcf-handler.c:647)</code></pre>
+<pre class="code w4"><code>[smf] INFO: UE SUPI[imsi-001011234567895] DNN[internet] IPv4[10.45.0.4] IPv6[] (../src/smf/npcf-handler.c:647)</code></pre>
 <p>SMF 는 이 세션을 <code>internet</code> 으로 받았다. 우리가 TLV
 <code>0x14</code> 에 <code>ims</code> 를 넣어 보냈는데 모뎀이 그것을
 무시하고 기본 프로파일로 세션을 올린 것이다. 모뎀 안에 저장된 프로파일
 목록을 QMI 로 꺼내 봤다.</p>
-<pre><code>Profile list retrieved:
+<pre class="code"><code>Profile list retrieved:
     [1] 3gpp - profile1
         APN: &#39;internet&#39;
         APN type: &#39;default&#39;
@@ -10301,7 +10309,7 @@ IPv4 gateway address: 10.45.0.5</code></pre>
 <p>2번 프로파일이 <code>ims</code> 다. 그래서 APN 문자열 대신 프로파일
 번호를 직접 지정했다(<code>--wds-start-network="3gpp-profile=2"</code>,
 TLV <code>0x31</code> Profile Index 3GPP).</p>
-<pre><code>Network cancelled... releasing resources
+<pre class="code"><code>Network cancelled... releasing resources
 [/dev/cdc-wdm0] Network stopped
 verbose call end reason (3,1140): [cm] (null)</code></pre>
 <p>이번에는 거절이다. 분류 3은 모뎀의 호 관리자(CM)이고, 이유 1140은
@@ -10324,7 +10332,7 @@ IMS 클라이언트가 P-CSCF(172.22.0.21)와 직접 대화하게 했다. 그 �
 이유 없이 죽기 시작했다: ModemManager</h2>
 <p>QMI 로 세션이 올라간 뒤 처리량을 재고 통화 시험을 준비하는 동안,
 링크가 반복해서 죽었다. 어느 순간 핑이 이렇게 됐다.</p>
-<pre><code>2 packets transmitted, 0 received, 100% packet loss, time 1023ms</code></pre>
+<pre class="code"><code>2 packets transmitted, 0 received, 100% packet loss, time 1023ms</code></pre>
 <p>세션을 다시 올리면 몇 분은 되다가 또 죽었다. 이 현상의 주범으로
 지목한 것이 <strong>ModemManager</strong> 다. ModemManager 는 리눅스
 데스크톱·서버에서 모뎀을 자동으로 찾아 인터넷에 붙여 주는 시스템
@@ -10335,7 +10343,7 @@ IMS 클라이언트가 P-CSCF(172.22.0.21)와 직접 대화하게 했다. 그 �
 SIM 을 읽고 망에 등록하고, 요청이 오면 자기 클라이언트 ID 로 데이터
 세션을 올린다. 그리고 AT 포트를 열어 둔 채 URC 를 계속 듣는다. 우리
 모뎀이 처음 꽂혔을 때 <code>mmcli -m</code> 출력이 그 분류 결과다.</p>
-<pre><code>  System   |                drivers: qmi_wwan, option
+<pre class="code w2"><code>  System   |                drivers: qmi_wwan, option
            |                 plugin: quectel
            |           primary port: cdc-wdm0
            |                  ports: cdc-wdm0 (qmi), ttyUSB0 (ignored), ttyUSB1 (gps),
@@ -10347,7 +10355,7 @@ SIM 을 읽고 망에 등록하고, 요청이 오면 자기 클라이언트 ID �
 <p>ModemManager 는 "이 모뎀은 내 것"이라는 전제로 돈다. 그래서 우리와 세
 군데서 부딪혔다. 첫째, AT 포트를 쥐고 있었다. 처음 AT 를 보내려 했을 때
 응답이 비어서 돌아왔고, 포트를 누가 쥐고 있는지 봤더니 이랬다.</p>
-<pre><code>                     사용자      PID 접근 명령
+<pre class="code"><code>                     사용자      PID 접근 명령
 /dev/ttyUSB2:        root       1416 F.... ModemManager
 /dev/ttyUSB3:        root       1416 F.... ModemManager</code></pre>
 <p>시리얼 포트는 한 바이트 스트림이라 두 프로세스가 동시에 읽으면 먼저
@@ -10363,7 +10371,7 @@ ModemManager 가 먼저 읽어 간 것이다. 둘째, 자기 방식으로 세션
 그 안에서 AT·QMI 작업을 하고, 끝나면 그 프로세스를 죽이는 식으로
 스크립트를 짰다.</p>
 <p>그런데 그 스크립트의 출력에는 매번 이런 줄이 섞여 있었다.</p>
-<pre><code>[1]+  나감 1                sudo mmcli --inhibit-device=&quot;$DEV&quot; &gt; /dev/null 2&gt;&amp;1</code></pre>
+<pre class="code w2"><code>[1]+  나감 1                sudo mmcli --inhibit-device=&quot;$DEV&quot; &gt; /dev/null 2&gt;&amp;1</code></pre>
 <p>bash 가 알려 주는 "백그라운드 작업 1번이 종료 코드 1로 끝났다"는
 줄이다. 즉 <strong>inhibit 를 걸어 둔 줄 알았던 프로세스가 이미 실패해서
 죽어 있던 경우가 있었다.</strong> 당시에는 이 줄을 읽지 않고 지나갔다.
@@ -10393,7 +10401,7 @@ ModemManager 가 다시 잡을 때 정확히 어떤 QMI 메시지로 무엇을
 관리자이고, ModemManager 는 장치에 <code>ID_MM_DEVICE_IGNORE=1</code>
 이라는 속성이 붙어 있으면 손대지 않는다. 이 속성은 ModemManager 가 바로
 이런 용도로 사용자에게 열어 둔 약속이다.</p>
-<pre><code># /etc/udev/rules.d/99-private5g-modem-ignore.rules
+<pre class="code w4"><code># /etc/udev/rules.d/99-private5g-modem-ignore.rules
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;usb&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;net&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;</code></pre>
@@ -10403,7 +10411,7 @@ ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;net&quot;, ATTRS{idVendor}==&qu
 읽히고(<code>udevadm control --reload</code>), 이미 꽂힌 장치에 다시
 적용하고(<code>udevadm trigger --action=change</code>), ModemManager 를
 재시작한 뒤 확인했다.</p>
-<pre><code>=== ModemManager 가 보는 모뎀 (없어야 정상) ===
+<pre class="code"><code>=== ModemManager 가 보는 모뎀 (없어야 정상) ===
 No modems were found
 === AT 포트 점유 (비어야 정상) ===
 (출력 없음)</code></pre>
@@ -10475,7 +10483,7 @@ No modems were found
 <p>raw IP 의 대가는 <strong>DHCP 가 없다</strong>는 것이다. 이더넷
 흉내가 없으니 그 위의 DHCP 도 없다. IP 는 QMI 의 Get Current Settings 로
 묻고 손으로 붙인다. 우리가 한 그대로다.</p>
-<pre><code>qmicli -d /dev/cdc-wdm0 --wds-get-current-settings --client-cid=17 --client-no-release-cid
+<pre class="code w3"><code>qmicli -d /dev/cdc-wdm0 --wds-get-current-settings --client-cid=17 --client-no-release-cid
                                           # 10.45.0.3, 마스크 255.255.255.248, 게이트웨이 10.45.0.4
 ip link set wwan0 up
 ip addr add 10.45.0.3/29 dev wwan0
@@ -10489,7 +10497,7 @@ PC 의 IP 스택을 만족시키려고, 받은 주소 주변으로 8칸짜리 �
 상대는 7장의 UPF 다.</p>
 <p>이 가짜 게이트웨이가 얼마나 가짜인지 우리 기록 하나가 보여 준다. 몇
 번째 재연결에서 모뎀은 이렇게 답했다.</p>
-<pre><code>IP=10.45.0.7 GW=10.45.0.8
+<pre class="code"><code>IP=10.45.0.7 GW=10.45.0.8
 Error: Nexthop has invalid gateway.
 3 packets transmitted, 3 received, 0% packet loss</code></pre>
 <p><code>10.45.0.7/29</code> 의 서브넷은
@@ -10792,7 +10800,7 @@ ModemManager 의 변경 기록 파일, <code>raw_ip</code>·<code>add_mux</code>
 <h2 id="151-이-질문이-처음-떠오른-순간">15.1 이 질문이 처음 떠오른
 순간</h2>
 <p>14 에서 ModemManager 가 AT 포트를 쥐고 있던 장면을 다시 보자.</p>
-<pre><code>                     사용자      PID 접근 명령
+<pre class="code"><code>                     사용자      PID 접근 명령
 /dev/ttyUSB2:        root       1416 F.... ModemManager
 /dev/ttyUSB3:        root       1416 F.... ModemManager</code></pre>
 <p>우리는 이것을 "방해꾼"으로 봤지만, 보안의 눈으로 다시 읽으면 다른
@@ -10806,7 +10814,7 @@ ModemManager 의 변경 기록 파일, <code>raw_ip</code>·<code>add_mux</code>
 로그인도, 세션 토큰도 없다. 접근 통제는 <strong>PC 쪽 파일 권한
 하나</strong>에 전부 걸려 있다.</p>
 <p>그 파일 권한을 우리 박스에서 확인했다.</p>
-<pre><code>crw------- 1 root root    180, 0 10월 13 23:13 /dev/cdc-wdm0
+<pre class="code"><code>crw------- 1 root root    180, 0 10월 13 23:13 /dev/cdc-wdm0
 crw-rw---- 1 root dialout 188, 0 10월 14 00:41 /dev/ttyUSB0
 crw-rw---- 1 root dialout 188, 1 10월 14 00:41 /dev/ttyUSB1
 crw-rw---- 1 root dialout 188, 2 10월 14 00:41 /dev/ttyUSB2
@@ -10823,7 +10831,7 @@ crw-rw---- 1 root dialout 188, 3 10월 14 00:41 /dev/ttyUSB3</code></pre>
 가 될 수 있는 사람과 <code>dialout</code> 그룹에 들어간
 사람</strong>이다.</p>
 <p>그런데 같은 박스에서 <code>id</code> 를 쳐 보면 하나가 더 보인다.</p>
-<pre><code>uid=1000(user) ... groups=...,27(sudo),...,124(docker),...</code></pre>
+<pre class="code"><code>uid=1000(user) ... groups=...,27(sudo),...,124(docker),...</code></pre>
 <p><code>docker</code> 그룹이다. 도커 데몬은 root 로 돌고,
 <code>docker</code> 그룹 사용자는 그 데몬에게 "호스트의
 <code>/dev</code> 를 넘겨받는 특권 컨테이너를 띄워 달라"고 요청할 수
@@ -10840,7 +10848,7 @@ crw-rw---- 1 root dialout 188, 3 10월 14 00:41 /dev/ttyUSB3</code></pre>
 <p>경계를 찾으러 실험실 설정을 다시 읽다가, 위 목록보다 넓은 구멍을 하나
 발견했다. 기지국 컨테이너의
 정의다(<code>upstream/srsgnb.yaml</code>).</p>
-<pre class="yaml"><code>  srsgnb:
+<pre class="code" class="yaml"><code>  srsgnb:
     image: docker_srsran
     container_name: srsgnb
     privileged: true
@@ -11025,7 +11033,7 @@ ModemManager 는 포트를 쥐고 세션을 건드린다. udev 규칙
 실험실 코어·IMS·SMSC 로 들어오는 길은 열지 않았다고 우리는 믿었다. 이
 책을 검수하며 <code>docker ps</code> 의 포트 칸을 다시 읽어 보니 그렇지
 않았다.</p>
-<pre><code>pyhss    3875/sctp, 3875/tcp, 0.0.0.0:8080-&gt;8080/tcp, [::]:8080-&gt;8080/tcp
+<pre class="code"><code>pyhss    3875/sctp, 3875/tcp, 0.0.0.0:8080-&gt;8080/tcp, [::]:8080-&gt;8080/tcp
 webui    0.0.0.0:9999-&gt;9999/tcp
 grafana  0.0.0.0:3000-&gt;3000/tcp
 metrics  0.0.0.0:9090-&gt;9090/tcp</code></pre>
@@ -11175,7 +11183,7 @@ id="16-엔지니어-모드-완전-해부-화면에-뜨는-모든-용어를-하�
 <p>휴대폰에는 숨은 화면이 있다. 전화 앱에 특정 번호를 누르면 뜨는 서비스
 모드, 필드 테스트, 엔지니어 모드라고 불리는 화면이다. 거기에는 이런
 글자가 수십 줄 뜬다.</p>
-<pre><code>RSRP -87  RSRQ -11  SINR 14  PCI 233  NR-ARFCN 640008  TAC 0x1A2B
+<pre class="code"><code>RSRP -87  RSRQ -11  SINR 14  PCI 233  NR-ARFCN 640008  TAC 0x1A2B
 CQI 12  MCS 20  RI 2  BLER 3%  EN-DC  Band n78  BW 100MHz</code></pre>
 <p>이 글자들은 지금까지 통신사 엔지니어의 전유물이었다. 이 절의 목적은
 그 전유물을 없애는 것이다. 화면에 뜨는 모든 항목에 대해 다섯 가지를
@@ -11202,14 +11210,14 @@ Field Test 안내 기준이다). 안 열리면 모델명으로 검색한다.</p>
 80 으로 두고, 모뎀이 <strong>망에 등록만 된 상태</strong>에서 읽은 줄과
 <strong>데이터 세션을 올린 뒤</strong> 읽은 줄이다(한국 시간 23시 20분과
 23시 23분).</p>
-<pre><code>세션 없음  +QENG: &quot;servingcell&quot;,&quot;NOCONN&quot;,&quot;NR5G-SA&quot;,&quot;TDD&quot;,001,01,00066C000,1,1,623040,78,3,-110,-10,11,1,30
+<pre class="code w3"><code>세션 없음  +QENG: &quot;servingcell&quot;,&quot;NOCONN&quot;,&quot;NR5G-SA&quot;,&quot;TDD&quot;,001,01,00066C000,1,1,623040,78,3,-110,-10,11,1,30
 세션 있음  +QENG: &quot;servingcell&quot;,&quot;NOCONN&quot;,&quot;NR5G-SA&quot;,&quot;TDD&quot;,001,01,00066C000,1,1,623040,78,3,-71,-10,18,1,-</code></pre>
 <p>같은 케이블, 같은 게인인데 RSRP 가 39 dB 다르고 마지막 칸이
 <code>30</code> 에서 <code>-</code> 로 바뀌었다. 왜 그런지는 1.5절에서
 확정했다. 이 장에서는 각 칸이 무엇인지에 집중한다.</p>
 <p>Quectel 매뉴얼(RM520N 용 V1.0.0)이 정한 SA 모드 응답의 필드 순서는
 이렇다.</p>
-<pre><code>+QENG: &quot;servingcell&quot;,&lt;state&gt;,&quot;NR5G-SA&quot;,&lt;duplex_mode&gt;,&lt;MCC&gt;,&lt;MNC&gt;,&lt;cellID&gt;,&lt;PCID&gt;,&lt;TAC&gt;,&lt;ARFCN&gt;,&lt;band&gt;,&lt;NR_DL_bandwidth&gt;,&lt;RSRP&gt;,&lt;RSRQ&gt;,&lt;SINR&gt;,&lt;scs&gt;,&lt;srxlev&gt;</code></pre>
+<pre class="code w4"><code>+QENG: &quot;servingcell&quot;,&lt;state&gt;,&quot;NR5G-SA&quot;,&lt;duplex_mode&gt;,&lt;MCC&gt;,&lt;MNC&gt;,&lt;cellID&gt;,&lt;PCID&gt;,&lt;TAC&gt;,&lt;ARFCN&gt;,&lt;band&gt;,&lt;NR_DL_bandwidth&gt;,&lt;RSRP&gt;,&lt;RSRQ&gt;,&lt;SINR&gt;,&lt;scs&gt;,&lt;srxlev&gt;</code></pre>
 <p>휴대폰의 엔지니어 모드와 이 한 줄은 <strong>같은 측정값을 다르게 그린
 것</strong>이다. 휴대폰은 칸마다 이름표를 붙이고 단위를 붙여 그리고,
 모뎀은 쉼표로 이어 붙인다. 이 줄을 끝까지 읽을 수 있으면 엔지니어 모드의
@@ -11289,17 +11297,18 @@ Area Code, 추적 영역 코드)다. 왜 이런 번호가 필요한지부터 보
 전원을 켠 채 데이터를 주고받지 않고 쉬고 있을 때(아래 RRC IDLE), 망은
 단말이 <strong>정확히 어느 셀</strong>에 있는지 추적하지 않는다. 그렇게
 하려면 단말이 셀을 옮길 때마다 보고해야 해서 배터리가 닳는다. 대신 망은
-**대략 어느 구역(Tracking Area)**에 있는지만 안다. 전화가 오면 그 구역의
-모든 셀에서 단말을 한꺼번에 부른다(<strong>페이징</strong>). TAC 가 그
-구역의 번호다. 우리 설정은 <code>tac: 1</code> 이고, 모뎀의
-<code>+C5GREG</code> 응답에는 16진 <code>"000001"</code> 로 나온다(5G 는
-24비트, LTE 는 16비트였다). 설계의 긴장은 구역 크기에 있다. 너무 작게
-자르면 단말이 구역을 넘을 때마다 "나 여기 있어요"(Tracking Area
-Update)를 보내 배터리와 시그널링을 먹고, 너무 크게 잡으면 전화 한 통에
-수천 셀이 페이징을 뿌려 망이 바쁘다. 그 절충이 사업자의 설계값이다.
-실험실에서 반드시 기억할 것은 <strong>기지국의 TAC 와 코어(AMF)의 TAC 가
-다르면 등록이 거절된다</strong>는 점이다. 우리 설정에서 <code>tac</code>
-플레이스홀더가 환경 변수로 양쪽에 같이 들어가는 이유다.</p>
+<strong>대략 어느 구역</strong>(Tracking Area)에 있는지만 안다. 전화가
+오면 그 구역의 모든 셀에서 단말을 한꺼번에
+부른다(<strong>페이징</strong>). TAC 가 그 구역의 번호다. 우리 설정은
+<code>tac: 1</code> 이고, 모뎀의 <code>+C5GREG</code> 응답에는 16진
+<code>"000001"</code> 로 나온다(5G 는 24비트, LTE 는 16비트였다). 설계의
+긴장은 구역 크기에 있다. 너무 작게 자르면 단말이 구역을 넘을 때마다 "나
+여기 있어요"(Tracking Area Update)를 보내 배터리와 시그널링을 먹고, 너무
+크게 잡으면 전화 한 통에 수천 셀이 페이징을 뿌려 망이 바쁘다. 그 절충이
+사업자의 설계값이다. 실험실에서 반드시 기억할 것은 <strong>기지국의 TAC
+와 코어(AMF)의 TAC 가 다르면 등록이 거절된다</strong>는 점이다. 우리
+설정에서 <code>tac</code> 플레이스홀더가 환경 변수로 양쪽에 같이
+들어가는 이유다.</p>
 <p>🔎 지금 할 일: <code>AT+C5GREG?</code> 응답의 NCI 와 AMF
 로그(<code>docker exec amf tail ...</code>)의 Cell Identity 가 같은지
 맞춰 보라. 무선 화면과 코어 로그가 한 번호로 꿰어지는 것을 눈으로
@@ -11469,7 +11478,7 @@ SINR 이 15 면 꽤 빠르다. 속도를 예측하려면 SINR 을 보라. 다만
 이고 SINR 도 같은 순서다. <strong>PRX</strong>(Primary Receive)가 주
 경로(ANT1), <strong>DRX</strong>(Diversity Receive)가 다이버시티
 경로(ANT2), RX2·RX3 이 나머지 두 단자다. 우리 실험실 값은 이랬다.</p>
-<pre><code>AT+QRSRP  -&gt;  +QRSRP: -112,-103,-102,-71,NR5G
+<pre class="code"><code>AT+QRSRP  -&gt;  +QRSRP: -112,-103,-102,-71,NR5G
 AT+QSINR  -&gt;  +QSINR: 11,19,-20,-20,NR5G</code></pre>
 <table>
 <thead>
@@ -11564,7 +11573,7 @@ SEARCH, LIMSRV</h3>
 줄 읽기</h3>
 <p>같은 정보를 더 자세히 보는 명령이 <code>AT+C5GREG?</code> 다. 우리
 응답은 이랬다.</p>
-<pre><code>+C5GREG: 2,1,&quot;000001&quot;,&quot;00066C000&quot;,11,1,&quot;01&quot;</code></pre>
+<pre class="code"><code>+C5GREG: 2,1,&quot;000001&quot;,&quot;00066C000&quot;,11,1,&quot;01&quot;</code></pre>
 <p>앞에서부터 읽으면, 첫 <code>2</code> 는 "URC 를 상세 모드로 켜 둠",
 다음 <code>1</code> 은 등록 상태(stat)로 1 이면 홈 망에 등록됨(0 미등록,
 2 찾는 중, 3 거절, 5 로밍 등록)이다. 그다음 <code>"000001"</code> 이
@@ -11717,7 +11726,7 @@ LG유플러스의 NR 단독 셀(AcT 12)까지 떴다는 것은, 케이블로 닫
 <h2 id="169-한-줄을-통째로-읽기">16.9 한 줄을 통째로 읽기</h2>
 <p>이제 기준으로 삼은 응답을 처음부터 끝까지 한 문장으로 읽는다. 이
 문장을 <strong>남에게 말할 수 있으면</strong> 이 절은 끝난 것이다.</p>
-<pre><code>+QENG: &quot;servingcell&quot;,&quot;NOCONN&quot;,&quot;NR5G-SA&quot;,&quot;TDD&quot;,001,01,00066C000,1,1,623040,78,3,-71,-10,19,1,-</code></pre>
+<pre class="code w3"><code>+QENG: &quot;servingcell&quot;,&quot;NOCONN&quot;,&quot;NR5G-SA&quot;,&quot;TDD&quot;,001,01,00066C000,1,1,623040,78,3,-71,-10,19,1,-</code></pre>
 <p>"등록은 됐고 지금은 쉬는 상태(NOCONN)다. 5G 단독 모드(SA)로, 시간
 분할(TDD) 방식의 시험용 망(001-01)에 붙어 있다. 셀 식별자는
 0x66C000(411번 기지국의 0번 셀), 물리 셀 번호는 1, 추적 영역은 1 이다.
@@ -11728,7 +11737,7 @@ LG유플러스의 NR 단독 셀(AcT 12)까지 떴다는 것은, 케이블로 닫
 측정은 <strong>데이터가 흐르는 중</strong>에 잰 것이다." 휴대폰 엔지니어
 모드의 화면도 이름만 다를 뿐 정확히 같은 문장으로 읽힌다.</p>
 <p>🔎 지금 당신의 장비에서. 이 장의 모든 칸을 한 번에 꺼내 본다.</p>
-<pre class="bash"><code>at &#39;AT+QENG=&quot;servingcell&quot;&#39;
+<pre class="code" class="bash"><code>at &#39;AT+QENG=&quot;servingcell&quot;&#39;
 at &#39;AT+QRSRP&#39;; at &#39;AT+QSINR&#39;</code></pre>
 <p>첫 줄의 칸들을 16.2~16.7 의 순서로 하나씩 짚어 읽고, 둘째 줄과
 비교한다. <strong>한 줄 안의 RSRP 와 SINR 이 서로 다른 안테나의 값일 수
@@ -12048,11 +12057,11 @@ RSRP 를 경로별로 적는 이유는 1.8 에 있다 — 모뎀이 화면에 �
 <p>처리량은 <strong>단말에서 UPF 까지</strong>를 잰다. 그 구간이 무선과
 터널을 전부 포함하고, 그 뒤(인터넷)는 우리 망이 아니다. 그래서 iperf3
 서버를 <strong>UPF 컨테이너 안에서 ogstun 주소에</strong> 띄운다.</p>
-<pre><code>docker exec -d upf iperf3 -s -B 10.45.0.1 -p 5201</code></pre>
+<pre class="code"><code>docker exec -d upf iperf3 -s -B 10.45.0.1 -p 5201</code></pre>
 <p>클라이언트는 호스트에서 <code>wwan0</code> 의 주소에 바인딩해 띄운다.
 바인딩하지 않으면 호스트의 기본 경로(이더넷)로 나가서 무선을 타지 않은
 숫자가 나온다.</p>
-<pre><code>iperf3 -c 10.45.0.1 -p 5201 -B 10.45.0.3 -R -t 15 -i 5      # DL (서버→클라이언트)
+<pre class="code w2"><code>iperf3 -c 10.45.0.1 -p 5201 -B 10.45.0.3 -R -t 15 -i 5      # DL (서버→클라이언트)
 iperf3 -c 10.45.0.1 -p 5201 -B 10.45.0.3    -t 15 -i 5      # UL
 iperf3 -c 10.45.0.1 -p 5201 -B 10.45.0.3 -R -u -b 100M -t 15  # DL UDP</code></pre>
 <p><code>-R</code> 이 방향을 뒤집는다. 서버가 보내고 클라이언트가 받으니
@@ -12063,7 +12072,7 @@ iperf3 -c 10.45.0.1 -p 5201 -B 10.45.0.3 -R -u -b 100M -t 15  # DL UDP</code></p
 <p>아래는 전부 [측정] 이다. 이 절에서 <strong>계산으로 얻은 값은 하나도
 없다</strong> — 상한과 비교하는 것은 블록 다음 문단에서 하고, 거기
 숫자에는 [추정] 이 붙어 있다.</p>
-<pre><code>DL TCP   지속 구간 55.4 / 55.2 Mbps   전체 평균 50.1 Mbps   재전송 1017
+<pre class="code w2"><code>DL TCP   지속 구간 55.4 / 55.2 Mbps   전체 평균 50.1 Mbps   재전송 1017
 UL TCP   지속 구간 11.3 / 8.58 Mbps   전체 평균 7.6~9.0 Mbps
 RTT      33~43 ms (평균 37.9)
 조건     tx_gain 80, 20 MHz, 1T1R, USB 오류 0, 15 초
@@ -12147,14 +12156,14 @@ TCP 보다 <strong>눈에 띄게 높으면</strong>(10% 이상) 상향 ACK 병�
 앞 단계가 통과해야 의미가 있다.</p>
 <p><strong>등록부터.</strong> 통화를 시험하기 전에 양쪽이 IMS 에 올라와
 있어야 한다.</p>
-<pre class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; reg-a      # 발신 쪽
+<pre class="code" class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; reg-a      # 발신 쪽
 python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; reg-b      # 착신 쪽</code></pre>
 <p><code>200 OK</code> 와 <code>P-Associated-URI</code> 가 나오면
 통과다. <code>412</code> 가 나오면 세션 IP 나 5QI 문제이고(8.4 벽 ①),
 거기서 멈춰야 한다. 등록이 안 된 채로 INVITE 를 보내면 그 실패는 정보가
 아니다.</p>
 <p><strong>통화.</strong> 착신을 먼저 띄우고 발신을 건다.</p>
-<pre class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; callee 10   # 먼저
+<pre class="code" class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; callee 10   # 먼저
 python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; caller 10   # 그다음</code></pre>
 <p>⚠️ <strong>여기서 도구의 "통화 성립 ✅" 를 믿으면 안 된다.</strong>
 18 장 사례 20 의 네 번째 원인이 그것이었다 — SDP 응답이 <code>183</code>
@@ -12195,7 +12204,7 @@ python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; caller 10   # 그다�
 통화를 실패로 읽는다.</p>
 <p><strong>문자.</strong> 짧은 것과 긴 것을 따로 시험해야 한다. 둘이
 다른 경로를 타기 때문이다.</p>
-<pre class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; sms-recv                       # 받는 쪽 대기
+<pre class="code w3" class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; sms-recv                       # 받는 쪽 대기
 python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; sms-send 3 &lt;대상 SIP URI&gt; &#39;&lt;본문&gt;&#39; &lt;번호&gt;
 python3 tools/ims_sms_mt.py 172.22.0.20 &lt;착신&gt; &lt;발신&gt; &#39;&lt;67자 넘는 본문&gt;&#39;       # UDH 살린 긴 문자</code></pre>
 <p>짧은 문자는 <code>202 Accepted</code> 와 단말 수신까지, 긴 문자는
@@ -12205,7 +12214,7 @@ python3 tools/ims_sms_mt.py 172.22.0.20 &lt;착신&gt; &lt;발신&gt; &#39;&lt;6
 다</strong> 쓰므로, 데이터 세션이 살아 있는지부터 본다(17.2 의 11 단계).
 영상은 음성 통화에 <code>VIDEO=1</code> 하나를 더한 것이고, 가입자 DB 에
 5QI 2 규칙 행이 있어야 한다(7.8).</p>
-<pre class="bash"><code>VIDEO=1 python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; caller 20
+<pre class="code" class="bash"><code>VIDEO=1 python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; caller 20
 docker logs rtpengine 2&gt;&amp;1 | tail            # 스트림이 두 쌍 잡히는가</code></pre>
 <p>🔎 지금 당신의 장비에서. 서비스 시험이 막히면 <strong>누가
 거절했는지</strong>부터 가른다.
@@ -12259,7 +12268,7 @@ SINR 이 떨어지는 <strong>꺾임</strong>이 있다. 꺾임의 위쪽이 증
 수신기 쪽으로는 송신되지 않는다. 그리고 송신기가 쓰이는 동안에는
 <code>uhd_find_devices</code> 에 <strong>수신기만</strong> 보인다. 한
 대만 보인다고 나머지가 빠진 것으로 읽지 말아야 한다.</p>
-<pre class="bash"><code>sudo python3 tools/leakscan.py RF01FPI 60 \
+<pre class="code" class="bash"><code>sudo python3 tools/leakscan.py RF01FPI 60 \
   3350010000:&quot;우리셀&quot; 3345600000:&quot;SSB&quot; 3300000000:&quot;기준&quot;</code></pre>
 <p>수신 게인 60 dB, 대역 2 MHz, 포트마다 40 만 샘플을 받아 앞 10%
 (게인·주파수 설정이 안정되는 구간)를 버리고 평균 전력을 낸다. 세 번째
@@ -12508,7 +12517,7 @@ SINR 이 떨어지는 <strong>꺾임</strong>이 있다. 꺾임의 위쪽이 증
 <strong>[추정]</strong> 인지를 적는다 — 이 책이 그렇게 쓰는 이유는, 둘을
 섞어 적은 기록이 나중에 "상한을 못 넘었다"와 "계산이 틀렸다" 중 어느
 쪽인지 가르지 못하게 만들기 때문이다.</p>
-<pre><code>측정:    DL TCP 처리량
+<pre class="code w3"><code>측정:    DL TCP 처리량
 값:      55.4 Mbps (지속 구간), 50.1 Mbps (15 초 평균), 재전송 1017
 조건:    tx_gain 80, 20 MHz, SCS 30, 1T1R, TDD 기본(6D+S+3U), USB 3 (오류 0 줄)
 신호:    PRX −112 dBm/SINR 11, DRX −103 dBm/SINR 19, RSRQ −10 dB (QRSRP·QSINR, 측정 직전)
@@ -12524,7 +12533,7 @@ SINR 이 떨어지는 <strong>꺾임</strong>이 있다. 꺾임의 위쪽이 증
 단계의 출력을 적는다. 그 번호가 당신이 펴야 할 장이다.</p>
 <p>막히기 전에 한 번 돌려 두면 좋은 것이 있다. 지금 상태를 통째로 찍어
 두는 것이다.</p>
-<pre class="bash"><code>$P5/bin/selftest.sh                                   # 단계별 자동 점검(9.9)
+<pre class="code w2" class="bash"><code>$P5/bin/selftest.sh                                   # 단계별 자동 점검(9.9)
 docker ps --format &#39;{{.Names}}\t{{.Status}}&#39; | sort   # 조각들이 다 떠 있나
 at &#39;AT+QENG=&quot;servingcell&quot;&#39;; at &#39;AT+QRSRP&#39;             # 지금 신호</code></pre>
 <p>이 세 줄의 출력을 <strong>잘 돌 때 한 번</strong> 남겨 두면, 나중에
@@ -12603,7 +12612,7 @@ B210(<code>RF01FPI</code>)은 <code>bcdUSB 3.00</code>, 5000M</strong>
 으로 떠 있었다. 즉 "이 호스트에서 B210 이 USB 3 로 뜨는 것은 가능하다"는
 대조군이 이미 있었다. 그 장치의 케이블을 뽑아 문제의
 장치(<code>5JKRCXX</code>)에 꽂았다.</p>
-<pre><code>[INFO] [B200] Operating over USB 3.
+<pre class="code"><code>[INFO] [B200] Operating over USB 3.
 002:002  bcdUSB 3.00  iProduct USRP B200  iSerial 5JKRCXX</code></pre>
 <p><strong>원인.</strong> <code>5JKRCXX</code> 에 달려 있던 케이블이 USB
 2.0 Micro-B 였다. B210 의 USB 3.0 Micro-B 커넥터는 2.0 케이블도
@@ -12683,7 +12692,7 @@ inhibit 해제 때 또 죽었다. 이것을 세 번 반복한 뒤에야 패턴�
 14.8.</p>
 <p><strong>2차 조치(근본).</strong> udev 규칙으로 이 모뎀을 ModemManager
 가 아예 보지 않게 했다.</p>
-<pre><code># /etc/udev/rules.d/99-private5g-modem-ignore.rules
+<pre class="code w4"><code># /etc/udev/rules.d/99-private5g-modem-ignore.rules
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;usb&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;tty&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;
 ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;net&quot;, ATTRS{idVendor}==&quot;2c7c&quot;, ATTRS{idProduct}==&quot;0801&quot;, ENV{ID_MM_DEVICE_IGNORE}=&quot;1&quot;</code></pre>
@@ -12706,7 +12715,7 @@ ACTION==&quot;add|change&quot;, SUBSYSTEM==&quot;net&quot;, ATTRS{idVendor}==&qu
 <p><strong>남은 변수.</strong> 신호 세기. 열흘 전 기록에
 "<code>tx_gain 65</code> 에서 셀 탐지"가 있었지만, 사례 14 에서 그
 기록의 신뢰가 떨어진 뒤였다. 65 → 80 으로 올려 재기동.</p>
-<pre><code>+COPS: (2,&quot;Open5GS&quot;,&quot;Open5GS&quot;,&quot;00101&quot;,12),…
+<pre class="code"><code>+COPS: (2,&quot;Open5GS&quot;,&quot;Open5GS&quot;,&quot;00101&quot;,12),…
 +C5GREG: 2,1,&quot;000001&quot;,&quot;00066C000&quot;,11,1,&quot;01&quot;</code></pre>
 <p>등록까지 한 번에 됐다. 10.8절에 게인 계산이 있다.</p>
 <p><strong>교훈.</strong> "전에 됐던 값"이 믿을 수 있는지를 먼저 따진다.
@@ -12766,7 +12775,7 @@ PCF 가 "그 IMSI 의 세션을 모른다"고 했다. 당연했다 — 우리 UA
 유지됐다.</p>
 <p><strong>증상 2.</strong> 같은 <code>412</code>. 그런데 이번 Reason 은
 <code>403</code> 이었고, <strong>PCF 로그가 달랐다.</strong></p>
-<pre><code>[pcf] WARNING: [imsi-001011234567895:1] CHECK WEBUI : Even the Default Bearer(QCI:9,ARP:8) cannot support IMS signalling.</code></pre>
+<pre class="code w4"><code>[pcf] WARNING: [imsi-001011234567895:1] CHECK WEBUI : Even the Default Bearer(QCI:9,ARP:8) cannot support IMS signalling.</code></pre>
 <p><strong>원인 2.</strong> 세션은 찾았지만 그 세션의 QoS 등급이 9 (일반
 데이터) 라서 IMS 시그널링을 실을 수 없다는 것이다. 7.8 의 5QI 5 가
 필요했다.</p>
@@ -12815,7 +12824,7 @@ I-CSCF 의 Diameter 연결 → <code>Connection refused</code> 가 있었다(사
 성공이었다.</p>
 <p><strong>결정적 관찰.</strong> I-CSCF 설정
 <code>kamailio_icscf.cfg</code> 를 열어 그 문구를 찾았다.</p>
-<pre><code>519:            t_reply(&quot;500&quot;, &quot;Server error on LIR select next S-CSCF&quot;);</code></pre>
+<pre class="code"><code>519:            t_reply(&quot;500&quot;, &quot;Server error on LIR select next S-CSCF&quot;);</code></pre>
 <p>그 줄은 <code>failure_route[initial_request_failure]</code> 안,
 <code>if (t_check_status("(408)"))</code> 블록 안에 있었다. 즉
 <strong>다음 홉이 408 타임아웃을 냈을 때</strong> 대체 S-CSCF 를
@@ -12841,7 +12850,7 @@ TCP 로 보낸다</h2>
 패킷뿐, <strong>INVITE 는 도착하지 않았다.</strong> 그런데 P-CSCF 에서
 UE 로 ping 은 됐다.</p>
 <p><strong>P-CSCF 로그.</strong></p>
-<pre><code>NOTICE: {INVITE … MT} Term UE connection information : IP is 10.46.0.7 and Port is 5062
+<pre class="code w2"><code>NOTICE: {INVITE … MT} Term UE connection information : IP is 10.46.0.7 and Port is 5062
 ERROR: &lt;core&gt; [core/tcp_main.c:4891]: handle_tcpconn_ev(): connect 10.46.0.7:5062 failed</code></pre>
 <p><code>tcp_main.c</code>. P-CSCF 가 <strong>TCP</strong> 로 연결하려
 했고, 우리 UA 는 UDP 만 듣고 있었다.</p>
@@ -12925,7 +12934,7 @@ Record-Route 와 같은 순서인지 본다.</p>
 <p><strong>증상.</strong> 사례 8·9 뒤 INVITE → 180 →
 <code>488</code>.</p>
 <p><strong>PCF 로그.</strong></p>
-<pre><code>[pcf] WARNING: [imsi-001011234567896:1] CHECK WEBUI : No PCC Rule in DB [QoS Index:1] - Please add PCC Rule using WEBUI</code></pre>
+<pre class="code w4"><code>[pcf] WARNING: [imsi-001011234567896:1] CHECK WEBUI : No PCC Rule in DB [QoS Index:1] - Please add PCC Rule using WEBUI</code></pre>
 <p>PCF 가 직접 말해 줬다. 음성(5QI 1) PCC 규칙이 가입자 DB 에 없다.</p>
 <p><strong>조치.</strong> mongo 양쪽 가입자의 모든 세션에
 <code>pcc_rule: [{qos:{index:1, arp:…, mbr:128kbps, gbr:128kbps}}]</code>
@@ -12968,7 +12977,7 @@ Diameter 처럼 <strong>재시도 없는</strong> 클라이언트는 기동 순�
 보냈다. SMSC 가 <code>200 OK</code> 를 냈고 로그에 본문까지 읽었다.
 그런데 착신에 안 왔다.</p>
 <p><strong>SMSC 로그.</strong></p>
-<pre><code>TEXT 사설 5G IMS 문자 테스트 ✅
+<pre class="code w2"><code>TEXT 사설 5G IMS 문자 테스트 ✅
 DCS  &lt;null&gt;
 ERROR: db_mysql … You have an error in your SQL syntax; … near &#39;&lt;null&gt;, now())&#39;</code></pre>
 <p><strong>원인.</strong> <code>kamailio_smsc.cfg</code> 의
@@ -13110,7 +13119,7 @@ dBm)으로 계산하면 52 dB 가 나와야 했다. 30 dB 가 비었다. 우리�
 <strong>ANT1·ANT2 에 케이블, ANT3·ANT4 에 종단기</strong>라는 답을
 받았다. 수신 경로가 네 개라는 뜻이다. 그러면 <code>AT+QENG</code> 의
 RSRP 한 칸은 넷 중 어느 것인가. 경로별로 묻는 명령을 쳤다.</p>
-<pre><code>AT+QRSRP  -&gt;  +QRSRP: -112,-103,-102,-71,NR5G
+<pre class="code"><code>AT+QRSRP  -&gt;  +QRSRP: -112,-103,-102,-71,NR5G
 AT+QSINR  -&gt;  +QSINR: 11,19,-20,-20,NR5G</code></pre>
 <p>매뉴얼의 순서는
 <code>&lt;PRX&gt;,&lt;DRX&gt;,&lt;RX2&gt;,&lt;RX3&gt;</code>. 종단한 두
@@ -13151,7 +13160,7 @@ AT+QSINR  -&gt;  +QSINR: 11,19,-20,-20,NR5G</code></pre>
 이미 고친 뒤였다. 모바일 데이터가 꺼졌나 → <code>mobile_data 1</code>.
 데이터 토글, 비행기 모드 토글 — 전부 그대로였다.</p>
 <p><strong>결정적 한 줄.</strong> 라디오 로그에 있었다.</p>
-<pre><code>DNC-0: Re-evaluating 0 unsatisfied network requests</code></pre>
+<pre class="code"><code>DNC-0: Re-evaluating 0 unsatisfied network requests</code></pre>
 <p>미충족 네트워크 요청이 <strong>0 개</strong>다. 안드로이드가 셀룰러
 인터넷을 요청조차 하지 않고 있었다. APN 설정이 아무리 맞아도 요청이
 없으면 세션은 안 선다.</p>
@@ -13161,7 +13170,7 @@ AT+QSINR  -&gt;  +QSINR: 11,19,-20,-20,NR5G</code></pre>
 요청을 <strong>이미 만족시키고 있었다.</strong> 안드로이드는 더 낮은
 우선순위의 셀룰러를 띄울 이유가 없었다.</p>
 <p><strong>조치.</strong></p>
-<pre class="bash"><code>adb shell settings put global mobile_data_always_on 1
+<pre class="code w2" class="bash"><code>adb shell settings put global mobile_data_always_on 1
 adb shell su -c &quot;svc data disable&quot;; sleep 4; adb shell su -c &quot;svc data enable&quot;</code></pre>
 <p>곧바로 <code>rmnet_data0 = 10.45.0.3/29</code> 가 올라왔다. UPF
 게이트웨이까지 RTT 25~31 ms, 외부까지 54~58 ms, 손실 0 %.</p>
@@ -13185,7 +13194,7 @@ adb shell su -c &quot;svc data disable&quot;; sleep 4; adb shell su -c &quot;svc
 삭제가 번갈아 찍힌다.</p>
 <p><strong>결정적 로그.</strong> 코어가 아니라 <strong>기지국</strong>에
 있었다.</p>
-<pre><code>[NGAP] [W] Unsupported PDU Session Type: ipv4v6
+<pre class="code"><code>[NGAP] [W] Unsupported PDU Session Type: ipv4v6
 [NGAP] [I] Validation of PDUSessionResourceSetupRequest failed
 [NGAP] [W] Some or all PDUSessionResourceSetupItems failed to setup</code></pre>
 <p><strong>원인.</strong> srsRAN gNB 가 <strong>IPv4v6 PDU 세션을
@@ -13194,7 +13203,7 @@ adb shell su -c &quot;svc data disable&quot;; sleep 4; adb shell su -c &quot;svc
 만들어 주는데 RAN 이 자원 설정을 거부하니, AMF 가 UE 컨텍스트를 풀고
 단말은 재시도한다.</p>
 <p><strong>조치.</strong> 그 가입자의 세션 타입을 1(IPv4)로 바꾼다.</p>
-<pre class="bash"><code>docker exec mongo mongosh --quiet open5gs --eval \
+<pre class="code" class="bash"><code>docker exec mongo mongosh --quiet open5gs --eval \
  &#39;db.subscribers.updateOne({imsi:&quot;001011234567897&quot;},
    {$set:{&quot;slice.0.session.0.type&quot;:1,&quot;slice.0.session.1.type&quot;:1}})&#39;</code></pre>
 <p><strong>교훈.</strong> 이 증상의 로그는 <strong>세 조각에 흩어져
@@ -13273,7 +13282,7 @@ Service, 사진·영상을 붙여 보내는 문자)의 수신을 시험했다. �
 건네주는 서버인 우리 <strong>MMSC</strong>(MMS Center) 의 HTTP 로그에
 GET 이 없다.</p>
 <p><strong>결정적 로그.</strong></p>
-<pre><code>MmsService: NetworkCallbackListener… nc=[ Transports: CELLULAR Capabilities: MMS&amp;SUPL&amp;INTERNET&amp;VALIDATED …]
+<pre class="code w4"><code>MmsService: NetworkCallbackListener… nc=[ Transports: CELLULAR Capabilities: MMS&amp;SUPL&amp;INTERNET&amp;VALIDATED …]
 MmsService: [DownloadRequest] Loading APN using name internet
 MmsService: [DownloadRequest] No match with APN name: internet, try with no name
 MmsService: APN failure
@@ -13291,7 +13300,7 @@ MmsService: com.android.mms.service.exception.ApnException: Can not find valid A
 쓰이지도 않는데, <strong>있는지 없는지는 본다.</strong></p>
 <p><strong>두 번째 벽 — 값을 넣을 수가 없다.</strong>
 <code>content insert</code> 의 바인딩 파서가 값의 콜론에서 쪼개진다.</p>
-<pre><code>--bind mmsc:s:http://192.168.1.109:8099/mms
+<pre class="code"><code>--bind mmsc:s:http://192.168.1.109:8099/mms
 → [ERROR] Binding not well formed</code></pre>
 <p><code>cmd phone cc</code> 로 캐리어 설정을 덮어쓰는 길은 루트로도
 <code>Permission denied</code>. 결국 <strong>APN 편집 화면을 adb 로
@@ -13325,14 +13334,14 @@ MmsService: com.android.mms.service.exception.ApnException: Can not find valid A
 섞여 들어갔는지 검사했다. 깨끗하다고 나왔다.
 <strong>틀렸다.</strong></p>
 <p><strong>무엇이 틀렸나.</strong> 검사 명령이 이랬다.</p>
-<pre class="bash"><code>git grep -I -l -i -- &quot;$값&quot; --cached      # ← 틀림</code></pre>
+<pre class="code" class="bash"><code>git grep -I -l -i -- &quot;$값&quot; --cached      # ← 틀림</code></pre>
 <p><code>--</code> 뒤의 것은 git 에서 <strong>경로 지정</strong>이다.
 <code>--cached</code> 가 옵션이 아니라 "<code>--cached</code> 라는
 이름의 파일"로 해석됐다. 그런 파일이 없으니 매칭이 0 건, 결과는
 "깨끗함"이었다.</p>
 <p><strong>어떻게 잡았나.</strong> 같은 검사에 <strong>패턴 전수
 조사</strong>를 하나 더 붙여 두었기 때문이다.</p>
-<pre class="bash"><code>git grep -I --cached -n -oE &#39;\b[0-9a-f]{32}\b&#39; | sort -u</code></pre>
+<pre class="code" class="bash"><code>git grep -I --cached -n -oE &#39;\b[0-9a-f]{32}\b&#39; | sort -u</code></pre>
 <p>여기서 <code>NEXT.md</code> 와 <code>docs/sim-cards.md</code> 에 남아
 있던 <strong>실제 Ki·OPc</strong> 가 나왔다. 자리표시자로 바꾸고, 올바른
 문법으로 다시 검사해 깨끗한 것을 확인한 뒤에 커밋했다.</p>
@@ -13359,7 +13368,7 @@ dB 이내로 무송신 기준 주파수의 흔들림과 같았지만, 같은 수
 됐는데 그 신원으로는 걸 수 없다</h2>
 <p><strong>증상.</strong> 실물 단말에 INVITE 를 보냈는데 I-CSCF 가
 이렇게 답한다.</p>
-<pre><code>SIP/2.0 500 Server error on LIR select next S-CSCF</code></pre>
+<pre class="code"><code>SIP/2.0 500 Server error on LIR select next S-CSCF</code></pre>
 <p><strong>이 문구를 이 책에서 세 번째로 본다.</strong> 벽 ②에서는 다음
 홉의 408 을 <code>failure_route</code> 가 포장한 것이었고(사례 7), 사례
 8 의 재발에서는 착신부가 TCP 를 안 들어서였다. 이번은 또 다른
@@ -13992,7 +14001,7 @@ SINR, PCI, ARFCN …)을 보여 주는 숨은 화면. 우리 모뎀에서는
 <p>⚠️ 표시가 붙은 명령은 전파를 내거나, 되돌릴 수 없거나, 망을 끊는다.
 실행 전에 무엇이 일어나는지 다시 읽어라.</p>
 <h2 id="b1-호스트와-장치-확인-9장">B.1 호스트와 장치 확인 (9장)</h2>
-<pre class="bash"><code>lsusb | grep -E &#39;2500:0020|2c7c:0801&#39;        # B210(Ettus) 과 RM520N-GL(Quectel) 이 보이는가
+<pre class="code w4" class="bash"><code>lsusb | grep -E &#39;2500:0020|2c7c:0801&#39;        # B210(Ettus) 과 RM520N-GL(Quectel) 이 보이는가
 lsusb -t                                      # B210 줄이 5000M 이면 USB 3.0. 480M 이면 케이블부터 의심
 uhd_find_devices                              # 호스트에서 본 USRP 목록과 serial (컨테이너 밖, ~/.uhd/uhd.conf 사용)
 ls -l /dev/ttyUSB* /dev/cdc-wdm0              # 모뎀 포트와 권한. ttyUSB2/3=AT, cdc-wdm0=QMI
@@ -14002,7 +14011,7 @@ udevadm info /dev/cdc-wdm0 | grep MM_DEVICE_IGNORE
 sudo udevadm control --reload &amp;&amp; sudo udevadm trigger    # udev 규칙을 고친 뒤</code></pre>
 <h2 id="b2-이미지와-설정-배포-9장-부록-c">B.2 이미지와 설정 배포 (9장,
 부록 C)</h2>
-<pre class="bash"><code>docker pull ghcr.io/herlesupreeth/docker_open5gs:master
+<pre class="code w3" class="bash"><code>docker pull ghcr.io/herlesupreeth/docker_open5gs:master
 docker tag  ghcr.io/herlesupreeth/docker_open5gs:master docker_open5gs
 #   docker_kamailio, docker_pyhss, docker_mysql, docker_dns, docker_rtpengine,
 #   docker_metrics, docker_srsran 도 같은 두 줄
@@ -14010,31 +14019,31 @@ docker tag  ghcr.io/herlesupreeth/docker_open5gs:master docker_open5gs
 $P5/bin/deploy-configs.sh --check             # 정본과 클론의 차이만 본다 (기대값: &quot;차이 0 건&quot;)
 $P5/bin/deploy-configs.sh                     # 정본 → 클론 복사</code></pre>
 <h2 id="b3-코어-59장">B.3 코어 (5·9장)</h2>
-<pre class="bash"><code>$P5/bin/core-ctl.sh START                     # 배포 → compose up → &quot;코어 준비 완료 (NF 5/5 …)&quot; 까지 대기
+<pre class="code w4" class="bash"><code>$P5/bin/core-ctl.sh START                     # 배포 → compose up → &quot;코어 준비 완료 (NF 5/5 …)&quot; 까지 대기
 $P5/bin/core-ctl.sh STATUS
 $P5/bin/core-ctl.sh STOP
 docker logs amf --since &quot;$(docker inspect amf --format &#39;{{.State.StartedAt}}&#39;)&quot; | grep &#39;NFInstance associated&#39;
 docker exec amf tail -40 /open5gs/install/var/log/open5gs/amf.log     # 등록·인증 실패는 여기부터
 docker exec amf grep -n &#39;tac\|mcc&#39; /open5gs/install/etc/open5gs/amf.yaml   # 치환 결과 확인</code></pre>
 <h2 id="b4-기지국-10장-️-송신">B.4 기지국 (10장) ⚠️ 송신</h2>
-<pre class="bash"><code>grep -o &#39;serial=[A-Z0-9]*&#39; $P5/configs/srsran/gnb.yml   # 케이블에 묶인 SDR 의 serial 인가. 아니면 멈춘다
+<pre class="code w4" class="bash"><code>grep -o &#39;serial=[A-Z0-9]*&#39; $P5/configs/srsran/gnb.yml   # 케이블에 묶인 SDR 의 serial 인가. 아니면 멈춘다
 cd $UP &amp;&amp; docker compose -p docker_open5gs -f srsgnb.yaml up -d      # ⚠️ 송신 시작
 docker logs -f srsgnb                         # &quot;gNB started&quot;, N2 연결, U/O 가 쏟아지지 않는지
 docker logs srsgnb 2&gt;&amp;1 | grep dl_ssb_arfcn   # 셀 요약 한 줄: pci, 대역폭, ARFCN, SSB
 docker stop srsgnb                            # 송신 정지. 케이블을 만지기 전에 반드시</code></pre>
 <p>시뮬레이션(전파 없음):</p>
-<pre class="bash"><code>$P5/bin/ran-ctl.sh START n78                  # OAI gNB + OAI nr-UE, rfsim (TCP 로 샘플 교환)
+<pre class="code w3" class="bash"><code>$P5/bin/ran-ctl.sh START n78                  # OAI gNB + OAI nr-UE, rfsim (TCP 로 샘플 교환)
 $P5/bin/ran-ctl.sh START n3                   # srsRAN gNB + srsUE, ZMQ, 15 kHz
 $P5/bin/ran-ctl.sh STOP                       # n78 과 n3 는 같은 IMSI 를 써서 동시 기동 금지
 $P5/bin/selftest.sh n78                       # 코어→RAN→UE→터널→8.8.8.8→정본 일치, 6단계 자가진단</code></pre>
 <h2 id="b5-sim-카드-4a장-️-adm-은-틀린-횟수가-쌓이면-복구-불가">B.5 SIM
 카드 (4a장) ⚠️ ADM 은 틀린 횟수가 쌓이면 복구 불가</h2>
-<pre class="bash"><code>sudo systemctl start pcscd                    # 카드 리더 데몬. 카드 작업 때만
+<pre class="code w3" class="bash"><code>sudo systemctl start pcscd                    # 카드 리더 데몬. 카드 작업 때만
 python3 pySim-read.py -p0                     # 리더 0번의 카드를 읽기만 한다
 python3 pySim-shell.py -p0 --apdu-trace       # 대화형 셸, 오가는 APDU 바이트를 함께 출력
 python3 pySim-shell.py -p0 --script write.txt # 스크립트로 한 번에 (관리자 키를 실수로 두 번 보내지 않게)</code></pre>
 <p><code>write.txt</code> 의 모양 (값은 전부 자리표시자):</p>
-<pre><code>verify_adm &lt;ADM1&gt;
+<pre class="code w4"><code>verify_adm &lt;ADM1&gt;
 select ADF.USIM
 select EF.IMSI
 update_binary_decoded {&quot;imsi&quot;:&quot;&lt;IMSI&gt;&quot;}
@@ -14049,7 +14058,7 @@ update_record_decoded 1 {&quot;alpha_id&quot;:&quot;&quot;,&quot;len_of_bcd&quot
 넣지 않는다.</p>
 <h2 id="b6-모뎀-at-1113-16">B.6 모뎀: AT (11~13, 16)</h2>
 <p>셸 함수 (간이용. 2초 안에 끝나는 명령만 — 13.7 의 한계 참조):</p>
-<pre class="bash"><code>PORT=/dev/ttyUSB3
+<pre class="code w3" class="bash"><code>PORT=/dev/ttyUSB3
 at() {
   sudo stty -F $PORT 115200 raw -echo 2&gt;/dev/null
   { printf &#39;%s\r&#39; &quot;$1&quot; | sudo tee $PORT &gt;/dev/null; sudo timeout 2 cat $PORT; } 2&gt;/dev/null \
@@ -14148,7 +14157,7 @@ at() {
 </table>
 <h2 id="b7-모뎀-qmi-와-데이터-경로-14-7장">B.7 모뎀: QMI 와 데이터 경로
 (14, 7장)</h2>
-<pre class="bash"><code>qmicli -d /dev/cdc-wdm0 --dms-get-revision                     # 읽기만 하는 첫 시험
+<pre class="code w3" class="bash"><code>qmicli -d /dev/cdc-wdm0 --dms-get-revision                     # 읽기만 하는 첫 시험
 cat /sys/class/net/wwan0/qmi/raw_ip                            # Y 여야 한다 (raw IP 모드)
 qmicli -d /dev/cdc-wdm0 --wds-start-network=&quot;ip-type=4,apn=internet&quot; --client-no-release-cid
 #   → 출력의 CID 와 패킷 데이터 핸들을 적어 둔다. CID 를 놓으면 세션이 닫힌다
@@ -14159,7 +14168,7 @@ sudo ip addr add &lt;UE_IP&gt;/29 dev wwan0
 sudo ip route add &lt;PCSCF_IP&gt;/32 via &lt;GW_FROM_QMI&gt; dev wwan0    # IMS 만 무선으로 (8장)
 qmicli -d /dev/cdc-wdm0 --nas-get-signal-info                  # RSRP/RSRQ/SINR 를 QMI 로</code></pre>
 <h2 id="b8-측정-17장">B.8 측정 (17장)</h2>
-<pre class="bash"><code>ping -I wwan0 -c 20 10.45.0.1                 # 단말 → UPF. 무선 + 터널 왕복
+<pre class="code w2" class="bash"><code>ping -I wwan0 -c 20 10.45.0.1                 # 단말 → UPF. 무선 + 터널 왕복
 ping -I wwan0 -c 20 8.8.8.8                   # 위 + NAT + 바깥
 docker exec upf iperf3 -s -B 10.45.0.1 &amp;      # 서버는 UPF 의 ogstun 쪽에
 iperf3 -c 10.45.0.1 -B &lt;UE_IP&gt;       -t 15 -i 5     # 상향
@@ -14168,7 +14177,7 @@ iperf3 -c 10.45.0.1 -B &lt;UE_IP&gt; -R -u -b 100M -t 15  # 하향 UDP — TCP �
 <p><code>-B</code> 로 <code>wwan0</code> 주소에 묶지 않으면 호스트 기본
 경로(이더넷)로 나가 무선을 타지 않은 숫자가 나온다.</p>
 <h2 id="b9-캡처-readme-필터-표-98">B.9 캡처 (README 필터 표, 9.8)</h2>
-<pre class="bash"><code>docker network ls | grep open5gs              # 브리지 ID → br-&lt;ID&gt;
+<pre class="code w3" class="bash"><code>docker network ls | grep open5gs              # 브리지 ID → br-&lt;ID&gt;
 sudo tcpdump -i br-&lt;ID&gt; -w core.pcap          # NGAP, GTP-U, PFCP, HTTP/2, SIP, Diameter 전부
 docker exec upf tcpdump -i ogstun -w - &gt; ue_inner.pcap    # 터널을 벗긴 단말 패킷
 sudo tcpdump -i wwan0 -w ue_side.pcap         # 단말 쪽에서 본 패킷
@@ -14178,7 +14187,7 @@ sudo modprobe usbmon &amp;&amp; sudo tcpdump -i usbmon&lt;버스번호&gt; -w qm
 <code>n3_enable</code> 등을 <code>true</code> 로 바꾸고
 재기동한다(10.3).</p>
 <h2 id="b10-가입자와-ims-68장">B.10 가입자와 IMS (6·8장)</h2>
-<pre class="bash"><code>docker exec mongo mongosh open5gs --quiet --eval \
+<pre class="code w4" class="bash"><code>docker exec mongo mongosh open5gs --quiet --eval \
   &#39;db.subscribers.findOne({imsi:&quot;&lt;IMSI&gt;&quot;}).slice[0].session.map(s=&gt;({dnn:s.name, qi:s.qos.index, pcc:(s.pcc_rule||[]).map(r=&gt;r.qos.index)}))&#39;
 #   → 세션별 기본 5QI 와 PCC 규칙(음성 1, 영상 2)이 있는가
 
@@ -14206,7 +14215,7 @@ PyHSS·카드 값으로 채운다. <code>&lt;SRC_IP&gt;</code> 는 UA 가 묶일
 주소로, 모뎀 쪽에서 쏠 때는 <code>wwan0</code> 의 IMS 세션 주소다(9.8 의
 NAT 예외가 이 주소를 그대로 P-CSCF 에 보여 준다).</p>
 <h2 id="b11-되돌리기와-정리">B.11 되돌리기와 정리</h2>
-<pre class="bash"><code>$P5/bin/core-ctl.sh STOP &amp;&amp; docker stop srsgnb            # 망 전체 정지 (컨테이너·볼륨 보존)
+<pre class="code w3" class="bash"><code>$P5/bin/core-ctl.sh STOP &amp;&amp; docker stop srsgnb            # 망 전체 정지 (컨테이너·볼륨 보존)
 cp $P5/configs/_backup/&lt;파일&gt;.bak $P5/configs/&lt;경로&gt;       # 정본을 백업으로 되돌림
 $P5/bin/deploy-configs.sh                                 # 그다음 배포, 재기동
 sudo systemctl stop pcscd                                 # 카드 작업 끝</code></pre>
@@ -14224,7 +14233,7 @@ C. 설정 파일 맵: 어떤 값이 어느 파일에서 와서 어느 프로세�
 <code>private5g/configs/</code>, 클론은 배포 사본, 컨테이너 안은 기동
 때마다 다시 만들어지는 결과물</strong> — 을 전제로 읽는다.</p>
 <h2 id="c1-값이-흐르는-세-단계">C.1 값이 흐르는 세 단계</h2>
-<pre><code>① 정본                          ② 배포 사본 (클론)                 ③ 컨테이너 안 (런타임)
+<pre class="code w3"><code>① 정본                          ② 배포 사본 (클론)                 ③ 컨테이너 안 (런타임)
 private5g/configs/env/env  ──▶  docker_open5gs/.env  ──(env_file)──▶ 각 컨테이너의 환경변수
                                                                         │
 private5g/configs/srsran/   ──▶  docker_open5gs/srsran/ ──(볼륨)──▶ /mnt/srsran/gnb.yml
@@ -14241,7 +14250,7 @@ private5g/configs/srsran/   ──▶  docker_open5gs/srsran/ ──(볼륨)─�
 <code>MNC</code>, <code>TAC</code> 같은 글자를 <code>sed</code> 로 env
 값으로 바꾼다. 그래서 <strong>값을 바꾸려면 ①을 고치고, 확인은 ③에서
 한다.</strong></p>
-<pre class="bash"><code>bin/deploy-configs.sh --check                     # ①과 ②가 같은가
+<pre class="code w4" class="bash"><code>bin/deploy-configs.sh --check                     # ①과 ②가 같은가
 docker exec amf grep -n &#39;tac\|mcc&#39; /open5gs/install/etc/open5gs/amf.yaml   # ③에 실제로 뭐가 들어갔나</code></pre>
 <h2 id="c2-정본-목록-deploy-configssh-매핑">C.2 정본 목록
 (deploy-configs.sh 매핑)</h2>
@@ -14431,7 +14440,7 @@ UHD 도구를 직접 쓸 때만 읽힌다(9.6).</li>
 <code>internet</code> 세션 기본 5QI 도 5 로 올라가 있었다(실험 중 바꾼
 흔적). 세 번째 가입자(시뮬레이션용)는 PCC 규칙이 없다. 확인은 이렇게
 한다.</p>
-<pre class="bash"><code>docker exec mongo mongosh open5gs --quiet --eval \
+<pre class="code w4" class="bash"><code>docker exec mongo mongosh open5gs --quiet --eval \
   &#39;db.subscribers.findOne({imsi:&quot;&lt;IMSI&gt;&quot;}).slice[0].session.map(s=&gt;({dnn:s.name, qi:s.qos.index, pcc:(s.pcc_rule||[]).map(r=&gt;r.qos.index)}))&#39;</code></pre>
 <p><strong><code>mysql</code> — IMS 가입자(PyHSS).</strong> IMS 쪽
 가입자(IMPI/IMPU, 전화번호, 인증 키)가 따로 있다. 5G 코어와 DB 가 둘이라

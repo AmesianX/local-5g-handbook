@@ -51,6 +51,24 @@ def chapter_meta(path, body_md):
     return num.strip(), title.strip(), sub.strip()
 
 
+def fit_code(frag):
+    """도표·로그가 본문 열보다 넓으면 글자를 줄여 통째로 보이게 한다.
+
+    본문 열은 68ch(약 612 px)이고 코드 글꼴은 0.78rem 에서 한 줄에 81 자쯤 들어간다.
+    그보다 긴 블록에 폭 등급을 매겨 CSS 가 글자 크기를 낮추도록 한다."""
+    def tag(m):
+        body = re.sub(r'<[^>]+>', '', m.group(2))
+        body = (body.replace('&lt;', '<').replace('&gt;', '>')
+                    .replace('&amp;', '&').replace('&quot;', '"'))
+        # 한글은 폭이 두 배다
+        longest = max((sum(2 if ord(c) > 0x1100 else 1 for c in line)
+                       for line in body.split('\n')), default=0)
+        # 본문 열 612 px 기준 한 줄에 들어가는 글자 수: 76 / 90 / 108 / 128
+        cls = '' if longest <= 76 else ' w2' if longest <= 90 else ' w3' if longest <= 108 else ' w4'
+        return f'<pre class="code{cls}"{m.group(1)}>{m.group(2)}</pre>'
+    return re.sub(r'<pre(.*?)>(.*?)</pre>', tag, frag, flags=re.S)
+
+
 def section_links(frag):
     """장 안의 h2 를 목차용으로 뽑는다."""
     return re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', frag, re.S)
@@ -65,7 +83,7 @@ def main():
     chapters, nav = [], []
     for i, f in enumerate(files):
         md = f.read_text(encoding='utf-8')
-        frag = convert(f)
+        frag = fit_code(convert(f))
         num, title, sub = chapter_meta(f, md)
         cid = 'c%02d' % i
         secs = [(sid, strip_tags(t)) for sid, t in section_links(frag)]
