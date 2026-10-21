@@ -2233,7 +2233,8 @@ UDM, UDR</strong> 셋은 묶어서 보면 RADIUS 서버와 LDAP 디렉터리다.
 <code>IPv4[10.45.0.3]</code> 을 찍은 것이 SMF 이고, <code>ogstun</code>
 인터페이스와 <code>MASQUERADE</code> 규칙을 가진 것이 UPF 다.
 <strong>PCF</strong> 는 QoS 정책 서버다. "이 가입자의 음성 통화에는 이
-등급의 베어러를 열어 줘라"를 결정한다. 우리 통화를 막았던
+등급의 <strong>베어러</strong>(품질 등급별로 따로 깔아 두는 논리 파이프.
+7.8)를 열어 줘라"를 결정한다. 우리 통화를 막았던
 <code>No PCC Rule in DB</code> 가 PCF 의 말이었다. <strong>NRF</strong>
 는 서비스 레지스트리다. 조각들이 자기 주소를 등록하고 서로를 찾는
 전화번호부이고, Consul 이나 쿠버네티스의 서비스 디스커버리와 같다.
@@ -5033,17 +5034,19 @@ IMS 의 P·I·S 가 각각 그 자리다. <strong>P</strong>-CSCF 가 엣지(단
                     ▼                           ▼
                   [PCF]                 [응용서버: SMSC …]</code></pre>
 <p><strong>P-CSCF(Proxy-CSCF)</strong> 는 단말이 처음 만나는 프록시다.
-독자가 아는 outbound proxy 에 <strong>세션 보더 컨트롤러</strong>의
-역할이 더해졌다. 단말의 IP 가 코어의 어느 세션인지 확인하고(N5), 미디어
-릴레이(rtpengine)를 붙이고, 통화마다 코어에 QoS 를 요청한다.
-<strong>I-CSCF(Interrogating-CSCF)</strong> 는 망의 입구다. 등록 때는
-"이 가입자를 어느 S-CSCF 가 맡을까", 착신 때는 "이 번호의 S-CSCF 는
-어디인가"를 HSS 에 묻는다. 로드밸런서 겸 디렉터리 조회다.
-<strong>S-CSCF(Serving-CSCF)</strong> 가 registrar 이자 호 제어의
-중심이다. 인증하고, 등록 상태를 보관하고, 가입자의 서비스 규칙(iFC)에
-따라 응용서버로 분기하고, 착신을 라우팅한다. <strong>HSS</strong> 는 IMS
-가입자 DB 이고 인증 벡터를 만든다. 5G 코어의 UDM 과는
-<strong>별개</strong>다. 4G 유산이기 때문이다.</p>
+단말이 바깥으로 나갈 때 무조건 거쳐 가도록 지정해 둔 <strong>아웃바운드
+프록시</strong>(사내망에서 모든 HTTP 를 한 프록시로 몰아 내보내는 그
+구조)에, <strong>세션 보더 컨트롤러</strong>(사업자 경계에 세우는 SIP
+전용 방화벽 겸 NAT. 줄여서 SBC)의 역할이 더해졌다. 단말의 IP 가 코어의
+어느 세션인지 확인하고(N5), 미디어 릴레이(rtpengine)를 붙이고, 통화마다
+코어에 QoS 를 요청한다. <strong>I-CSCF(Interrogating-CSCF)</strong> 는
+망의 입구다. 등록 때는 "이 가입자를 어느 S-CSCF 가 맡을까", 착신 때는
+"이 번호의 S-CSCF 는 어디인가"를 HSS 에 묻는다. 로드밸런서 겸 디렉터리
+조회다. <strong>S-CSCF(Serving-CSCF)</strong> 가 registrar 이자 호
+제어의 중심이다. 인증하고, 등록 상태를 보관하고, 가입자의 서비스
+규칙(iFC)에 따라 응용서버로 분기하고, 착신을 라우팅한다.
+<strong>HSS</strong> 는 IMS 가입자 DB 이고 인증 벡터를 만든다. 5G 코어의
+UDM 과는 <strong>별개</strong>다. 4G 유산이기 때문이다.</p>
 <p>CSCF 는 Call Session Control Function 이다. 셋 다 오픈소스 SIP 서버
 Kamailio 에 각각 다른 설정을 올린 것이고, 우리 컨테이너
 <code>pcscf</code>·<code>icscf</code>·<code>scscf</code> 가 그것이다. 한
