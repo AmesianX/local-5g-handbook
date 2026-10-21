@@ -8,7 +8,7 @@ import glob, html, pathlib, re, subprocess, sys
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
 ORDER = ['00', '01', '02', '03', '04-', '04a', '05', '06', '07', '08', '09', '10',
-         '11a', '11b', '11c', '11d', '11e', '11f', '12', '13',
+         '11-', '12', '13', '14', '15', '16', '17', '18',
          '부록A', '부록B', '부록C', '부록D']
 
 TITLES = {}

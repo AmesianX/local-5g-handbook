@@ -5,22 +5,22 @@
 ## C.1 값이 흐르는 세 단계
 
 ```
-① 정본                          ② 배포 사본 (클론)                 ③ 컨테이너 안 (런타임)
+11 정본                          12 배포 사본 (클론)                 13 컨테이너 안 (런타임)
 private5g/configs/env/env  ──▶  docker_open5gs/.env  ──(env_file)──▶ 각 컨테이너의 환경변수
                                                                         │
 private5g/configs/srsran/   ──▶  docker_open5gs/srsran/ ──(볼륨)──▶ /mnt/srsran/gnb.yml
    gnb.yml                                                              │ 기동 스크립트가
                                                                         ▼ 자리표시자를 sed 치환
                                                      /open5gs/install/etc/open5gs/amf.yaml 등
-        bin/deploy-configs.sh 가 ①→② 를 복사         (치환 결과. 여기서 고치면 재기동 때 사라짐)
+        bin/deploy-configs.sh 가 11→12 를 복사         (치환 결과. 여기서 고치면 재기동 때 사라짐)
         (cmp 로 다른 것만, --check 는 차이만 출력)
 ```
 
-①→② 는 `deploy-configs.sh` 가 하고, `core-ctl.sh START` 가 기동 전에 이것을 먼저 부른다. ②→③ 은 도커와 각 컨테이너의 `*_init.sh` 가 한다. 예를 들어 `amf_init.sh` 는 클론의 `amf/amf.yaml` 을 컨테이너 안으로 복사한 뒤 `AMF_IP`, `MCC`, `MNC`, `TAC` 같은 글자를 `sed` 로 env 값으로 바꾼다. 그래서 **값을 바꾸려면 ①을 고치고, 확인은 ③에서 한다.**
+11→12 는 `deploy-configs.sh` 가 하고, `core-ctl.sh START` 가 기동 전에 이것을 먼저 부른다. 12→13 은 도커와 각 컨테이너의 `*_init.sh` 가 한다. 예를 들어 `amf_init.sh` 는 클론의 `amf/amf.yaml` 을 컨테이너 안으로 복사한 뒤 `AMF_IP`, `MCC`, `MNC`, `TAC` 같은 글자를 `sed` 로 env 값으로 바꾼다. 그래서 **값을 바꾸려면 11을 고치고, 확인은 13에서 한다.**
 
 ```bash
-bin/deploy-configs.sh --check                     # ①과 ②가 같은가
-docker exec amf grep -n 'tac\|mcc' /open5gs/install/etc/open5gs/amf.yaml   # ③에 실제로 뭐가 들어갔나
+bin/deploy-configs.sh --check                     # 11과 12가 같은가
+docker exec amf grep -n 'tac\|mcc' /open5gs/install/etc/open5gs/amf.yaml   # 13에 실제로 뭐가 들어갔나
 ```
 
 ## C.2 정본 목록 (deploy-configs.sh 매핑)
@@ -29,7 +29,7 @@ docker exec amf grep -n 'tac\|mcc' /open5gs/install/etc/open5gs/amf.yaml   # ③
 |---|---|---|---|
 | `env/env` | `.env` | 모든 컨테이너(env_file) → 각 `*_init.sh` | 5.6, 9.6 |
 | `dns/ims_zone` | `dns/ims_zone` | `dns` 컨테이너(bind) | 8, 13 |
-| `compose/sa-vonr-deploy.yaml` | `sa-vonr-deploy.yaml` | docker compose (코어·IMS 전체 정의) | 9, 11e |
+| `compose/sa-vonr-deploy.yaml` | `sa-vonr-deploy.yaml` | docker compose (코어·IMS 전체 정의) | 9, 15 |
 | `srsran/gnb.yml` | `srsran/gnb.yml` | `srsgnb` 의 `gnb` 프로세스 | 10 전체 |
 | `srsran/libresdr_alphafox02.bin` | `srsran/…bin` | `srsgnb` 안 UHD (FPGA 적재) | 2, 9.2, 10 |
 | `srsran/gnb_zmq_n78.yml` | `srsran/…` | 시뮬레이션 기지국(ZMQ) | 3 |
@@ -61,7 +61,7 @@ OAI 시뮬레이션 프로파일(`compose/oai_n78_rfsim.yaml` 과 `configs/oai/g
 
 **`dns/ims_zone`**
 
-- `@  1D IN A  ICSCF_IP` 한 줄 추가 — IMS 도메인 자체의 A 레코드. SMSC 가 `sip:<번호>@ims.mnc001.mcc001.3gppnetwork.org` 로 문자를 넘길 때 이 이름을 풀어야 하는데, 업스트림 존에는 서브도메인(`pcscf.`, `scscf.` …)만 있고 도메인 자체가 없어 전달이 조용히 멈췄다(8장 벽 ⑦, 13장). 처음에는 컨테이너 안에서 고쳤고, 그다음 클론에 반영했고, 이 부록을 쓰면서 정본(`configs/dns/`)과 배포 매핑에 올렸다. 세 단계를 다 거치기 전까지는 클론을 새로 받는 순간 사라질 수 있는 수정이었다.
+- `@  1D IN A  ICSCF_IP` 한 줄 추가 — IMS 도메인 자체의 A 레코드. SMSC 가 `sip:<번호>@ims.mnc001.mcc001.3gppnetwork.org` 로 문자를 넘길 때 이 이름을 풀어야 하는데, 업스트림 존에는 서브도메인(`pcscf.`, `scscf.` …)만 있고 도메인 자체가 없어 전달이 조용히 멈췄다(8장 벽 17, 18장). 처음에는 컨테이너 안에서 고쳤고, 그다음 클론에 반영했고, 이 부록을 쓰면서 정본(`configs/dns/`)과 배포 매핑에 올렸다. 세 단계를 다 거치기 전까지는 클론을 새로 받는 순간 사라질 수 있는 수정이었다.
 
 **`pcscf/route/{register,mo,mt}.cfg`**
 
@@ -69,18 +69,18 @@ OAI 시뮬레이션 프로파일(`compose/oai_n78_rfsim.yaml` 과 `configs/oai/g
 
 **`sa-vonr-deploy.yaml`** (코어·IMS compose 정의)
 
-- PyHSS REST(8080), webui(9999), grafana(3000), metrics(9090) 의 `ports:` 를 `0.0.0.0` 공개에서 `127.0.0.1:` 로 바꿨다. 업스트림 기본은 호스트의 모든 인터페이스에 공개라, 인증 없는 PyHSS API 가 LAN 에 열려 있었다(11e.4). 원본은 `configs/_backup/sa-vonr-deploy.yaml.pre-loopback.bak`.
+- PyHSS REST(8080), webui(9999), grafana(3000), metrics(9090) 의 `ports:` 를 `0.0.0.0` 공개에서 `127.0.0.1:` 로 바꿨다. 업스트림 기본은 호스트의 모든 인터페이스에 공개라, 인증 없는 PyHSS API 가 LAN 에 열려 있었다(15.4). 원본은 `configs/_backup/sa-vonr-deploy.yaml.pre-loopback.bak`.
 
 **호스트 쪽 (컨테이너 밖)**
 
-- `/etc/udev/rules.d/99-private5g-modem-ignore.rules` — ModemManager 가 우리 모뎀(2c7c:0801)을 건드리지 않게 한다(9.3, 13장).
+- `/etc/udev/rules.d/99-private5g-modem-ignore.rules` — ModemManager 가 우리 모뎀(2c7c:0801)을 건드리지 않게 한다(9.3, 18장).
 - `~/.uhd/uhd.conf` — 시리얼별 FPGA 이미지 지정. 호스트에서 UHD 도구를 직접 쓸 때만 읽힌다(9.6).
 
 ## C.4 파일이 아닌 설정: 데이터베이스에 든 것
 
 망의 일부 설정은 파일이 아니라 **DB 안에** 있다. 이것들은 `deploy-configs.sh` 가 다루지 않고, 컨테이너를 지워도 도커 볼륨에 남는다. 반대로 볼륨을 지우면 사라진다.
 
-**`mongo` — 5G 코어 가입자(Open5GS).** 가입자마다 IMSI, 키(K, OPc), AMF 필드, 그리고 DNN 별 세션 설정이 한 문서에 들어 있다. 우리가 넣거나 바꾼 것은 이렇다. `ims` DNN 세션의 기본 5QI 를 5 로(8장 — 5QI 9 면 PCF 가 IMS 시그널링을 거절), 그리고 **5QI 1 PCC 규칙**(음성. 없으면 PCF 가 `No PCC Rule in DB [QoS Index:1]` 로 거절, 13장)과 **5QI 2 PCC 규칙**(영상). 2026-10-14 에 DB 를 다시 읽어 보니 통화에 쓴 가입자 둘은 `internet`·`ims` 두 세션 모두에 PCC 규칙 [1, 2] 가 들어 있었고, 그중 하나는 `internet` 세션 기본 5QI 도 5 로 올라가 있었다(실험 중 바꾼 흔적). 세 번째 가입자(시뮬레이션용)는 PCC 규칙이 없다. 확인은 이렇게 한다.
+**`mongo` — 5G 코어 가입자(Open5GS).** 가입자마다 IMSI, 키(K, OPc), AMF 필드, 그리고 DNN 별 세션 설정이 한 문서에 들어 있다. 우리가 넣거나 바꾼 것은 이렇다. `ims` DNN 세션의 기본 5QI 를 5 로(8장 — 5QI 9 면 PCF 가 IMS 시그널링을 거절), 그리고 **5QI 1 PCC 규칙**(음성. 없으면 PCF 가 `No PCC Rule in DB [QoS Index:1]` 로 거절, 18장)과 **5QI 2 PCC 규칙**(영상). 2026-10-14 에 DB 를 다시 읽어 보니 통화에 쓴 가입자 둘은 `internet`·`ims` 두 세션 모두에 PCC 규칙 [1, 2] 가 들어 있었고, 그중 하나는 `internet` 세션 기본 5QI 도 5 로 올라가 있었다(실험 중 바꾼 흔적). 세 번째 가입자(시뮬레이션용)는 PCC 규칙이 없다. 확인은 이렇게 한다.
 
 ```bash
 docker exec mongo mongosh open5gs --quiet --eval \
@@ -89,7 +89,7 @@ docker exec mongo mongosh open5gs --quiet --eval \
 
 **`mysql` — IMS 가입자(PyHSS).** IMS 쪽 가입자(IMPI/IMPU, 전화번호, 인증 키)가 따로 있다. 5G 코어와 DB 가 둘이라 가입자를 추가할 때 양쪽에 넣어야 한다는 점은 5.5절에서 봤다.
 
-**`smsc` 의 메시지 표.** SMSC 가 받아 둔 문자는 MySQL 의 SMSC 스키마(`smsc-create.sql`)에 쌓였다가 전달 뒤 지워진다. 전달이 멈추면 여기에 남아 있는 것이 증거다(13장).
+**`smsc` 의 메시지 표.** SMSC 가 받아 둔 문자는 MySQL 의 SMSC 스키마(`smsc-create.sql`)에 쌓였다가 전달 뒤 지워진다. 전달이 멈추면 여기에 남아 있는 것이 증거다(18장).
 
 DB 의 내용은 키를 포함하므로 **이 책과 저장소에는 넣지 않는다.** 백업이 필요하면 `docker exec mongo mongodump --archive > open5gs.archive` 처럼 받아 실험실 밖으로 내보내지 않는 곳에 둔다.
 
@@ -102,7 +102,7 @@ DB 의 내용은 키를 포함하므로 **이 책과 저장소에는 넣지 않�
 | `ogstun` 10.45.0.1/16, `ogstun2` 10.46.0.1/16 | `upf/tun_if.py` (env 의 UE 대역에서 파생) | `docker exec upf ip -br addr` |
 | NAT `-s 10.45.0.0/16 ! -d <PCSCF_IP> ! -o ogstun -j MASQUERADE` | `upf/tun_if.py` | `docker exec upf iptables -t nat -S` |
 | 도커 브리지 `br-<네트워크 ID>` | 도커(네트워크 생성 시) | `docker network ls` |
-| 모뎀 `wwan0` 주소 | 우리가 QMI 로 받은 값을 손으로(11d) | `ip -br addr show wwan0` |
+| 모뎀 `wwan0` 주소 | 우리가 QMI 로 받은 값을 손으로(14) | `ip -br addr show wwan0` |
 
 ## C.6 백업 파일 읽는 법
 

@@ -86,9 +86,9 @@ update_record_decoded 1 {"alpha_id":"","len_of_bcd":7,"ton_npi":{…"internation
 
 `<ADM1>` 은 카드 제조사가 준 값만 쓴다. 추측해서 넣지 않는다.
 
-## B.6 모뎀: AT (11a~11c, 11f)
+## B.6 모뎀: AT (11~13, 16)
 
-셸 함수 (간이용. 2초 안에 끝나는 명령만 — 11c.7 의 한계 참조):
+셸 함수 (간이용. 2초 안에 끝나는 명령만 — 13.7 의 한계 참조):
 
 ```bash
 PORT=/dev/ttyUSB3
@@ -113,12 +113,12 @@ at() {
 | 통신사 프로파일 | `AT+QMBNCFG="List"` | 활성 프로파일 확인 |
 | 주변 망 스캔 | `AT+COPS=?` | 60~100초. `"00101",12` 가 우리 셀 |
 | 등록 상태 | `AT+C5GREG=2` 후 `AT+C5GREG?` | `2,1,…` (1=홈 등록) |
-| 셀 측정 | `AT+QENG="servingcell"` | RSRP·SINR·PCI·ARFCN (11f) |
+| 셀 측정 | `AT+QENG="servingcell"` | RSRP·SINR·PCI·ARFCN (16) |
 | 데이터 프로파일 | `AT+CGDCONT?` | `internet`, `ims` … |
 | 세션 주소 | `AT+CGPADDR=1` | 10.45.0.x |
 | 모뎀 자체 ping | `AT+QPING=1,"8.8.8.8"` | PC 경로와 무관하게 무선·코어 확인 |
 
-## B.7 모뎀: QMI 와 데이터 경로 (11d, 7장)
+## B.7 모뎀: QMI 와 데이터 경로 (14, 7장)
 
 ```bash
 qmicli -d /dev/cdc-wdm0 --dms-get-revision                     # 읽기만 하는 첫 시험
@@ -133,7 +133,7 @@ sudo ip route add <PCSCF_IP>/32 via <GW_FROM_QMI> dev wwan0    # IMS 만 무선�
 qmicli -d /dev/cdc-wdm0 --nas-get-signal-info                  # RSRP/RSRQ/SINR 를 QMI 로
 ```
 
-## B.8 측정 (12장)
+## B.8 측정 (17장)
 
 ```bash
 ping -I wwan0 -c 20 10.45.0.1                 # 단말 → UPF. 무선 + 터널 왕복
@@ -153,7 +153,7 @@ docker network ls | grep open5gs              # 브리지 ID → br-<ID>
 sudo tcpdump -i br-<ID> -w core.pcap          # NGAP, GTP-U, PFCP, HTTP/2, SIP, Diameter 전부
 docker exec upf tcpdump -i ogstun -w - > ue_inner.pcap    # 터널을 벗긴 단말 패킷
 sudo tcpdump -i wwan0 -w ue_side.pcap         # 단말 쪽에서 본 패킷
-sudo modprobe usbmon && sudo tcpdump -i usbmon<버스번호> -w qmi.pcap   # QMI 바이트 (11d)
+sudo modprobe usbmon && sudo tcpdump -i usbmon<버스번호> -w qmi.pcap   # QMI 바이트 (14)
 ```
 
 기지국 내부 캡처는 `gnb.yml` 의 `pcap:` 블록에서 `mac_enable`, `ngap_enable`, `n3_enable` 등을 `true` 로 바꾸고 재기동한다(10.3).
@@ -181,7 +181,7 @@ adb shell content query --uri content://telephony/carriers \
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> sms-send 3 'sip:<B_MSISDN>@<REALM>' '<본문>' <B_MSISDN>   # TPDU 로 문자
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> sms-recv       # B 로 등록해 문자 수신
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP>                # 둘 다 한 프로세스에서: 등록→통화→BYE
-docker logs pcscf 2>&1 | tail -50             # 412/488/500 은 여기서 이유를 찾는다 (13장)
+docker logs pcscf 2>&1 | tail -50             # 412/488/500 은 여기서 이유를 찾는다 (18장)
 docker logs rtpengine 2>&1 | tail             # 미디어가 한쪽만 흐를 때
 ```
 

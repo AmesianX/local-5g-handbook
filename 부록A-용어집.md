@@ -14,9 +14,9 @@
 
 **5GMM / 5GSM** (5G Mobility Management / Session Management) — NAS 메시지의 두 갈래. 5GMM 은 등록·인증·보안처럼 "단말이 망에 있는가", 5GSM 은 PDU 세션처럼 "데이터 통로가 있는가"를 다룬다. NAS 헤더의 첫 바이트(EPD)로 구분한다. → 5.6a
 
-**5QI** (5G QoS Identifier) — 트래픽의 품질 등급 번호. 1 = 대화형 음성(GBR), 2 = 대화형 영상(GBR), 5 = IMS 시그널링, 9 = 일반 인터넷(기본값). 4G 의 QCI 와 같은 표. 우리 통화가 성립하려면 IMS 세션이 5, 음성 PCC 규칙이 1, 영상이 2 여야 했다. → 7.8, 8장, 13장
+**5QI** (5G QoS Identifier) — 트래픽의 품질 등급 번호. 1 = 대화형 음성(GBR), 2 = 대화형 영상(GBR), 5 = IMS 시그널링, 9 = 일반 인터넷(기본값). 4G 의 QCI 와 같은 표. 우리 통화가 성립하려면 IMS 세션이 5, 음성 PCC 규칙이 1, 영상이 2 여야 했다. → 7.8, 8장, 18장
 
-**8N1** — 시리얼 통신의 가장 흔한 틀. 데이터 8비트, 패리티 없음(None), 정지 비트 1. 한 글자 앞뒤에 시작·정지 비트가 붙어 10비트가 된다. → 11a
+**8N1** — 시리얼 통신의 가장 흔한 틀. 데이터 8비트, 패리티 없음(None), 정지 비트 1. 한 글자 앞뒤에 시작·정지 비트가 붙어 10비트가 된다. → 11
 
 ## A
 
@@ -36,13 +36,13 @@
 
 **APDU** (Application Protocol Data Unit) — SIM 카드와 주고받는 메시지 단위. `CLA INS P1 P2 [Lc 데이터] [Le]` → 응답 데이터 + SW1 SW2. ISO 7816-4. → 4a장
 
-**APN** (Access Point Name) — 단말이 어느 데이터 망으로 나갈지 고르는 이름. 4G 용어. 5G 의 DNN. 우리 값 `internet`, `ims`. → 7장, 11c
+**APN** (Access Point Name) — 단말이 어느 데이터 망으로 나갈지 고르는 이름. 4G 용어. 5G 의 DNN. 우리 값 `internet`, `ims`. → 7장, 13
 
-**ARFCN** (Absolute Radio Frequency Channel Number) — 주파수를 정수로 부르는 번호. 와이파이의 채널 번호와 같은 역할. 5G 는 NR-ARFCN 이라 하고 3~24 GHz 구간에서 F = 3000 MHz + 15 kHz × (N − 600000). 우리 `dl_arfcn=623334` 는 3350.01 MHz. 엔지니어 모드에 그대로 뜬다. → 3, 10.6, 11f
+**ARFCN** (Absolute Radio Frequency Channel Number) — 주파수를 정수로 부르는 번호. 와이파이의 채널 번호와 같은 역할. 5G 는 NR-ARFCN 이라 하고 3~24 GHz 구간에서 F = 3000 MHz + 15 kHz × (N − 600000). 우리 `dl_arfcn=623334` 는 3350.01 MHz. 엔지니어 모드에 그대로 뜬다. → 3, 10.6, 16
 
 **ARP** (Allocation and Retention Priority) — QoS 의 자원 할당·선점 우선순위. 네트워크의 ARP(주소 해석)와 이름만 같다. → 7장
 
-**AT 명령** — 모뎀에게 글자로 내리는 명령. `AT` 로 시작한다(ATtention). 1층 V.250 기본 명령, 2층 3GPP 27.007/27.005, 3층 제조사(`+Q…`), 4층 비공개. → 11a~11c
+**AT 명령** — 모뎀에게 글자로 내리는 명령. `AT` 로 시작한다(ATtention). 1층 V.250 기본 명령, 2층 3GPP 27.007/27.005, 3층 제조사(`+Q…`), 4층 비공개. → 11~13
 
 **ATR** (Answer To Reset) — SIM 에 전원이 들어오면 카드가 먼저 내놓는 바이트열. 지원 속도·규약을 알린다. → 4a장
 
@@ -56,19 +56,19 @@
 
 **B210** — Ettus Research 의 USB SDR. 70 MHz~6 GHz, 2×2, 12비트, 최대 56 MHz 대역폭. 우리 것은 LibreSDR 호환판. → 2, 9, 10장
 
-**BCD** (Binary-Coded Decimal) — 십진 숫자 하나를 4비트(니블)에 넣는 표기. SIM 과 SMS 의 번호는 두 자리씩 니블을 **뒤집어** 넣는다(`82 10` → `28 01`). → 4a, 11c
+**BCD** (Binary-Coded Decimal) — 십진 숫자 하나를 4비트(니블)에 넣는 표기. SIM 과 SMS 의 번호는 두 자리씩 니블을 **뒤집어** 넣는다(`82 10` → `28 01`). → 4a, 13
 
-**BLER** (Block Error Rate) — 무선으로 보낸 전송 블록 가운데 한 번에 복호되지 못한 비율. 스케줄러는 보통 첫 전송 BLER 10% 근처를 목표로 MCS 를 고른다. 0 에 가까우면 MCS 를 더 올릴 여지가 있다는 뜻. → 11f
+**BLER** (Block Error Rate) — 무선으로 보낸 전송 블록 가운데 한 번에 복호되지 못한 비율. 스케줄러는 보통 첫 전송 BLER 10% 근처를 목표로 MCS 를 고른다. 0 에 가까우면 MCS 를 더 올릴 여지가 있다는 뜻. → 16
 
 **BSF** (Binding Support Function) — "이 단말 IP 의 세션은 어느 PCF 가 맡는가"를 기억하는 조회 서비스. P-CSCF 가 통화 정책을 요청할 PCF 를 찾을 때 쓴다. → 5, 8장
 
 ## C
 
-**CA** (Carrier Aggregation) — 여러 주파수 묶음을 동시에 써서 속도를 더하는 기술. 우리 셀은 하나뿐이라 해당 없음. → 11f
+**CA** (Carrier Aggregation) — 여러 주파수 묶음을 동시에 써서 속도를 더하는 기술. 우리 셀은 하나뿐이라 해당 없음. → 16
 
 **CK / IK** (Cipher Key / Integrity Key) — AKA 가 끝나면 SIM 과 망이 각자 계산해 갖는 128비트 키 둘. 여기서 5G 키 계층(K_AUSF → K_SEAF → K_AMF → K_gNB …)이 파생된다. → 6장
 
-**CQI** (Channel Quality Indicator) — 단말이 "지금 채널이면 이 정도 변조까지 받을 수 있다"고 기지국에 보고하는 0~15 의 숫자. 기지국이 MCS 를 고르는 근거. 높을수록 좋다. → 11f
+**CQI** (Channel Quality Indicator) — 단말이 "지금 채널이면 이 정도 변조까지 받을 수 있다"고 기지국에 보고하는 0~15 의 숫자. 기지국이 MCS 를 고르는 근거. 높을수록 좋다. → 16
 
 **CSCF** (Call Session Control Function) — IMS 의 SIP 프록시 셋. P-(단말 쪽 관문), I-(도메인 입구, 담당 S 찾기), S-(실제 등록·라우팅). 우리 `pcscf`, `icscf`, `scscf`(Kamailio). → 8장
 
@@ -78,27 +78,27 @@
 
 **dB / dBm** — dB 는 두 전력의 비를 로그로(10 dB = 10 배), dBm 은 1 mW 를 기준으로 한 절대 전력. 0 dBm = 1 mW, +23 dBm = 200 mW, −100 dBm = 0.1 pW. 곱셈이 덧셈이 되어 링크 계산이 쉬워진다. → 1장
 
-**dBFS** (dB Full Scale) — 아날로그-디지털 변환기의 최대 표현값을 0 으로 놓고 그보다 몇 dB 아래인지로 적는 상대 전력. 장치·게인마다 기준이 달라 **같은 장치 같은 설정의 비교에만** 쓴다. 차폐함 누설 계측의 단위. → 12.5a
+**dBFS** (dB Full Scale) — 아날로그-디지털 변환기의 최대 표현값을 0 으로 놓고 그보다 몇 dB 아래인지로 적는 상대 전력. 장치·게인마다 기준이 달라 **같은 장치 같은 설정의 비교에만** 쓴다. 차폐함 누설 계측의 단위. → 17.5a
 
 **DTX** (Discontinuous Transmission) — 말이 없는 구간에 음성 프레임을 보내지 않고 편안잡음 정보만 띄엄띄엄 보내는 절약 기능. 실물 단말의 RTP 수신 개수가 송신보다 훨씬 적은 것이 이것이다. 모의 UE 는 흉내 내지 않는다. → 8.6a
 
-**DCI** (Downlink Control Information) — 기지국이 매 슬롯 "누구에게 어느 PRB 를 어떤 MCS 로 준다"를 알리는 제어 메시지. 스케줄러의 결정이 담긴다. 기지국 MAC pcap 에서 보인다. → 10, 12장
+**DCI** (Downlink Control Information) — 기지국이 매 슬롯 "누구에게 어느 PRB 를 어떤 MCS 로 준다"를 알리는 제어 메시지. 스케줄러의 결정이 담긴다. 기지국 MAC pcap 에서 보인다. → 10, 17장
 
-**DCS** (Data Coding Scheme) — SMS 본문의 부호화. `0x00` 7비트 GSM 문자, `0x08` UCS2. text/plain 으로 보낸 문자에서 이 값이 비어 SMSC 가 SQL 오류를 낸 것이 13장 사례다. → 8, 11c, 13
+**DCS** (Data Coding Scheme) — SMS 본문의 부호화. `0x00` 7비트 GSM 문자, `0x08` UCS2. text/plain 으로 보낸 문자에서 이 값이 비어 SMSC 가 SQL 오류를 낸 것이 18장 사례다. → 8, 13, 13
 
 **Diameter** — 4G 코어와 IMS 의 인증·정책 프로토콜. RADIUS 의 후손. 메시지는 명령 코드 + AVP 들. 우리 배포에서는 CSCF ↔ PyHSS(Cx: UAR/MAR/SAR/LIR). → 4, 8장
 
-**DIAG** — Qualcomm 계열 모뎀의 바이너리 진단 프로토콜. 우리 모뎀의 `ttyUSB0`. AT 와 별개의 포트다. → 11c, 11e
+**DIAG** — Qualcomm 계열 모뎀의 바이너리 진단 프로토콜. 우리 모뎀의 `ttyUSB0`. AT 와 별개의 포트다. → 13, 15
 
 **DNN** (Data Network Name) — 5G 에서 APN 을 부르는 이름. 같은 개념. → 7장
 
 **DRB** (Data Radio Bearer) — 무선 구간에서 사용자 데이터를 나르는 논리 통로. QoS 흐름들이 여기 매핑된다. → 7장
 
-**DTE / DCE** (Data Terminal / Data Circuit-terminating Equipment) — 시리얼 연결의 양 끝. PC 가 DTE, 모뎀이 DCE. RS-232 신호선(RTS/CTS, DTR/DSR, DCD)의 방향이 여기서 정해진다. → 11b
+**DTE / DCE** (Data Terminal / Data Circuit-terminating Equipment) — 시리얼 연결의 양 끝. PC 가 DTE, 모뎀이 DCE. RS-232 신호선(RTS/CTS, DTR/DSR, DCD)의 방향이 여기서 정해진다. → 12
 
 ## E
 
-**E.164** — 국제 전화번호 체계. 국가 코드 + 국내 번호, 최대 15자리. SIM 과 SMS 의 번호 형식 바이트 `0x91` 의 아래 니블 `1` 이 "E.164". → 4, 4a, 11c
+**E.164** — 국제 전화번호 체계. 국가 코드 + 국내 번호, 최대 15자리. SIM 과 SMS 의 번호 형식 바이트 `0x91` 의 아래 니블 `1` 이 "E.164". → 4, 4a, 13
 
 **ECIES** — 공개키로 데이터를 암호화하는 방식의 하나. SUCI 가 IMSI 를 숨길 때 쓴다(방식 1 = X25519, 방식 2 = secp256r1). 우리 실험은 방식 0(널, 숨기지 않음). → 6장
 
@@ -126,7 +126,7 @@
 
 ## H
 
-**HARQ** (Hybrid Automatic Repeat reQuest) — 무선 구간의 빠른 재전송. 수신 측이 실패한 블록을 버리지 않고 재전송분과 합쳐 복호한다. TCP 재전송보다 훨씬 아래, 수 ms 단위. → 3, 11f
+**HARQ** (Hybrid Automatic Repeat reQuest) — 무선 구간의 빠른 재전송. 수신 측이 실패한 블록을 버리지 않고 재전송분과 합쳐 복호한다. TCP 재전송보다 훨씬 아래, 수 ms 단위. → 3, 16
 
 **HSS** (Home Subscriber Server) — 4G/IMS 의 가입자 DB 서버. 우리 배포에서는 PyHSS 가 IMS 의 HSS 역할. 5G 에서는 UDM/UDR 이 대응. → 4, 8장
 
@@ -134,9 +134,9 @@
 
 **I/Q** (In-phase / Quadrature) — 전파 한 순간의 세기와 위상을 복소수 하나로 담은 샘플. SDR 이 주고받는 데이터의 정체. → 2장
 
-**ICCID** — SIM 카드 자체의 일련번호(카드 뒷면 19~20자리). 가입자 번호(IMSI)와 별개. `AT+QCCID`. → 4a, 11c
+**ICCID** — SIM 카드 자체의 일련번호(카드 뒷면 19~20자리). 가입자 번호(IMSI)와 별개. `AT+QCCID`. → 4a, 13
 
-**IMEI** — 단말 기계의 고유 번호. SIM 을 바꿔도 그대로. `AT+CGSN`. → 4, 11c
+**IMEI** — 단말 기계의 고유 번호. SIM 을 바꿔도 그대로. `AT+CGSN`. → 4, 13
 
 **IMPI / IMPU** (IMS Private / Public User Identity) — IMS 의 계정 이름(인증용)과 공개 주소(전화 걸 때 쓰는 SIP/tel URI). ISIM 이 비어 있으면 IMSI 에서 유도한다. → 4a, 8장
 
@@ -152,7 +152,7 @@
 
 ## L
 
-**LCP / IPCP** — PPP 의 링크 협상(LCP)과 IP 주소 협상(IPCP). 다이얼업의 주소 받기가 이것이었다. 5G 에서는 NAS 의 PDU 세션 수락이 그 자리를 대신한다. → 11b, 7장
+**LCP / IPCP** — PPP 의 링크 협상(LCP)과 IP 주소 협상(IPCP). 다이얼업의 주소 받기가 이것이었다. 5G 에서는 NAS 의 PDU 세션 수락이 그 자리를 대신한다. → 12, 7장
 
 ## M
 
@@ -160,15 +160,15 @@
 
 **MCC / MNC** (Mobile Country / Network Code) — 국가 번호와 사업자 번호. 합쳐서 PLMN. 한국 MCC 450, 시험용 001/01. → 4장, 부록 D
 
-**MCS** (Modulation and Coding Scheme) — 기지국이 고른 변조(QPSK~256QAM)와 부호율의 조합 번호. 높을수록 한 번에 많이 싣는다. CQI 를 보고 정한다. → 3, 11f, 12
+**MCS** (Modulation and Coding Scheme) — 기지국이 고른 변조(QPSK~256QAM)와 부호율의 조합 번호. 높을수록 한 번에 많이 싣는다. CQI 를 보고 정한다. → 3, 16, 12
 
 **MILENAGE** — AKA 에 쓰는 표준 알고리즘 묶음(f1~f5). AES 기반. K, OPc, RAND 로 RES, CK, IK, AK, MAC 을 만든다. 우리는 파이썬으로 독립 구현해 PyHSS 와 바이트 단위 일치를 확인했다. → 6장
 
-**MMS** (Multimedia Messaging Service) — 사진·영상을 붙여 보내는 문자. SMS 로 본문을 나르지 않고, WAP 푸시로 **URL 만** 보낸 뒤 단말이 데이터망으로 HTTP GET 한다. 문자망과 데이터망이 둘 다 살아 있어야 성립한다. → 8.7a, 13장
+**MMS** (Multimedia Messaging Service) — 사진·영상을 붙여 보내는 문자. SMS 로 본문을 나르지 않고, WAP 푸시로 **URL 만** 보낸 뒤 단말이 데이터망으로 HTTP GET 한다. 문자망과 데이터망이 둘 다 살아 있어야 성립한다. → 8.7a, 18장
 
 **MMSC** (MMS Center) — MMS 본문을 보관하고 알림을 만들어 주는 서버. 우리 배포에 없어 `tools/mmsc.py` 로 만들었다. → 8.7a
 
-**MO / MT** (Mobile Originated / Terminated) — 단말이 보내는 방향과 받는 방향. 문자·MMS·통화 경로를 가를 때 쓴다. → 8, 13장
+**MO / MT** (Mobile Originated / Terminated) — 단말이 보내는 방향과 받는 방향. 문자·MMS·통화 경로를 가를 때 쓴다. → 8, 18장
 
 **MIMO** (Multiple Input Multiple Output) — 안테나 여럿으로 같은 주파수에 여러 흐름을 동시에 보내는 기술. 우리는 1T1R(송신 1, 수신 1)이라 해당 없음. → 3장
 
@@ -196,11 +196,11 @@
 
 ## P
 
-**PCC 규칙** (Policy and Charging Control) — PCF 가 SMF 에게 "이 흐름을 이 5QI 로 열어라"고 내리는 규칙. Open5GS 에서는 가입자 문서의 세션 아래 `pcc_rule`. 없으면 통화가 `No PCC Rule in DB` 로 거절된다. → 7.8, 8, 13장, 부록 C
+**PCC 규칙** (Policy and Charging Control) — PCF 가 SMF 에게 "이 흐름을 이 5QI 로 열어라"고 내리는 규칙. Open5GS 에서는 가입자 문서의 세션 아래 `pcc_rule`. 없으면 통화가 `No PCC Rule in DB` 로 거절된다. → 7.8, 8, 18장, 부록 C
 
 **PCF** (Policy Control Function) — 5G 코어의 정책 서버. 4G 의 PCRF. → 5, 7, 8장
 
-**PCI** (Physical Cell ID) — 셀의 물리 번호 0~1007. PSS/SSS 에서 바로 나온다. 이웃 셀과 겹치면 안 된다. 우리 `pci=1`. → 3, 10, 11f
+**PCI** (Physical Cell ID) — 셀의 물리 번호 0~1007. PSS/SSS 에서 바로 나온다. 이웃 셀과 겹치면 안 된다. 우리 `pci=1`. → 3, 10, 16
 
 **PDCP / RLC / SDAP** — 기지국 무선 계층들. SDAP 는 QoS 흐름 → 무선 통로 매핑, PDCP 는 암호화·헤더 압축·순서 맞추기, RLC 는 분할·재조립과 재전송. → 7, 10장
 
@@ -224,7 +224,7 @@
 
 **QFI** (QoS Flow Identifier) — GTP-U 확장 헤더에 실리는 QoS 흐름 번호. → 7장
 
-**QMI** (Qualcomm MSM Interface) — Qualcomm 계열 모뎀의 바이너리 제어 프로토콜. TLV 구조, 서비스 번호(CTL 0x00, WDS 0x01, DMS 0x02, NAS 0x03, UIM 0x0B …)와 클라이언트 ID(CID). `/dev/cdc-wdm0`, `qmicli`. → 11d
+**QMI** (Qualcomm MSM Interface) — Qualcomm 계열 모뎀의 바이너리 제어 프로토콜. TLV 구조, 서비스 번호(CTL 0x00, WDS 0x01, DMS 0x02, NAS 0x03, UIM 0x0B …)와 클라이언트 ID(CID). `/dev/cdc-wdm0`, `qmicli`. → 14
 
 ## R
 
@@ -234,17 +234,17 @@
 
 **RAND / RES / XRES** — AKA 의 챌린지(무작위 128비트), 단말의 응답, 망이 미리 계산해 둔 기대 응답. 5G 에서는 RES*/XRES* 로 한 번 더 감싼다. → 6장
 
-**RI** (Rank Indicator) — 단말이 보고하는 "동시에 받을 수 있는 흐름 수". 1T1R 에서는 항상 1. → 11f
+**RI** (Rank Indicator) — 단말이 보고하는 "동시에 받을 수 있는 흐름 수". 1T1R 에서는 항상 1. → 16
 
-**RmNet / raw IP** — 모뎀이 USB 로 이더넷 흉내 없이 IP 패킷만 보내는 방식. `/sys/class/net/wwan0/qmi/raw_ip = Y`. → 11d
+**RmNet / raw IP** — 모뎀이 USB 로 이더넷 흉내 없이 IP 패킷만 보내는 방식. `/sys/class/net/wwan0/qmi/raw_ip = Y`. → 14
 
-**RRC** (Radio Resource Control) — 단말과 기지국 사이 무선 제어 계층. 상태는 IDLE(쉼), INACTIVE(기억만), CONNECTED(통신 중). 엔지니어 모드의 상태 표시가 이것이다. → 4, 10, 11f
+**RRC** (Radio Resource Control) — 단말과 기지국 사이 무선 제어 계층. 상태는 IDLE(쉼), INACTIVE(기억만), CONNECTED(통신 중). 엔지니어 모드의 상태 표시가 이것이다. → 4, 10, 16
 
-**RSRP** (Reference Signal Received Power) — 셀의 기준 신호 한 부반송파의 수신 전력. 단위 dBm. 어림값으로 −80 이상 아주 좋음, −80~−90 좋음, −90~−100 보통, −100 아래 나쁨. 5G 에서는 SSB 로 재서 SS-RSRP 라 부른다. **수신 경로마다 따로 측정되므로 `AT+QRSRP` 처럼 경로별로 물어야 한다** — 우리 케이블 경로 실측은 −112(ANT1)·−103(ANT2)이고, 엔지니어 모드 한 칸에 뜨던 −71 은 종단한 포트의 찌꺼기였다(1.8, 13장 사례 17). → 1, 11f
+**RSRP** (Reference Signal Received Power) — 셀의 기준 신호 한 부반송파의 수신 전력. 단위 dBm. 어림값으로 −80 이상 아주 좋음, −80~−90 좋음, −90~−100 보통, −100 아래 나쁨. 5G 에서는 SSB 로 재서 SS-RSRP 라 부른다. **수신 경로마다 따로 측정되므로 `AT+QRSRP` 처럼 경로별로 물어야 한다** — 우리 케이블 경로 실측은 −112(ANT1)·−103(ANT2)이고, 엔지니어 모드 한 칸에 뜨던 −71 은 종단한 포트의 찌꺼기였다(1.8, 18장 사례 17). → 1, 16
 
-**RSRQ** (Reference Signal Received Quality) — RSRP 를 전체 수신 전력(RSSI)에 비춘 값. 단위 dB. −10 이상 좋음, −10~−15 보통, −15 아래 나쁨. 간섭이 많으면 RSRP 가 좋아도 나빠진다. 우리 −10~−11. → 11f, 13장
+**RSRQ** (Reference Signal Received Quality) — RSRP 를 전체 수신 전력(RSSI)에 비춘 값. 단위 dB. −10 이상 좋음, −10~−15 보통, −15 아래 나쁨. 간섭이 많으면 RSRP 가 좋아도 나빠진다. 우리 −10~−11. → 16, 18장
 
-**RSSI** (Received Signal Strength Indicator) — 대역 전체에서 받은 총 전력(신호 + 잡음 + 간섭). 와이파이에서 흔히 보는 그 숫자. → 1, 11f
+**RSSI** (Received Signal Strength Indicator) — 대역 전체에서 받은 총 전력(신호 + 잡음 + 간섭). 와이파이에서 흔히 보는 그 숫자. → 1, 16
 
 **RTP / RTCP** — 음성·영상 미디어를 나르는 UDP 프로토콜과 그 통계 짝. SSRC 로 흐름을 구분한다. 우리 실측 오디오 50 pps 양방향. → 8장
 
@@ -262,9 +262,9 @@
 
 **SDP** — SIP 본문에 실리는 미디어 협상 서술(`m=audio`, `c=`, 코덱). → 8장
 
-**SIB1** (System Information Block 1) — 셀이 방송하는 첫 시스템 정보. PLMN, TAC, 접속 방법. → 3, 11f
+**SIB1** (System Information Block 1) — 셀이 방송하는 첫 시스템 정보. PLMN, TAC, 접속 방법. → 3, 16
 
-**SINR** (Signal to Interference plus Noise Ratio) — 신호 대 간섭·잡음비. 단위 dB. 20 이상 아주 좋음, 13~20 좋음, 0~13 보통, 0 아래 나쁨. 변조 차수를 정하는 가장 직접적인 숫자. 우리 19 dB. → 1, 3, 11f
+**SINR** (Signal to Interference plus Noise Ratio) — 신호 대 간섭·잡음비. 단위 dB. 20 이상 아주 좋음, 13~20 좋음, 0~13 보통, 0 아래 나쁨. 변조 차수를 정하는 가장 직접적인 숫자. 우리 19 dB. → 1, 3, 16
 
 **SIP** — IMS 의 시그널링 프로토콜. HTTP 와 닮은 글자 기반. REGISTER, INVITE, ACK, BYE, MESSAGE. 와이어샤크 `sip`. → 8장
 
@@ -272,7 +272,7 @@
 
 **SMF** (Session Management Function) — 5G 코어의 세션 관리자. 주소 풀에서 IP 를 고르고(DHCP 역할), UPF 에 PFCP 규칙을 설치한다. → 5, 7장
 
-**SMSC / SMSF** — 문자 저장·전달 센터와, 5G 코어에서 NAS 문자를 SMSC 로 넘기는 조각. 우리 배포에는 `smsc`(IMS 경로)만 있고 SMSF 는 없다. → 8, 11c
+**SMSC / SMSF** — 문자 저장·전달 센터와, 5G 코어에서 NAS 문자를 SMSC 로 넘기는 조각. 우리 배포에는 `smsc`(IMS 경로)만 있고 SMSF 는 없다. → 8, 13
 
 **SQN** (Sequence Number) — AKA 의 재사용 방지 카운터. SIM 과 망이 각자 들고 있다가 어긋나면 재동기화한다. → 6장
 
@@ -286,15 +286,15 @@
 
 ## T
 
-**TA** (Timing Advance) — 단말이 기지국과의 거리만큼 상향 신호를 미리 보내는 시간 보정. 거리에 비례한다. 직결 실험에서는 0 근처. → 11f
+**TA** (Timing Advance) — 단말이 기지국과의 거리만큼 상향 신호를 미리 보내는 시간 보정. 거리에 비례한다. 직결 실험에서는 0 근처. → 16
 
-**TAC / TAI** (Tracking Area Code / Identity) — 셀들을 묶은 구역 번호. 대기 중인 단말은 구역 단위로만 위치를 알리고, 망은 구역 단위로 페이징한다. 우리 TAC 1. → 4, 9, 11f
+**TAC / TAI** (Tracking Area Code / Identity) — 셀들을 묶은 구역 번호. 대기 중인 단말은 구역 단위로만 위치를 알리고, 망은 구역 단위로 페이징한다. 우리 TAC 1. → 4, 9, 16
 
 **TDD / FDD** — 송수신을 시간으로 나누는가(TDD), 주파수로 나누는가(FDD). n78 은 TDD. srsRAN 기본 패턴은 10슬롯 주기에 하향 6, 특수 1, 상향 3. → 3장
 
 **TEID** (Tunnel Endpoint Identifier) — GTP-U 헤더의 32비트 터널 번호. 단말 세션마다 방향별로 하나. → 7장
 
-**TPDU** (Transfer Protocol Data Unit) — SMS 의 바이트 단위 메시지(SMS-SUBMIT, SMS-DELIVER). TS 23.040. 바깥에 RP(중계 계층), NAS 경로에서는 CP 가 더 붙는다. → 8, 11c
+**TPDU** (Transfer Protocol Data Unit) — SMS 의 바이트 단위 메시지(SMS-SUBMIT, SMS-DELIVER). TS 23.040. 바깥에 RP(중계 계층), NAS 경로에서는 CP 가 더 붙는다. → 8, 13
 
 **TS** (Technical Specification) — 3GPP 표준 문서. 번호로 분야가 갈린다. → 3장
 
@@ -308,15 +308,15 @@
 
 **UPF** (User Plane Function) — 5G 코어의 사용자 평면. GTP-U 를 벗겨 `ogstun` 으로 내보내고 NAT 한다. 4G 의 SGW-U(Serving Gateway 사용자 평면)+PGW-U(PDN Gateway 사용자 평면). → 5, 7장
 
-**UDH** (User Data Header) — SMS 본문 앞에 붙는 머리글. 한 글을 여러 통으로 쪼갰다는 표시와 조각 번호가 들어가 단말이 합칠 수 있게 한다. 우리 SMSC 는 이것을 버려서 분할 문자가 병합되지 않았다. → 8.7, 11c
+**UDH** (User Data Header) — SMS 본문 앞에 붙는 머리글. 한 글을 여러 통으로 쪼갰다는 표시와 조각 번호가 들어가 단말이 합칠 수 있게 한다. 우리 SMSC 는 이것을 버려서 분할 문자가 병합되지 않았다. → 8.7, 13
 
-**URC** (Unsolicited Result Code) — 묻지 않아도 모뎀이 먼저 보내는 AT 줄(`RING`, `+C5GREG: …`, `+QIND: …`). → 11c
+**URC** (Unsolicited Result Code) — 묻지 않아도 모뎀이 먼저 보내는 AT 줄(`RING`, `+C5GREG: …`, `+QIND: …`). → 13
 
 **USIM** — SIM 카드 안의 3G 이후 가입자 응용. IMSI, 키, MILENAGE 설정을 담는다. → 4a장
 
 ## V
 
-**V.250** — ITU-T 의 AT 기본 명령 표준(옛 V.25ter). Hayes 명령의 국제 표준화. → 11b, 11c
+**V.250** — ITU-T 의 AT 기본 명령 표준(옛 V.25ter). Hayes 명령의 국제 표준화. → 12, 13
 
 **VoNR / VoLTE** — 5G·4G 에서 IMS 로 하는 음성 통화. → 8장
 
@@ -324,7 +324,7 @@
 
 **WAP** (Wireless Application Protocol) — 2000 년 전후의 모바일 인터넷 규격. 지금 남아 있는 쓰임새는 **MMS 알림의 푸시 형식**이다. 목적지 포트 2948, 8 비트 데이터 SMS 로 온다. → 8.7a
 
-**wwan0** — 모뎀이 리눅스에 만든 네트워크 인터페이스. DHCP 없이 QMI 로 받은 주소를 손으로 붙인다. → 7, 11d
+**wwan0** — 모뎀이 리눅스에 만든 네트워크 인터페이스. DHCP 없이 QMI 로 받은 주소를 손으로 붙인다. → 7, 14
 
 ---
 
@@ -336,7 +336,7 @@
 
 **대역폭** — 신호가 차지하는 주파수 폭. 우리 셀 20 MHz. 처리량의 상한을 정한다. → 1, 3장
 
-**베이스밴드** — (1) 반송파를 벗긴 0 Hz 중심의 신호. (2) 휴대폰에서 무선 통신을 맡는 별도 프로세서와 그 펌웨어. 문맥으로 구분한다. → 2, 11e
+**베이스밴드** — (1) 반송파를 벗긴 0 Hz 중심의 신호. (2) 휴대폰에서 무선 통신을 맡는 별도 프로세서와 그 펌웨어. 문맥으로 구분한다. → 2, 15
 
 **보호 대역** — 채널 양 끝에서 필터가 깔끔히 자르지 못해 비워 두는 부분. 20 MHz 에 PRB 51개만 들어가는 이유. → 3장
 
@@ -346,7 +346,7 @@
 
 **슬롯 / 심볼** — 시간 격자의 단위. 30 kHz 에서 슬롯 하나 0.5 ms, 슬롯당 OFDM 심볼 14개. → 3장
 
-**엔지니어 모드** — 휴대폰·모뎀이 무선 측정값(RSRP, SINR, PCI, ARFCN …)을 보여 주는 숨은 화면. 우리 모뎀에서는 `AT+QENG="servingcell"`. 이 용어집이 그 화면의 사전이다. → 11f
+**엔지니어 모드** — 휴대폰·모뎀이 무선 측정값(RSRP, SINR, PCI, ARFCN …)을 보여 주는 숨은 화면. 우리 모뎀에서는 `AT+QENG="servingcell"`. 이 용어집이 그 화면의 사전이다. → 16
 
 **잡음 지수** (NF, Noise Figure) — 수신기가 신호에 더하는 잡음의 양(dB). B210 은 8 dB 미만. → 2장
 
@@ -358,4 +358,4 @@
 
 **피그테일** — 다른 규격의 커넥터를 잇는 짧은 동축 케이블. 우리 것은 SMA ↔ MHF4. → 9, 10장
 
-**핸드셰이크 소리** — 다이얼업 모뎀이 연결할 때 내던 소리. 응답 톤, V.8 협상, 회선 탐색, 학습 구간이 차례로 들린다. → 11b
+**핸드셰이크 소리** — 다이얼업 모뎀이 연결할 때 내던 소리. 응답 톤, V.8 협상, 회선 탐색, 학습 구간이 차례로 들린다. → 12

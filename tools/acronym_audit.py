@@ -1,7 +1,7 @@
 # 약어 감사: 장 순서대로 읽으며 각 약어의 책 전체 첫 등장 자리에 풀이 패턴이 있는지 본다.
 # 사용: python3 tools/acronym_audit.py  (README 집필 기준 "모든 용어는 처음 나온 자리에서 푼다"의 점검 도구)
 import re, glob
-order = ['01','02','03','04-','04a','05','06','07','08','09','10','11a','11b','11c','11d','11e','11f','12','13','부록A','부록B','부록C','부록D']
+order = ['01','02','03','04-','04a','05','06','07','08','09','10','11-','12','13','14','15','16','17','18','부록A','부록B','부록C','부록D']
 files = []
 for p in order:
     m = [f for f in sorted(glob.glob('*.md')) if f.startswith(p) and f!='README.md']
@@ -38,6 +38,10 @@ for f in files:
     # 제목 줄은 이름만 대고 정의는 바로 아래 본문이 한다
     text_nocode = re.sub(r'(?m)^#.*$', '', text_nocode)
     text_nocode = re.sub(r'<?https?://\S+', '', text_nocode)   # URL
+    # 그림의 대체텍스트와 따옴표 안의 글자는 '보여 주는 증거'이지 책이 도입하는 용어가 아니다.
+    # 지우지 않고 자리표시자로 바꾼다 — 지우면 **"…"** 가 **** 가 되어 굵은 글씨 짝이 밀린다.
+    text_nocode = re.sub(r'!\[[^\]]*\]\([^)]*\)', '\u25a1', text_nocode)
+    text_nocode = re.sub(r'"[^"\n]{0,60}"', '\u25a1', text_nocode)
     spans = bold_spans(text_nocode)
     for m in acr.finditer(text_nocode):
         a = m.group(1).rstrip('-')

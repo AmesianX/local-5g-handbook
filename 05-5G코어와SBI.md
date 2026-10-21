@@ -57,9 +57,17 @@
 
 NRF 곁에 조연이 둘 있다. **SCP(Service Communication Proxy)** 는 NF 사이에 끼어들 수 있는 API 게이트웨이다. 라우팅, 부하 분산, 재시도를 대신해 준다. 서비스 메시의 사이드카 프록시와 같은 자리이고, 우리 배포에도 `scp` 컨테이너가 있다. **BSF(Binding Support Function)** 는 아주 작은 조회 서비스인데, "단말 IP `10.45.0.6` 의 세션은 **어느 PCF** 가 담당하고 있나"를 기억한다. 이것이 필요한 이유는 8 장에서 나온다. IMS 의 P-CSCF 가 통화 QoS 를 요청하려면 그 단말의 PCF 를 찾아야 하는데, P-CSCF 는 코어 바깥(4G 유산)에 있어서 SMF 의 내부 상태를 모른다. 그래서 BSF 에 IP 로 묻는다.
 
+🔎 지금 당신의 장비에서. NRF 가 전화번호부 노릇을 했는지는 AMF 쪽 로그 한 줄로 안다.
+
+```bash
+docker logs amf 2>&1 | grep -c 'NFInstance associated'     # 5 가 나와야 한다
+```
+
+다섯이 안 되면 조각 하나가 아직 등록하지 못한 것이고, 그 상태로 단말을 붙이면 9.7 절의 `504` 를 만난다. **컨테이너가 떴다는 것과 망이 준비됐다는 것은 다르다.**
+
 ## 5.3 단말 하나가 붙을 때 코어 안에서 일어나는 일
 
-이 장에서 가장 중요한 그림이다. 모뎀에서 `AT+CFUN=1` 을 친 순간부터(CFUN 은 functionality 의 줄임으로, 모뎀 무선부의 전원 스위치다. `1` 이 켬, `0` 이 끔이고 11c 에서 다시 본다) `+C5GREG: 1` 이 뜰 때까지, 코어 조각들이 **어떤 순서로 누구를 부르는지**를 AMF 로그와 함께 따라간다. 이 순서를 알면 어디서 멈췄는지를 로그 한 줄로 짚을 수 있다.
+이 장에서 가장 중요한 그림이다. 모뎀에서 `AT+CFUN=1` 을 친 순간부터(CFUN 은 functionality 의 줄임으로, 모뎀 무선부의 전원 스위치다. `1` 이 켬, `0` 이 끔이고 13 에서 다시 본다) `+C5GREG: 1` 이 뜰 때까지, 코어 조각들이 **어떤 순서로 누구를 부르는지**를 AMF 로그와 함께 따라간다. 이 순서를 알면 어디서 멈췄는지를 로그 한 줄로 짚을 수 있다.
 
 ```
  UE         gNB        AMF         AUSF       UDM/UDR      SMF       UPF       PCF
@@ -92,7 +100,7 @@ NRF 곁에 조연이 둘 있다. **SCP(Service Communication Proxy)** 는 NF 사
 
 가장 먼저 `gNB-N2 accepted[172.22.0.37]` 가 찍힌다. 기지국이 SCTP 로 AMF 에 붙은 것이고, 단말과 무관하게 기지국이 뜰 때 한 번 일어난다. 그 다음 단말이 전파로 기지국에 RRC 연결을 맺고 첫 NAS 메시지를 보내면, 기지국이 그것을 N2 에 담아 보내고 AMF 가 `InitialUEMessage` 를 찍는다.
 
-바로 뒤에 `RAN_UE_NGAP_ID[0] AMF_UE_NGAP_ID[1] TAC[1] CellID[0x66c000]` 가 나온다. 이 줄은 두 가지를 말한다. 하나는 이 단말이 어느 셀(0x66c000. 이 번호가 11f 의 NCI(NR Cell Identity), 즉 망 전체에서 셀 하나를 가리키는 36 비트 번호다)의 어느 추적 영역(TAC 1)에서 왔는가. 다른 하나는 기지국과 AMF 가 이 단말을 부를 **임시 번호**를 각각 하나씩 정했다는 것이다. 기지국은 0 번, AMF 는 1 번이라 했다. 왜 번호가 둘인가. TCP 가 양쪽 포트 번호를 쓰는 것과 같은 이유다. 한쪽 번호만 쓰면 한쪽이 재시작하거나 핸드오버가 일어날 때 충돌한다. 그리고 여기에 **IMSI 가 없다**는 것이 중요하다. N2 에서 단말은 임시 번호로만 불린다. 4 장의 "기지국은 가입자를 모른다"가 로그에서 보이는 자리다.
+바로 뒤에 `RAN_UE_NGAP_ID[0] AMF_UE_NGAP_ID[1] TAC[1] CellID[0x66c000]` 가 나온다. 이 줄은 두 가지를 말한다. 하나는 이 단말이 어느 셀(0x66c000. 이 번호가 16 의 NCI(NR Cell Identity), 즉 망 전체에서 셀 하나를 가리키는 36 비트 번호다)의 어느 추적 영역(TAC 1)에서 왔는가. 다른 하나는 기지국과 AMF 가 이 단말을 부를 **임시 번호**를 각각 하나씩 정했다는 것이다. 기지국은 0 번, AMF 는 1 번이라 했다. 왜 번호가 둘인가. TCP 가 양쪽 포트 번호를 쓰는 것과 같은 이유다. 한쪽 번호만 쓰면 한쪽이 재시작하거나 핸드오버가 일어날 때 충돌한다. 그리고 여기에 **IMSI 가 없다**는 것이 중요하다. N2 에서 단말은 임시 번호로만 불린다. 4 장의 "기지국은 가입자를 모른다"가 로그에서 보이는 자리다.
 
 그 다음 `[suci-0-001-01-0-0-0-1234567895] Unknown UE by SUCI` 가 찍힌다. 단말이 자기를 **SUCI** 라는 형식으로 밝혔고(6장), AMF 는 이 SUCI 를 처음 본다는 뜻이다. **이것은 오류가 아니다.** 처음 보는 단말이면 당연히 모른다. 이 로그를 보고 "등록이 실패했다"고 오해하는 사람이 많은데, 바로 다음 줄이 `Registration request` 이고 절차는 정상 진행 중이다.
 
@@ -100,7 +108,7 @@ NRF 곁에 조연이 둘 있다. **SCP(Service Communication Proxy)** 는 NF 사
 
 이어서 단말이 세션을 요청한다. 이때 AMF 가 찍는 줄에는 처음 보는 칸 이름이 여럿 있으니 먼저 이름부터 푼다. SUPI(Subscription Permanent Identifier)는 5G 에서 가입자의 영구 ID 이고, SIM 가입자라면 `imsi-` 접두어를 붙인 IMSI 그대로다. DNN(Data Network Name)은 4G 의 APN 과 같은 것으로, 단말이 어느 데이터망(`internet`, `ims`)에 붙고 싶은지를 적은 이름이다. LBO(Local Breakout)는 로밍 중일 때 방문한 망에서 곧바로 인터넷으로 내보낼지를 뜻하는 플래그이고, 집 망인 우리는 `0` 이다. `S_NSSAI` 는 이 세션이 어느 **망 슬라이스**(같은 코어를 용도별로 나눈 논리 망)에 속하는지를 고르는 값으로 두 칸이 있다. SST(Slice/Service Type)는 슬라이스 종류로 `1` 이 일반 모바일 브로드밴드이고, SD(Slice Differentiator)는 같은 종류 안의 구분자로 `0xffffff` 가 "구분 없음"이다. 이 이름들을 알고 나면 `UE SUPI[imsi-…895] DNN[ims] LBO[0] S_NSSAI[SST:1 SD:0xffffff] smContextRef[NULL]` 는 "이 단말이 `ims` 라는 데이터망으로, 기본 슬라이스에서 세션을 원하는데 아직 SMF 쪽 세션 객체(`smContextRef`)가 비어 있다"로 읽힌다. AMF 는 SMF 의 REST 를 부른다. 세션을 새로 만드는 호출은 `POST /nsmf-pdusession/v1/sm-contexts` 이고, SMF 가 만든 세션 객체의 주소(`smContextRef`)를 돌려준다. 그 뒤 기지국이 터널 준비를 마쳤다는 등 세션 상태가 바뀔 때마다 AMF 가 `POST /nsmf-pdusession/v1/sm-contexts/{ref}/modify` 로 알린다. 앞 절의 경로 목록에 있던 `…/modify` 가 그것이다. SMF 가 IP 를 할당하면 SMF 로그에 `UE SUPI[…] DNN[internet] IPv4[10.45.0.3]` 이 찍힌다. UPF 쪽 로그는 F-SEID(Fully qualified Session Endpoint ID)로 세션을 부른다. F-SEID 는 UPF 와 SMF 사이 제어 프로토콜(PFCP)의 세션 번호이고, 양쪽이 하나씩 붙이므로 UP(User Plane, 즉 UPF 쪽이 붙인 번호)와 CP(Control Plane, 즉 SMF 쪽이 붙인 번호) 두 칸이다. 그 줄이 `UE F-SEID[UP:0x770 CP:0x392] APN[internet]` 이다. 7 장에서 이 부분을 자세히 본다.
 
-마지막으로 `UE Context Release [Action:2]` 가 등록 몇 초 뒤에 찍힌다. 이것도 오류가 아니다. 단말이 데이터를 보내지 않으면 망은 무선 연결(RRC)을 놓아서 전파와 배터리를 아낀다. 단말은 등록된 채로 IDLE 상태가 된다. 11f 에서 볼 Quectel 모뎀의 `AT+QENG` 응답에 NOCONN(no connection — 등록은 되어 있지만 무선 연결은 없다는 뜻)으로 뜨는 상태가 이것이다. 데이터가 생기면 다시 연결한다.
+마지막으로 `UE Context Release [Action:2]` 가 등록 몇 초 뒤에 찍힌다. 이것도 오류가 아니다. 단말이 데이터를 보내지 않으면 망은 무선 연결(RRC)을 놓아서 전파와 배터리를 아낀다. 단말은 등록된 채로 IDLE 상태가 된다. 16 에서 볼 Quectel 모뎀의 `AT+QENG` 응답에 NOCONN(no connection — 등록은 되어 있지만 무선 연결은 없다는 뜻)으로 뜨는 상태가 이것이다. 데이터가 생기면 다시 연결한다.
 
 ## 5.4 NAS: 기지국이 열어 보지 못하는 봉투
 
@@ -195,6 +203,14 @@ TCP 헤더를 비트 단위로 그려 놓고 플래그를 하나씩 설명하듯
 ## 5.6b 와이어샤크로 보기
 
 호스트에서 `tcpdump -i br-b33ecd87724d -w reg.pcap` 를 켠 채 모뎀을 `AT+CFUN=0` → `AT+CFUN=1` 하면 등록 전 과정이 한 파일에 담긴다. 와이어샤크로 열고 필터 `ngap` 을 치면 5.3절의 그림이 그대로 나온다. `InitialUEMessage` 를 펼치면 그 안에 `NAS-PDU` 가 있고(NAS-PDU 는 NGAP 메시지에 통째로 실린 NAS 메시지 바이트다. PDU, Protocol Data Unit 은 한 층이 주고받는 메시지 한 덩어리를 부르는 말이다), 와이어샤크가 그것을 `nas-5gs` 로 다시 해석해서 위 표의 `0x41 Registration request` 와 그 안의 SUCI 필드까지 보여 준다. `0x56 Authentication request` 의 RAND 와 AUTN 도 바이트로 보인다. `0x5D Security mode command` 이후 NAS 는 `Ciphered` 로 표시되고 내용이 안 보인다 — 6 장의 키 계층이 작동한 자리다. 필터를 `http2` 로 바꾸면 같은 시간대에 AMF 가 SMF 를 부른 `POST /nsmf-pdusession/v1/sm-contexts` 와 JSON 본문이 보인다. 두 필터를 번갈아 보면 "단말이 보낸 한 메시지가 코어 안에서 REST 몇 번으로 번지는지"가 눈에 들어온다.
+
+🔎 지금 당신의 장비에서. SBI 가 정말 HTTP/2 인지 패킷으로 확인한다.
+
+```bash
+sudo tcpdump -i <브리지> -n -A -c 40 'tcp port 7777' | grep -i -m5 ':path\|:status\|nnrf\|namf'
+```
+
+`:path` 와 `:status` 는 HTTP/2 의 의사 헤더(pseudo-header)다. REST 경로가 `/nnrf-nfm/...`, `/namf-comm/...` 처럼 **조각 이름으로 시작**하는 것이 보이면 5.1 절의 "코어는 REST API 의 묶음"이 그대로 확인된 것이다. 와이어샤크를 쓸 수 있으면 표시 필터 `http2` 가 더 편하다(5.6b).
 
 ## 5.7 이 장의 요약
 
