@@ -149,7 +149,7 @@ NAS 는 다시 **두 층**이다. **5GMM(Mobility Management)** 은 AMF 와의 �
 
 컨테이너마다 설정 파일이 있다. `amf.yaml`, `smf.yaml`, `upf.yaml`, `gnb.yml` 등이다. 그런데 그 안의 주소, PLMN, TAC, IP 대역은 **전부 `.env` 한 파일에서** 온다. 각 컨테이너의 기동 스크립트가 설정 파일의 플레이스홀더(`AMF_IP`, `MCC`, `PLMN`, `UE_IPV4_INTERNET_APN_SUBNET` …)를 env 값으로 `sed` 치환한다. 10 장에서 볼 `srsran_init.sh` 가 기지국 설정의 `PLMN` 을 `001`+`01` 로 바꾸는 것이 같은 방식이다.
 
-이 구조에서 운영 원칙 하나가 나온다. **설정을 바꿀 때는 `configs/env/env` 한 곳을 고치고 `deploy-configs.sh` 로 배포한다. 컨테이너 안의 파일을 직접 고치면 재기동 때 사라진다.** 우리가 단말 IP 대역을 `192.168.100.0/24` 에서 `10.45.0.0/16` 으로 바꾼 것은 env 두 줄(`UE_IPV4_INTERNET`, `UE_IPV4_IMS`)이었고, `ip_utils.py` 가 거기서 서브넷과 게이트웨이를 파생시켜 `smf.yaml` 과 `upf.yaml` 에 넣었다. 반면 DNS 존의 A 레코드는 급해서 컨테이너 안에서 먼저 고쳤고, 그 뒤 클론의 `dns/ims_zone` 에 반영했고, 마지막으로 정본 `configs/dns/ims_zone` 과 배포 매핑에 올렸다(부록 C). 세 단계를 다 거치기 전까지는 사라질 수 있는 수정이었다. 13 장의 사례 하나가 이것이다.
+이 구조에서 운영 원칙 하나가 나온다. **설정을 바꿀 때는 `configs/env/env` 한 곳을 고치고 `deploy-configs.sh` 로 배포한다. 컨테이너 안의 파일을 직접 고치면 재기동 때 사라진다.** 우리가 단말 IP 대역을 `192.168.100.0/24` 에서 `10.45.0.0/16` 으로 바꾼 것은 env 두 줄(`UE_IPV4_INTERNET`, `UE_IPV4_IMS`)이었고, `ip_utils.py` 가 거기서 서브넷과 게이트웨이를 파생시켜 `smf.yaml` 과 `upf.yaml` 에 넣었다. 반면 DNS 존의 A 레코드는 급해서 컨테이너 안에서 먼저 고쳤고, 그 뒤 클론의 `dns/ims_zone` 에 반영했고, 마지막으로 정본 `configs/dns/ims_zone` 과 배포 매핑에 올렸다(부록 C). 세 단계를 다 거치기 전까지는 사라질 수 있는 수정이었다. 18 장 사례 13 이 이것이다.
 
 ## 5.6a 로그에서 NAS 를 읽는 법
 

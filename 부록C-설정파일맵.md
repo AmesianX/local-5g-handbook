@@ -28,7 +28,7 @@ docker exec amf grep -n 'tac\|mcc' /open5gs/install/etc/open5gs/amf.yaml   # ③
 | 정본 (`private5g/configs/…`) | 배포 위치 (클론) | 읽는 주체 | 다루는 장 |
 |---|---|---|---|
 | `env/env` | `.env` | 모든 컨테이너(env_file) → 각 `*_init.sh` | 5.6, 9.6 |
-| `dns/ims_zone` | `dns/ims_zone` | `dns` 컨테이너(bind) | 8, 13 |
+| `dns/ims_zone` | `dns/ims_zone` | `dns` 컨테이너(bind) | 8, 18 |
 | `compose/sa-vonr-deploy.yaml` | `sa-vonr-deploy.yaml` | docker compose (코어·IMS 전체 정의) | 9, 15 |
 | `srsran/gnb.yml` | `srsran/gnb.yml` | `srsgnb` 의 `gnb` 프로세스 | 10 전체 |
 | `srsran/libresdr_alphafox02.bin` | `srsran/…bin` | `srsgnb` 안 UHD (FPGA 적재) | 2, 9.2, 10 |
