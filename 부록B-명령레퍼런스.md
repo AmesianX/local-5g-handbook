@@ -168,7 +168,16 @@ docker exec mongo mongosh open5gs --quiet --eval \
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> reg-a          # A 등록만 (AKAv1-MD5)
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> callee 10      # B 등록 후 착신 대기, 10초 통화
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> caller 10      # A 등록 후 B 에게 발신
-VIDEO=1 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> caller 10   # SDP 에 m=video 추가
+VIDEO=1 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> caller 10   # SDP 에 m=video 추가 (8.6a)
+#   → 5QI 2 PCC 규칙이 DB 에 있어야 PCF 가 Flow 를 연다 (7.8)
+
+# MMS (8.7a). 알림의 URL 경로는 매번 다르게 — 같으면 단말이 중복으로 버린다 (사례 21)
+MMS_TID=T1 python3 tools/mmsc.py serve 0.0.0.0 8099 image.jpg <A_MSISDN> <B_MSISDN> "제목"
+PUSH=$(MMS_TID=T1 python3 tools/mmsc.py notify "http://<호스트>:8099/m/$(date +%s)" <크기> <A_MSISDN>)
+python3 tools/ims_sms_mt.py 172.22.0.20 <B_MSISDN> <A_MSISDN> "hex:$PUSH"
+python3 tools/ims_sms_mt.py 172.22.0.20 <B_MSISDN> <A_MSISDN> '<긴 본문>'   # UDH 살린 분할 문자 (8.7)
+adb shell content query --uri content://telephony/carriers \
+  --projection _id:name:type:mmsc --where "numeric='<MCCMNC>'"   # mmsc 칸이 비면 MMS 는 시작도 못 한다
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> sms-send 3 'sip:<B_MSISDN>@<REALM>' '<본문>' <B_MSISDN>   # TPDU 로 문자
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> sms-recv       # B 로 등록해 문자 수신
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP>                # 둘 다 한 프로세스에서: 등록→통화→BYE

@@ -78,6 +78,8 @@
 
 **dB / dBm** — dB 는 두 전력의 비를 로그로(10 dB = 10 배), dBm 은 1 mW 를 기준으로 한 절대 전력. 0 dBm = 1 mW, +23 dBm = 200 mW, −100 dBm = 0.1 pW. 곱셈이 덧셈이 되어 링크 계산이 쉬워진다. → 1장
 
+**dBFS** (dB Full Scale) — 아날로그-디지털 변환기의 최대 표현값을 0 으로 놓고 그보다 몇 dB 아래인지로 적는 상대 전력. 장치·게인마다 기준이 달라 **같은 장치 같은 설정의 비교에만** 쓴다. 차폐함 누설 계측의 단위. → 12.5a
+
 **DCI** (Downlink Control Information) — 기지국이 매 슬롯 "누구에게 어느 PRB 를 어떤 MCS 로 준다"를 알리는 제어 메시지. 스케줄러의 결정이 담긴다. 기지국 MAC pcap 에서 보인다. → 10, 12장
 
 **DCS** (Data Coding Scheme) — SMS 본문의 부호화. `0x00` 7비트 GSM 문자, `0x08` UCS2. text/plain 으로 보낸 문자에서 이 값이 비어 SMSC 가 SQL 오류를 낸 것이 13장 사례다. → 8, 11c, 13
@@ -159,6 +161,12 @@
 **MCS** (Modulation and Coding Scheme) — 기지국이 고른 변조(QPSK~256QAM)와 부호율의 조합 번호. 높을수록 한 번에 많이 싣는다. CQI 를 보고 정한다. → 3, 11f, 12
 
 **MILENAGE** — AKA 에 쓰는 표준 알고리즘 묶음(f1~f5). AES 기반. K, OPc, RAND 로 RES, CK, IK, AK, MAC 을 만든다. 우리는 파이썬으로 독립 구현해 PyHSS 와 바이트 단위 일치를 확인했다. → 6장
+
+**MMS** (Multimedia Messaging Service) — 사진·영상을 붙여 보내는 문자. SMS 로 본문을 나르지 않고, WAP 푸시로 **URL 만** 보낸 뒤 단말이 데이터망으로 HTTP GET 한다. 문자망과 데이터망이 둘 다 살아 있어야 성립한다. → 8.7a, 13장
+
+**MMSC** (MMS Center) — MMS 본문을 보관하고 알림을 만들어 주는 서버. 우리 배포에 없어 `tools/mmsc.py` 로 만들었다. → 8.7a
+
+**MO / MT** (Mobile Originated / Terminated) — 단말이 보내는 방향과 받는 방향. 문자·MMS·통화 경로를 가를 때 쓴다. → 8, 13장
 
 **MIMO** (Multiple Input Multiple Output) — 안테나 여럿으로 같은 주파수에 여러 흐름을 동시에 보내는 기술. 우리는 1T1R(송신 1, 수신 1)이라 해당 없음. → 3장
 
@@ -258,6 +266,8 @@
 
 **SIP** — IMS 의 시그널링 프로토콜. HTTP 와 닮은 글자 기반. REGISTER, INVITE, ACK, BYE, MESSAGE. 와이어샤크 `sip`. → 8장
 
+**SMIL** (Synchronized Multimedia Integration Language) — 어느 그림을 언제 얼마나 보여 줄지 적는 XML 레이아웃. MMS 본문의 multipart 안에 들어 있다. → 8.7a
+
 **SMF** (Session Management Function) — 5G 코어의 세션 관리자. 주소 풀에서 IP 를 고르고(DHCP 역할), UPF 에 PFCP 규칙을 설치한다. → 5, 7장
 
 **SMSC / SMSF** — 문자 저장·전달 센터와, 5G 코어에서 NAS 문자를 SMSC 로 넘기는 조각. 우리 배포에는 `smsc`(IMS 경로)만 있고 SMSF 는 없다. → 8, 11c
@@ -296,6 +306,8 @@
 
 **UPF** (User Plane Function) — 5G 코어의 사용자 평면. GTP-U 를 벗겨 `ogstun` 으로 내보내고 NAT 한다. 4G 의 SGW-U(Serving Gateway 사용자 평면)+PGW-U(PDN Gateway 사용자 평면). → 5, 7장
 
+**UDH** (User Data Header) — SMS 본문 앞에 붙는 머리글. 한 글을 여러 통으로 쪼갰다는 표시와 조각 번호가 들어가 단말이 합칠 수 있게 한다. 우리 SMSC 는 이것을 버려서 분할 문자가 병합되지 않았다. → 8.7, 11c
+
 **URC** (Unsolicited Result Code) — 묻지 않아도 모뎀이 먼저 보내는 AT 줄(`RING`, `+C5GREG: …`, `+QIND: …`). → 11c
 
 **USIM** — SIM 카드 안의 3G 이후 가입자 응용. IMSI, 키, MILENAGE 설정을 담는다. → 4a장
@@ -307,6 +319,8 @@
 **VoNR / VoLTE** — 5G·4G 에서 IMS 로 하는 음성 통화. → 8장
 
 ## W
+
+**WAP** (Wireless Application Protocol) — 2000 년 전후의 모바일 인터넷 규격. 지금 남아 있는 쓰임새는 **MMS 알림의 푸시 형식**이다. 목적지 포트 2948, 8 비트 데이터 SMS 로 온다. → 8.7a
 
 **wwan0** — 모뎀이 리눅스에 만든 네트워크 인터페이스. DHCP 없이 QMI 로 받은 주소를 손으로 붙인다. → 7, 11d
 

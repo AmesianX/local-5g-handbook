@@ -152,7 +152,7 @@ ICCID(Integrated Circuit Card Identifier, 카드 자체의 일련번호. 카드 
 
 카드에는 비밀번호가 여러 겹이고, 각각이 **지키는 것이 다르다.** 이것을 모르면 "PIN 을 아는데 왜 쓰기가 안 되나"에서 막힌다. 리눅스로 치면 로그인 비밀번호와 `sudo` 비밀번호와 BIOS 관리자 비밀번호가 따로 있는 것이고, 각각을 잃었을 때의 복구 방법도 다르다.
 
-**PIN1(Personal Identification Number, 개인 식별 번호)** 은 사용자의 것이고, **카드를 쓰는 것 자체**를 지킨다. 전화기를 켤 때 묻는 그 네 자리다. 세 번 틀리면 잠기고, 그때 **PUK1(PIN Unblocking Key, PIN 잠금 해제 키)** 이라는 여덟 자리 번호로 푼다. PUK 를 열 번 틀리면 카드는 영구히 잠긴다. **PIN2** 는 고정 다이얼링(정해진 번호로만 전화를 걸게 하는 기능) 같은 부가 기능을 지키고, 역시 PUK2 로 푼다. 우리 카드에서 리눅스의 모뎀 관리 데몬 ModemManager(11d 에서 다룬다)가 `lock: sim-pin2`, `enabled locks: fixed-dialing`, `unlock retries: sim-pin (3), sim-puk (10), sim-pin2 (3), sim-puk2 (10)` 을 보고한 것이 이것이다. 고정 다이얼링이 켜져 있다는 표시였지만 망 등록에는 영향이 없었다.
+**PIN1(Personal Identification Number, 개인 식별 번호)** 은 사용자의 것이고, **카드를 쓰는 것 자체**를 지킨다. 전화기를 켤 때 묻는 그 네 자리다. 세 번 틀리면 잠기고, 그때 **PUK1(PIN Unblocking Key, PIN 잠금 해제 키)** 이라는 여덟 자리 번호로 푼다. PUK 를 열 번 틀리면 카드는 영구히 잠긴다. **PIN2** 는 고정 다이얼링(정해진 번호로만 전화를 걸게 하는 기능) 같은 부가 기능을 지키고, 역시 PUK2(PIN2 전용 잠금 해제 키)로 푼다. 우리 카드에서 리눅스의 모뎀 관리 데몬 ModemManager(11d 에서 다룬다)가 `lock: sim-pin2`, `enabled locks: fixed-dialing`, `unlock retries: sim-pin (3), sim-puk (10), sim-pin2 (3), sim-puk2 (10)` 을 보고한 것이 이것이다. 고정 다이얼링이 켜져 있다는 표시였지만 망 등록에는 영향이 없었다.
 
 **ADM1(Administrative key 1, 관리자 키 1)** 은 전혀 다른 층이다. 사용자가 아니라 **카드 발급사(사업자)** 의 것이고, **가입자 데이터를 쓰는 것**을 지킨다. IMSI 와 비밀키가 그 데이터다. 카드에 따라 ADM2(2 번 관리자 키), ADM3(3 번 관리자 키)처럼 번호가 다른 관리자 키가 더 있어서 파일별로 다른 키가 쓰기를 지키기도 한다. 알리 카드는 ICCID·IMSI·키 파일의 쓰기를 전부 ADM2 가 지켰고, 그래서 우리가 ADM2 에 기본값을 넣다가 카드를 잃었다.
 
