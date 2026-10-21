@@ -5,22 +5,22 @@
 ## C.1 값이 흐르는 세 단계
 
 ```
-11 정본                          12 배포 사본 (클론)                 13 컨테이너 안 (런타임)
+① 정본                          ② 배포 사본 (클론)                 ③ 컨테이너 안 (런타임)
 private5g/configs/env/env  ──▶  docker_open5gs/.env  ──(env_file)──▶ 각 컨테이너의 환경변수
                                                                         │
 private5g/configs/srsran/   ──▶  docker_open5gs/srsran/ ──(볼륨)──▶ /mnt/srsran/gnb.yml
    gnb.yml                                                              │ 기동 스크립트가
                                                                         ▼ 자리표시자를 sed 치환
                                                      /open5gs/install/etc/open5gs/amf.yaml 등
-        bin/deploy-configs.sh 가 11→12 를 복사         (치환 결과. 여기서 고치면 재기동 때 사라짐)
+        bin/deploy-configs.sh 가 ①→② 를 복사         (치환 결과. 여기서 고치면 재기동 때 사라짐)
         (cmp 로 다른 것만, --check 는 차이만 출력)
 ```
 
-11→12 는 `deploy-configs.sh` 가 하고, `core-ctl.sh START` 가 기동 전에 이것을 먼저 부른다. 12→13 은 도커와 각 컨테이너의 `*_init.sh` 가 한다. 예를 들어 `amf_init.sh` 는 클론의 `amf/amf.yaml` 을 컨테이너 안으로 복사한 뒤 `AMF_IP`, `MCC`, `MNC`, `TAC` 같은 글자를 `sed` 로 env 값으로 바꾼다. 그래서 **값을 바꾸려면 11을 고치고, 확인은 13에서 한다.**
+①→② 는 `deploy-configs.sh` 가 하고, `core-ctl.sh START` 가 기동 전에 이것을 먼저 부른다. ②→③ 은 도커와 각 컨테이너의 `*_init.sh` 가 한다. 예를 들어 `amf_init.sh` 는 클론의 `amf/amf.yaml` 을 컨테이너 안으로 복사한 뒤 `AMF_IP`, `MCC`, `MNC`, `TAC` 같은 글자를 `sed` 로 env 값으로 바꾼다. 그래서 **값을 바꾸려면 ①을 고치고, 확인은 ③에서 한다.**
 
 ```bash
-bin/deploy-configs.sh --check                     # 11과 12가 같은가
-docker exec amf grep -n 'tac\|mcc' /open5gs/install/etc/open5gs/amf.yaml   # 13에 실제로 뭐가 들어갔나
+bin/deploy-configs.sh --check                     # ①과 ②가 같은가
+docker exec amf grep -n 'tac\|mcc' /open5gs/install/etc/open5gs/amf.yaml   # ③에 실제로 뭐가 들어갔나
 ```
 
 ## C.2 정본 목록 (deploy-configs.sh 매핑)
@@ -61,7 +61,7 @@ OAI 시뮬레이션 프로파일(`compose/oai_n78_rfsim.yaml` 과 `configs/oai/g
 
 **`dns/ims_zone`**
 
-- `@  1D IN A  ICSCF_IP` 한 줄 추가 — IMS 도메인 자체의 A 레코드. SMSC 가 `sip:<번호>@ims.mnc001.mcc001.3gppnetwork.org` 로 문자를 넘길 때 이 이름을 풀어야 하는데, 업스트림 존에는 서브도메인(`pcscf.`, `scscf.` …)만 있고 도메인 자체가 없어 전달이 조용히 멈췄다(8장 벽 17, 18장). 처음에는 컨테이너 안에서 고쳤고, 그다음 클론에 반영했고, 이 부록을 쓰면서 정본(`configs/dns/`)과 배포 매핑에 올렸다. 세 단계를 다 거치기 전까지는 클론을 새로 받는 순간 사라질 수 있는 수정이었다.
+- `@  1D IN A  ICSCF_IP` 한 줄 추가 — IMS 도메인 자체의 A 레코드. SMSC 가 `sip:<번호>@ims.mnc001.mcc001.3gppnetwork.org` 로 문자를 넘길 때 이 이름을 풀어야 하는데, 업스트림 존에는 서브도메인(`pcscf.`, `scscf.` …)만 있고 도메인 자체가 없어 전달이 조용히 멈췄다(8장 벽 ⑦, 18장). 처음에는 컨테이너 안에서 고쳤고, 그다음 클론에 반영했고, 이 부록을 쓰면서 정본(`configs/dns/`)과 배포 매핑에 올렸다. 세 단계를 다 거치기 전까지는 클론을 새로 받는 순간 사라질 수 있는 수정이었다.
 
 **`pcscf/route/{register,mo,mt}.cfg`**
 

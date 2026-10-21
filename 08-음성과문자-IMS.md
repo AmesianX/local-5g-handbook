@@ -63,7 +63,7 @@ Service-Route: <sip:orig@scscf.ims.mnc001.mcc001.3gppnetwork.org:6060;lr>
 
 IMS 의 신원 용어를 정리한다. **IMPI(IMS Private Identity)** 는 인증용 비공개 ID 로 로그인 ID 에 해당한다. 우리는 `001011234567895@ims.mnc001.mcc001.3gppnetwork.org` 다. **IMPU(IMS Public Identity)** 는 남이 부르는 공개 ID 로 이메일 주소나 전화번호에 해당하고 여러 개 가질 수 있다. **realm(홈 도메인)** 은 IMS 망의 이름이다. 4a 에서 ISIM 이 비어 있어 IMPI 를 IMSI 에서 유도했다고 했는데, 그 규칙이 `IMSI@ims.mnc<MNC>.mcc<MCC>.3gppnetwork.org` 다. 이 `3gppnetwork.org` 도메인은 인터넷으로 나가지 않는다. 우리 `dns` 컨테이너가 푼다.
 
-**벽 11: `412 Register N5 QoS authorization failed`.** P-CSCF 의 첫 확인에서 두 번 걸렸다. 처음 호스트 브리지 IP(172.22.0.1)로 보냈을 때는 그 IP 에 **PDU 세션이 없어서**, 단말 IP(10.45.0.x)로 바꾼 뒤에는 세션은 있지만 **5QI 9 라서** 거절됐다. PCF 로그가 `Even the Default Bearer(QCI:9,ARP:8) cannot support IMS signalling` 이라고 정확히 말해 줬다. 7 장의 5QI 가 등록 첫 관문에서 바로 쓰인다. **IMS 등록은 반드시 단말의 PDU 세션 IP 에서, 5QI 5 를 실을 수 있는 세션으로** 보내야 한다. 상용 단말은 `ims` DNN 세션으로 보내므로 자동으로 만족한다. 우리 모뎀 펌웨어가 IMS 를 지원하지 않아 `internet` 세션의 등급을 5 로 올린 것은 실험실 고유의 우회였다.
+**벽 ①: `412 Register N5 QoS authorization failed`.** P-CSCF 의 첫 확인에서 두 번 걸렸다. 처음 호스트 브리지 IP(172.22.0.1)로 보냈을 때는 그 IP 에 **PDU 세션이 없어서**, 단말 IP(10.45.0.x)로 바꾼 뒤에는 세션은 있지만 **5QI 9 라서** 거절됐다. PCF 로그가 `Even the Default Bearer(QCI:9,ARP:8) cannot support IMS signalling` 이라고 정확히 말해 줬다. 7 장의 5QI 가 등록 첫 관문에서 바로 쓰인다. **IMS 등록은 반드시 단말의 PDU 세션 IP 에서, 5QI 5 를 실을 수 있는 세션으로** 보내야 한다. 상용 단말은 `ims` DNN 세션으로 보내므로 자동으로 만족한다. 우리 모뎀 펌웨어가 IMS 를 지원하지 않아 `internet` 세션의 등급을 5 로 올린 것은 실험실 고유의 우회였다.
 
 실물 단말을 붙이면 이 구분이 바로 걸린다. 단말은 **번호 기반 IMPU**(`sip:821099994533@<realm>`)로 등록하고 그 번호로만 걸린다. 우리 도구가 IMSI 형식으로 걸었을 때 I-CSCF 가 500 을 돌려준 것이 그 때문이다(사례 23). **등록이 됐다는 것은 그 신원으로 걸 수 있다는 뜻이 아니다.**
 
@@ -75,13 +75,13 @@ A 가 INVITE 를 P-CSCF 에 보낸다. SDP 에 자기 오디오 포트가 있다
 
 한 통화에 SIP 요청 셋(INVITE, ACK, BYE)과 응답 여러 개가 **홉마다** 오간다. 우리 캡처에서 I-CSCF 와 S-CSCF 사이에만 UDP 패킷이 십여 개였던 이유다. 이제 우리가 만난 벽들이다.
 
-**벽 12: `500 Server error on LIR select next S-CSCF`.** 이 문구는 "LIR 이 실패했다"처럼 읽힌다. 아니었다. I-CSCF 설정을 열어 보니 이 문장은 `failure_route` 안, 즉 **다음 홉이 408 타임아웃을 냈을 때 들어오는 블록**에 있었다. 캡처에서 LIA 에는 S-CSCF 주소가 정상적으로 들어 있었다. 그러니까 LIR 은 성공했고, I-CSCF 가 S-CSCF 로 INVITE 를 넘긴 뒤 **그 뒤 어딘가**에서 응답이 없어 408 이 났고, 대체 S-CSCF 가 없어 500 으로 포장된 것이다. Kamailio 의 오류 문구는 **그 코드가 놓인 자리의 이름**이지 원인이 아니다. 원인은 다음 홉에 있었다.
+**벽 ②: `500 Server error on LIR select next S-CSCF`.** 이 문구는 "LIR 이 실패했다"처럼 읽힌다. 아니었다. I-CSCF 설정을 열어 보니 이 문장은 `failure_route` 안, 즉 **다음 홉이 408 타임아웃을 냈을 때 들어오는 블록**에 있었다. 캡처에서 LIA 에는 S-CSCF 주소가 정상적으로 들어 있었다. 그러니까 LIR 은 성공했고, I-CSCF 가 S-CSCF 로 INVITE 를 넘긴 뒤 **그 뒤 어딘가**에서 응답이 없어 408 이 났고, 대체 S-CSCF 가 없어 500 으로 포장된 것이다. Kamailio 의 오류 문구는 **그 코드가 놓인 자리의 이름**이지 원인이 아니다. 원인은 다음 홉에 있었다.
 
-**벽 13: P-CSCF 가 단말에 TCP 로 보낸다.** 착신 P-CSCF 로그가 답이었다. `connect 10.46.0.7:5062 failed`, 그 위에 `tcp_main.c`. 우리 단말 쪽 소프트웨어는 UDP 만 듣고 있었는데 P-CSCF 는 TCP 로 연결하려 했다. 왜 TCP 인가. 캡처로 홉마다 크기를 재 보니 INVITE 는 P-CSCF 를 떠날 때 1220 바이트였다가 S-CSCF 를 지나 **1317**, I-CSCF 를 지나 1465, 착신 S-CSCF 를 지나 P-CSCF(B)에 도착할 때 **1636 바이트**였다(8.8a 의 표. 한 프레임에 못 들어가 IP 조각 두 개로 쪼개져 도착했다). RFC 3261 §18.1.1 은 요청이 경로 MTU 에서 200 을 뺀 크기를 넘거나, MTU 를 모를 때 1300 바이트를 넘으면 **TCP 처럼 혼잡 제어가 있는 전송으로 보내라**고 정한다. IMS 는 홉마다 Via, Record-Route, P-헤더가 붙어서 INVITE 가 금방 커진다. 그래서 **IMS 단말은 TCP 를 반드시 들어야 한다.** 우리 도구에 TCP listener 를 넣자 INVITE 가 도착했다. Contact 에 `;transport=udp` 를 넣어 UDP 를 강제하는 것도 시도했는데 **역효과**였다. P-CSCF 가 Contact 의 `alias=` 파라미터로 단말 주소를 파싱하는데 `transport=` 가 끼자 파싱이 깨져 `IP is <null>` 이 됐다. 표준만 믿고 프록시의 구현을 모르면 생기는 일이다.
+**벽 ③: P-CSCF 가 단말에 TCP 로 보낸다.** 착신 P-CSCF 로그가 답이었다. `connect 10.46.0.7:5062 failed`, 그 위에 `tcp_main.c`. 우리 단말 쪽 소프트웨어는 UDP 만 듣고 있었는데 P-CSCF 는 TCP 로 연결하려 했다. 왜 TCP 인가. 캡처로 홉마다 크기를 재 보니 INVITE 는 P-CSCF 를 떠날 때 1220 바이트였다가 S-CSCF 를 지나 **1317**, I-CSCF 를 지나 1465, 착신 S-CSCF 를 지나 P-CSCF(B)에 도착할 때 **1636 바이트**였다(8.8a 의 표. 한 프레임에 못 들어가 IP 조각 두 개로 쪼개져 도착했다). RFC 3261 §18.1.1 은 요청이 경로 MTU 에서 200 을 뺀 크기를 넘거나, MTU 를 모를 때 1300 바이트를 넘으면 **TCP 처럼 혼잡 제어가 있는 전송으로 보내라**고 정한다. IMS 는 홉마다 Via, Record-Route, P-헤더가 붙어서 INVITE 가 금방 커진다. 그래서 **IMS 단말은 TCP 를 반드시 들어야 한다.** 우리 도구에 TCP listener 를 넣자 INVITE 가 도착했다. Contact 에 `;transport=udp` 를 넣어 UDP 를 강제하는 것도 시도했는데 **역효과**였다. P-CSCF 가 Contact 의 `alias=` 파라미터로 단말 주소를 파싱하는데 `transport=` 가 끼자 파싱이 깨져 `IP is <null>` 이 됐다. 표준만 믿고 프록시의 구현을 모르면 생기는 일이다.
 
-**벽 14: `404 Not here` 와 단방향 RTP.** INVITE 가 통했는데 BYE 에 404 가 오고 발신 쪽 RTP 수신이 0 이었다. 둘 다 **우리 도구가 다이얼로그 안의 요청(ACK, BYE)을 잘못 만든** 버그였다. RFC 3261 §12.1.2 는 UAC(User Agent Client, 요청을 보내는 쪽의 SIP 단말)가 2xx 응답의 **Record-Route 를 Route 로 바꿔** 그 순서대로 넣고, Request-URI 는 **2xx 의 Contact(remote target)** 로 하라고 한다. 우리 도구는 Record-Route 를 이름 그대로 넣고 Request-URI 에 원래 호출 URI 를 썼다. 프록시는 그런 요청의 다이얼로그를 못 찾는다(404). ACK 가 B 에 안 닿으니 rtpengine 이 역방향을 열지 않아 RTP 가 한쪽만 흘렀다. 고친 뒤 ACK 도착, RTP 양방향 200/200, BYE 200 OK 가 됐다. SIP 를 아는 독자라면 "그걸 왜 틀려" 하겠지만, 실험용 도구를 급하게 짤 때 가장 자주 빠지는 구멍이다.
+**벽 ④: `404 Not here` 와 단방향 RTP.** INVITE 가 통했는데 BYE 에 404 가 오고 발신 쪽 RTP 수신이 0 이었다. 둘 다 **우리 도구가 다이얼로그 안의 요청(ACK, BYE)을 잘못 만든** 버그였다. RFC 3261 §12.1.2 는 UAC(User Agent Client, 요청을 보내는 쪽의 SIP 단말)가 2xx 응답의 **Record-Route 를 Route 로 바꿔** 그 순서대로 넣고, Request-URI 는 **2xx 의 Contact(remote target)** 로 하라고 한다. 우리 도구는 Record-Route 를 이름 그대로 넣고 Request-URI 에 원래 호출 URI 를 썼다. 프록시는 그런 요청의 다이얼로그를 못 찾는다(404). ACK 가 B 에 안 닿으니 rtpengine 이 역방향을 열지 않아 RTP 가 한쪽만 흘렀다. 고친 뒤 ACK 도착, RTP 양방향 200/200, BYE 200 OK 가 됐다. SIP 를 아는 독자라면 "그걸 왜 틀려" 하겠지만, 실험용 도구를 급하게 짤 때 가장 자주 빠지는 구멍이다.
 
-**벽 15: `488 N5 QoS authorization failed for call`.** INVITE 가 통하자 P-CSCF 가 **통화 미디어용 QoS** 를 PCF 에 요청했고, PCF 가 `No PCC Rule in DB [QoS Index:1]` 로 거절했다. 7 장의 5QI 1 PCC 규칙을 양쪽 가입자에 넣자 통과했다. 영상은 같은 방식으로 5QI 2 다. 이 벽이 **IMS 와 코어가 연결되어 있다**는 가장 직접적인 증거다. SIP 통화가 성립하려면 PCF 가 음성 베어러를 열어 줘야 하고, 그 근거는 가입자 DB 의 PCC 규칙이다. 일반 VoIP 에는 없는 단계다.
+**벽 ⑤: `488 N5 QoS authorization failed for call`.** INVITE 가 통하자 P-CSCF 가 **통화 미디어용 QoS** 를 PCF 에 요청했고, PCF 가 `No PCC Rule in DB [QoS Index:1]` 로 거절했다. 7 장의 5QI 1 PCC 규칙을 양쪽 가입자에 넣자 통과했다. 영상은 같은 방식으로 5QI 2 다. 이 벽이 **IMS 와 코어가 연결되어 있다**는 가장 직접적인 증거다. SIP 통화가 성립하려면 PCF 가 음성 베어러를 열어 줘야 하고, 그 근거는 가입자 DB 의 PCC 규칙이다. 일반 VoIP 에는 없는 단계다.
 
 ## 8.6 미디어: rtpengine 이 사이에 있는 이유
 
@@ -146,9 +146,9 @@ sip:821099994533@10.46.0.15:6200
 
 SMSC 는 TPDU 를 풀어 발신, 착신, 본문, 문자 인코딩을 알리는 DCS(Data Coding Scheme — `0` 이면 GSM 7 비트 문자표, `8` 이면 UCS2(유니코드 한 글자를 2 바이트로 담는 인코딩)처럼 본문 해석법을 정하는 1 바이트)를 DB 에 저장하고 단말에 `202 Accepted` 를 보낸다. "받았다, 전달은 나중에"라는 뜻이다. 그리고 워커가 큐에서 꺼내 착신 번호를 `sip:번호@realm` 으로 바꿔 새 MESSAGE 를 만들어 S-CSCF(B) 로 보낸다. 거기서 P-CSCF(B) 를 거쳐 B 에 도착하면 B 가 200 OK 를 돌려준다.
 
-**벽 16: `text/plain` 으로 보내면 SMSC 의 DB 가 깨진다.** 처음엔 평문 본문으로 보냈다. SMSC 는 받아서 본문까지 읽었는데(200 OK), DB 에 넣을 때 DCS 가 비어 있어 SQL 문법 오류가 났다. 설정을 열어 보니 `text/plain` 경로는 OTT(Over-The-Top: 사업자 SMS 체계를 거치지 않고 데이터 위에서 도는 메신저류) 메시지용이라 DCS 변수를 채우지 않는 **업스트림 버그**였다. 설정을 고치는 대신 **실제 단말과 같은 `application/vnd.3gpp.sms` + TPDU** 로 보냈다. 그 경로는 TPDU 에서 DCS 를 읽어 `8`(UCS2)로 채웠고 저장이 됐다. 응답도 3GPP 경로의 표준인 `202 Accepted` 로 바뀌었다.
+**벽 ⑥: `text/plain` 으로 보내면 SMSC 의 DB 가 깨진다.** 처음엔 평문 본문으로 보냈다. SMSC 는 받아서 본문까지 읽었는데(200 OK), DB 에 넣을 때 DCS 가 비어 있어 SQL 문법 오류가 났다. 설정을 열어 보니 `text/plain` 경로는 OTT(Over-The-Top: 사업자 SMS 체계를 거치지 않고 데이터 위에서 도는 메신저류) 메시지용이라 DCS 변수를 채우지 않는 **업스트림 버그**였다. 설정을 고치는 대신 **실제 단말과 같은 `application/vnd.3gpp.sms` + TPDU** 로 보냈다. 그 경로는 TPDU 에서 DCS 를 읽어 `8`(UCS2)로 채웠고 저장이 됐다. 응답도 3GPP 경로의 표준인 `202 Accepted` 로 바뀌었다.
 
-**벽 17: 저장은 됐는데 전달이 안 됨.** SMSC 워커가 `sip:821099994532@ims.mnc001.mcc001.3gppnetwork.org` 로 보내려는데 이름이 안 풀렸다. DNS 존에 `scscf.ims…`, `hss.ims…` 같은 **호스트 이름만** 있고 **도메인 자체(`@`)의 A 레코드가 없었다.** 독자가 아는 것으로 치면 `_sip._udp.example.com` SRV 는 있는데 `example.com` A 가 없어서, SRV 를 안 보는 클라이언트가 실패한 것이다. 이름이 안 풀리니 전송이 **조용히** 멈추고 큐에 남았다. `@ IN A <I-CSCF 주소>`(존 파일 문법으로 "이 도메인 자체(`@`)의 인터넷 클래스(`IN`) A 레코드")를 넣자 전달됐다. IMS 도메인의 SIP 진입점은 I-CSCF 이므로 그쪽이 맞다. 표준은 NAPTR/SRV 로 찾지만 Kamailio 의 uac 모듈은 A 를 봤다.
+**벽 ⑦: 저장은 됐는데 전달이 안 됨.** SMSC 워커가 `sip:821099994532@ims.mnc001.mcc001.3gppnetwork.org` 로 보내려는데 이름이 안 풀렸다. DNS 존에 `scscf.ims…`, `hss.ims…` 같은 **호스트 이름만** 있고 **도메인 자체(`@`)의 A 레코드가 없었다.** 독자가 아는 것으로 치면 `_sip._udp.example.com` SRV 는 있는데 `example.com` A 가 없어서, SRV 를 안 보는 클라이언트가 실패한 것이다. 이름이 안 풀리니 전송이 **조용히** 멈추고 큐에 남았다. `@ IN A <I-CSCF 주소>`(존 파일 문법으로 "이 도메인 자체(`@`)의 인터넷 클래스(`IN`) A 레코드")를 넣자 전달됐다. IMS 도메인의 SIP 진입점은 I-CSCF 이므로 그쪽이 맞다. 표준은 NAPTR/SRV 로 찾지만 Kamailio 의 uac 모듈은 A 를 봤다.
 
 ![토막난 문자 일곱 통. "…긴 문자다. P" 다음 통이 "LMN 001/01…" 로 이어진다](images/03-문자-분할7통.png)
 
@@ -219,7 +219,7 @@ From: <sip:001011234567895@ims.mnc001.mcc001.3gppnetwork.org>;tag=pdvxg2d0qf  �
 To: <sip:001011234567896@ims.mnc001.mcc001.3gppnetwork.org>                ← 착신. 200 OK 가 올 때 To-tag 가 붙는다
 Call-ID: a3zvak124ujyoi49                                                  ← 이 통화의 고유 번호
 CSeq: 1 INVITE                                                             ← 순번 + 메서드
-Contact: <sip:001011234567895@10.45.0.6:5060;alias=10.45.0.6~5060~1>       ← 발신의 직접 주소. alias= 는 P-CSCF 가 붙인 것(벽 13)
+Contact: <sip:001011234567895@10.45.0.6:5060;alias=10.45.0.6~5060~1>       ← 발신의 직접 주소. alias= 는 P-CSCF 가 붙인 것(벽 ③)
 Allow: INVITE,ACK,CANCEL,BYE,UPDATE,PRACK
 Supported: 100rel,timer
 Content-Type: application/sdp
@@ -241,11 +241,11 @@ a=sendrecv
 a=rtcp:49255
 ```
 
-읽는 법 세 가지. 첫째, **Via 는 응답의 길**이다. 프록시마다 자기 주소를 맨 위에 쌓고, 응답은 맨 위 Via 부터 벗기며 되돌아간다. 둘째, **Record-Route 는 다이얼로그 안 요청(ACK, BYE)의 길**이다. 200 OK 에 이 줄들이 그대로 담겨 단말에 오고, 단말은 그것을 **Route 로 바꿔** ACK 와 BYE 에 넣는다. 벽 14가 이것을 안 해서 생겼다. `did=161.25f2` 같은 파라미터는 Kamailio 가 다이얼로그를 다시 찾으려고 자기 Record-Route 에 심어 둔 표시다. 셋째, **다이얼로그는 Call-ID + From-tag + To-tag 세 값**으로 정해진다. 프록시가 "404 Not here, 그런 다이얼로그 없다"고 한 것은 이 셋 중 하나 또는 Route 가 안 맞았다는 뜻이다.
+읽는 법 세 가지. 첫째, **Via 는 응답의 길**이다. 프록시마다 자기 주소를 맨 위에 쌓고, 응답은 맨 위 Via 부터 벗기며 되돌아간다. 둘째, **Record-Route 는 다이얼로그 안 요청(ACK, BYE)의 길**이다. 200 OK 에 이 줄들이 그대로 담겨 단말에 오고, 단말은 그것을 **Route 로 바꿔** ACK 와 BYE 에 넣는다. 벽 ④가 이것을 안 해서 생겼다. `did=161.25f2` 같은 파라미터는 Kamailio 가 다이얼로그를 다시 찾으려고 자기 Record-Route 에 심어 둔 표시다. 셋째, **다이얼로그는 Call-ID + From-tag + To-tag 세 값**으로 정해진다. 프록시가 "404 Not here, 그런 다이얼로그 없다"고 한 것은 이 셋 중 하나 또는 Route 가 안 맞았다는 뜻이다.
 
-### 같은 INVITE 를 홉마다 재 보면: 벽 12와 13의 실제 모습
+### 같은 INVITE 를 홉마다 재 보면: 벽 ②와 ③의 실제 모습
 
-같은 캡처에서 이 통화의 패킷만 시간순으로 뽑으면 벽 12와 13이 한 화면에 나온다. (마지막 칸은 UDP 페이로드 바이트, 시각은 초 단위 끝자리.)
+같은 캡처에서 이 통화의 패킷만 시간순으로 뽑으면 벽 ②와 ③이 한 화면에 나온다. (마지막 칸은 UDP 페이로드 바이트, 시각은 초 단위 끝자리.)
 
 ```
 :18  P-CSCF(.21) → S-CSCF(.20)   INVITE  1220   ← 위의 패킷
@@ -261,7 +261,7 @@ a=rtcp:49255
 :21  S-CSCF(.20) → P-CSCF(.21)   500 Server error on LIR select next S-CSCF   → 발신 단말이 받은 응답
 ```
 
-INVITE 가 홉을 지날 때마다 Via·Record-Route·P-헤더가 붙어 1220 → 1317 → 1465 → 1636 바이트로 자랐다. 마지막 것은 이더넷의 한 프레임(1500 바이트)에 들어가지 못해 **IP 조각 두 개**(1500 + 184)로 쪼개져 도착했다. 조각화는 그 자체로 신뢰성을 떨어뜨린다 — 조각 하나만 잃어도 메시지 전체가 버려지고, 중간 장비가 조각을 막는 경우도 흔하다. RFC 3261 이 크기 제한을 둔 이유가 이것이다. P-CSCF(B)가 단말 B 에게 보내야 할 INVITE 는 이미 1300 을 한참 넘었고, RFC 3261 §18.1.1 에 따라 TCP 로 연결하려 했다. 그 3 초의 빈칸이 P-CSCF 가 B 의 TCP 5062 에 연결을 시도하다 실패한 시간이다(벽 13). 그 실패가 408 이 되어 거꾸로 올라가다가, I-CSCF 의 `failure_route` 에서 "다른 S-CSCF 를 고를 수 있나"를 시도했고 대안이 없어 500 으로 바뀌었다(벽 12). **500 의 문구는 I-CSCF 가 그 응답을 만든 코드 블록의 이름이고, 원인은 맨 끝 홉의 TCP 였다.** 이 표 한 장이 벽 12와 13을 같이 설명한다.
+INVITE 가 홉을 지날 때마다 Via·Record-Route·P-헤더가 붙어 1220 → 1317 → 1465 → 1636 바이트로 자랐다. 마지막 것은 이더넷의 한 프레임(1500 바이트)에 들어가지 못해 **IP 조각 두 개**(1500 + 184)로 쪼개져 도착했다. 조각화는 그 자체로 신뢰성을 떨어뜨린다 — 조각 하나만 잃어도 메시지 전체가 버려지고, 중간 장비가 조각을 막는 경우도 흔하다. RFC 3261 이 크기 제한을 둔 이유가 이것이다. P-CSCF(B)가 단말 B 에게 보내야 할 INVITE 는 이미 1300 을 한참 넘었고, RFC 3261 §18.1.1 에 따라 TCP 로 연결하려 했다. 그 3 초의 빈칸이 P-CSCF 가 B 의 TCP 5062 에 연결을 시도하다 실패한 시간이다(벽 ③). 그 실패가 408 이 되어 거꾸로 올라가다가, I-CSCF 의 `failure_route` 에서 "다른 S-CSCF 를 고를 수 있나"를 시도했고 대안이 없어 500 으로 바뀌었다(벽 ②). **500 의 문구는 I-CSCF 가 그 응답을 만든 코드 블록의 이름이고, 원인은 맨 끝 홉의 TCP 였다.** 이 표 한 장이 벽 ②와 ③을 같이 설명한다.
 
 ### Diameter 헤더와 AVP (RFC 6733)
 
@@ -343,14 +343,14 @@ INVITE 가 홉을 지날 때마다 Via·Record-Route·P-헤더가 붙어 1220 �
 
 | 벽 | 증상 | 원인 | IMS 의 어느 원리 |
 |---|---|---|---|
-| 11 | `412 N5 QoS` | 단말 세션 IP 가 아니거나 5QI 9 | P-CSCF 는 PDU 세션과 묶인다 |
-| 12 | `500 LIR select next S-CSCF` | 다음 홉 408 을 failure_route 가 포장 | 오류 문구 ≠ 원인 |
-| 13 | `connect …:5062 failed` | INVITE 가 홉마다 자라 1636 B(조각 2개) → TCP | IMS 단말은 TCP 필수 |
-| 14 | `404 Not here`, RTP 단방향 | Route set / remote target 누락 | RFC 3261 §12 다이얼로그 |
-| 15 | `488 N5 QoS … for call` | 5QI 1/2 PCC 규칙 없음 | 통화 = PCF 가 베어러를 열어야 |
-| 16 | SMSC SQL 오류 | text/plain 경로의 DCS 미설정 | 3GPP SMS 형식을 써라 |
-| 17 | SMS 큐에 멈춤 | 도메인 A 레코드 없음 | IMS 도메인 → I-CSCF |
-| 18 | 실물 단말이 `488` | G.711 제시, PRACK 없음, 전제조건 미선언 | 규격을 지키는 쪽은 단말이다 (사례 20) |
+| ① | `412 N5 QoS` | 단말 세션 IP 가 아니거나 5QI 9 | P-CSCF 는 PDU 세션과 묶인다 |
+| ② | `500 LIR select next S-CSCF` | 다음 홉 408 을 failure_route 가 포장 | 오류 문구 ≠ 원인 |
+| ③ | `connect …:5062 failed` | INVITE 가 홉마다 자라 1636 B(조각 2개) → TCP | IMS 단말은 TCP 필수 |
+| ④ | `404 Not here`, RTP 단방향 | Route set / remote target 누락 | RFC 3261 §12 다이얼로그 |
+| ⑤ | `488 N5 QoS … for call` | 5QI 1/2 PCC 규칙 없음 | 통화 = PCF 가 베어러를 열어야 |
+| ⑥ | SMSC SQL 오류 | text/plain 경로의 DCS 미설정 | 3GPP SMS 형식을 써라 |
+| ⑦ | SMS 큐에 멈춤 | 도메인 A 레코드 없음 | IMS 도메인 → I-CSCF |
+| ⑧ | 실물 단말이 `488` | G.711 제시, PRACK 없음, 전제조건 미선언 | 규격을 지키는 쪽은 단말이다 (사례 20) |
 | ⑨ | MMS 알림만 뜨고 본문 없음 | APN 의 `mmsc` 칸이 비어 행이 건너뛰어짐 | MMS 는 문자망 + 데이터망 (사례 21) |
 
 | 질문 | 답 |

@@ -215,13 +215,13 @@ USB 장치 하나가 다섯 개의 **인터페이스**(If 0~4)를 내놓고 있�
 
 요청이 내려가는 길은 이렇다.
 
-11 **`qmicli`(사용자 공간, libqmi-glib)** 가 위 28바이트를 만든다. 서비스 번호, 클라이언트 ID, 트랜잭션 ID 를 채우는 것도, 응답의 TLV 를 풀어 `Packet data handle:` 같은 글자로 찍는 것도 이 라이브러리다.
+① **`qmicli`(사용자 공간, libqmi-glib)** 가 위 28바이트를 만든다. 서비스 번호, 클라이언트 ID, 트랜잭션 ID 를 채우는 것도, 응답의 TLV 를 풀어 `Packet data handle:` 같은 글자로 찍는 것도 이 라이브러리다.
 
-12 **`/dev/cdc-wdm0` 에 `write()`** 한다. 이 문자 장치는 커널의 `cdc_wdm` 코드가 제공한다. CDC-WDM 은 USB 통신 기기 표준(CDC, Communications Device Class)의 한 부분인 WDM(Wireless Mobile Device Management) 규격이고, 하는 일은 단순하다. 쓴 바이트를 해석하지 않고 USB **제어 전송**의 SEND_ENCAPSULATED_COMMAND 요청에 그대로 실어 보낸다. 즉 커널은 QMI 를 모른다. 봉투를 열어 보지 않는 우체부다.
+② **`/dev/cdc-wdm0` 에 `write()`** 한다. 이 문자 장치는 커널의 `cdc_wdm` 코드가 제공한다. CDC-WDM 은 USB 통신 기기 표준(CDC, Communications Device Class)의 한 부분인 WDM(Wireless Mobile Device Management) 규격이고, 하는 일은 단순하다. 쓴 바이트를 해석하지 않고 USB **제어 전송**의 SEND_ENCAPSULATED_COMMAND 요청에 그대로 실어 보낸다. 즉 커널은 QMI 를 모른다. 봉투를 열어 보지 않는 우체부다.
 
-13 **모뎀 펌웨어의 QMUX 라우터**가 받는다. 첫 바이트로 QMUX 임을 확인하고, 서비스 번호 `01` 을 보고 WDS 서버에게 넘기고, 클라이언트 ID `0F` 를 보고 "15번 손님의 요청"으로 기록한다. WDS 서버가 세션을 만들 수 있는지 판단하고, 이번처럼 같은 설정의 세션이 있으면 241로 거절한다. 세션을 만들 수 있으면 여기서부터는 5장·7장의 세계다. 모뎀은 5G NAS 의 PDU Session Establishment Request 를 만들어 기지국을 거쳐 AMF 로 보내고, SMF 가 주소를 정하고, 그 결과가 돌아와야 WDS 응답이 나간다. 우리가 Start Network 한 번에 수 초를 기다리는 이유가 그 왕복이다.
+③ **모뎀 펌웨어의 QMUX 라우터**가 받는다. 첫 바이트로 QMUX 임을 확인하고, 서비스 번호 `01` 을 보고 WDS 서버에게 넘기고, 클라이언트 ID `0F` 를 보고 "15번 손님의 요청"으로 기록한다. WDS 서버가 세션을 만들 수 있는지 판단하고, 이번처럼 같은 설정의 세션이 있으면 241로 거절한다. 세션을 만들 수 있으면 여기서부터는 5장·7장의 세계다. 모뎀은 5G NAS 의 PDU Session Establishment Request 를 만들어 기지국을 거쳐 AMF 로 보내고, SMF 가 주소를 정하고, 그 결과가 돌아와야 WDS 응답이 나간다. 우리가 Start Network 한 번에 수 초를 기다리는 이유가 그 왕복이다.
 
-14 **응답이 올라오는 길**은 반대다. 모뎀은 USB 의 인터럽트 엔드포인트로 "응답이 준비됐다"는 신호(RESPONSE_AVAILABLE)만 보내고, `cdc_wdm` 이 그 신호를 받아 GET_ENCAPSULATED_RESPONSE 로 실제 바이트를 가져와 `read()` 대기 중인 `qmicli` 에게 넘긴다.
+④ **응답이 올라오는 길**은 반대다. 모뎀은 USB 의 인터럽트 엔드포인트로 "응답이 준비됐다"는 신호(RESPONSE_AVAILABLE)만 보내고, `cdc_wdm` 이 그 신호를 받아 GET_ENCAPSULATED_RESPONSE 로 실제 바이트를 가져와 `read()` 대기 중인 `qmicli` 에게 넘긴다.
 
 데이터 패킷은 이 길을 전혀 타지 않는다. 우리 셸에서 `ping -I wwan0` 을 치면 커널의 IP 스택이 패킷을 `wwan0` 에 넘기고, `qmi_wwan`(내부적으로 리눅스의 `usbnet` 공용 코드)이 같은 4번 인터페이스의 **벌크 엔드포인트**(대용량 전송용 USB 통로)로 밀어 넣는다. 모뎀 펌웨어의 데이터 경로가 그 패킷을 받아 Start Network 로 만들어진 세션에 실어 무선으로 보낸다. 제어는 제어 전송으로, 데이터는 벌크 전송으로, 같은 인터페이스 위에서 완전히 다른 통로를 쓴다. 14.2 의 다섯 번째 문제("데이터 모드에 들어가면 제어를 못 한다")가 이렇게 풀렸다.
 
