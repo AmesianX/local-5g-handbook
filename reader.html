@@ -789,6 +789,11 @@ cm 였으니 다이폴 한쪽 팔은 약 2.2 cm, 전체 4.5 cm 다. 5G 단말 �
 방향(세로인지 가로인지)이고, 송수신 안테나의 편파가 어긋나면 신호가 크게
 준다. 지금 단계에서는 "안테나는 방향과 자세가 있다"는 것만 기억하면
 된다.</p>
+<p>🔎 지금 당신의 장비에서. 우리 "안테나"는 케이블이다. 그 배선이 실제로
+그렇게 되어 있는지는 눈으로 센다 — 케이블 두 가닥, 감쇠기 두 개,
+<strong>남은 단자에는 종단기</strong>. 종단하지 않은 단자는 안테나가
+되어 상용 신호를 주워 담고(18 장 사례 5), 그 값이 <code>AT+QRSRP</code>
+의 엉뚱한 칸에 나타난다(1.8).</p>
 <h2 id="15-db-곱셈을-덧셈으로-바꾸는-단위">1.5 dB: 곱셈을 덧셈으로
 바꾸는 단위</h2>
 <p>여기서 많은 사람이 막힌다. 전파 쪽 숫자는 전부 dB 로 적혀 있는데, dB
@@ -1005,6 +1010,10 @@ and Coding Scheme — 기지국이 고른 "한 칸에 몇 비트" 등급 번호)
 같은 정리가 전화선 모뎀이 33.6k 에서 멈춘 이유도 설명하는데, 그 이야기는
 12.3 에 있다.</p>
 </blockquote>
+<p>🔎 지금 당신의 장비에서. SINR 은 모뎀에게 물으면 바로 나온다.</p>
+<pre class="bash"><code>at &#39;AT+QSINR&#39;      # 경로별로 네 칸.  19 근처면 256QAM 을 쓸 만한 자리다</code></pre>
+<p>이 숫자가 17.3 에서 "실측 55 Mbps 가 상한 72 에 비해 타당한가"를
+판정하는 근거다.</p>
 <h2
 id="18-tx_gain-80-에서-수신-세기까지-링크-예산과-숫자를-잘못-읽은-이야기">1.8
 tx_gain 80 에서 수신 세기까지: 링크 예산과, 숫자를 잘못 읽은 이야기</h2>
@@ -1355,6 +1364,11 @@ MPEG-2 만 재생했고, 새 코덱이 나오면 보드를 바꿔야 했다. 지
 5G 신호를 다루려면 적어도 그 두 배인 40 MS/s 가 필요할 것처럼 보인다.
 그런데 우리 설정은 23.04 MS/s 다. 두 배가 아니라 1.15배다. 이것이 가능한
 이유는 다음 절의 I/Q 에 있다.</p>
+<p>🔎 지금 당신의 장비에서. 샘플링 레이트는 설정에 그대로 있다.</p>
+<pre class="bash"><code>grep -E &#39;srate|channel_bandwidth&#39; $P5/configs/srsran/gnb.yml</code></pre>
+<p><code>srate</code> 와 대역폭은 <strong>짝이 맞아야</strong> 기지국이
+뜬다. 대역폭을 바꾸면 이 값도 같이 바꿔야 하고, 그 곱이 2.6 의 USB
+대역폭 계산으로 이어진다.</p>
 <h2 id="23-iq-왜-샘플-하나가-숫자-두-개인가">2.3 I/Q: 왜 샘플 하나가
 숫자 두 개인가</h2>
 <p>소프트웨어 엔지니어가 SDR 을 처음 만질 때 가장 낯선 것이 이것이다.
@@ -1439,6 +1453,12 @@ ANT1 을 케이블로 묶었다.</p>
 <p>이 네 부품 중 <strong>소프트웨어가 건드리는 것은 FPGA 와 FX3</strong>
 다. 둘 다 전원을 넣는다고 바로 일하지 않는다. 각자 프로그램을 받아야
 한다.</p>
+<p>🔎 지금 당신의 장비에서. 안에 어떤 칩이 들었는지는 드라이버가 알려
+준다.</p>
+<pre class="bash"><code>uhd_usrp_probe 2&gt;&amp;1 | grep -iE &quot;name|product|revision|fw|fpga&quot;</code></pre>
+<p>복제품을 샀다면 여기서 나온 이름으로 FPGA 이미지를 고른다. 이름이
+다른데 정품 이미지를 올리면 2.5 의 <code>fx3 state 5</code> 로
+멈춘다.</p>
 <h2 id="25-전원을-넣어도-바로-안-되는-이유-펌웨어와-비트스트림">2.5
 전원을 넣어도 바로 안 되는 이유: 펌웨어와 비트스트림</h2>
 <p>B210 을 USB 에 꽂고 <code>lsusb</code> 를 치면 처음에는 "Cypress
@@ -1745,6 +1765,10 @@ OFDM과 5G NR 물리 계층: 한 줄기 전파에 수백 명을 태우는 법</h
           └──────────┴──────────┴──────────┴──────────┘
   한 칸을 확대하면:  부반송파 12개 × 심볼 14개 = 자원 요소(RE) 168개
   기지국은 &quot;이 슬롯의 PRB 몇 번부터 몇 번까지는 누구&quot; 단위로 나눠 준다 (3.5)</code></pre>
+<p>🔎 지금 당신의 장비에서. 이 격자의 크기는 설정 두 줄이 정한다.</p>
+<pre class="bash"><code>grep -E &#39;channel_bandwidth_MHz|common_scs&#39; $P5/configs/srsran/gnb.yml</code></pre>
+<p>대역폭이 주파수 축(PRB 수), <code>common_scs</code> 가 시간 축(슬롯
+길이)을 정한다. 3.8 의 속도 상한이 이 둘의 곱에서 나온다.</p>
 <h2 id="33-주파수를-촘촘히-나누는-기술-ofdm직교-주파수-분할-다중">3.3
 주파수를 촘촘히 나누는 기술: OFDM(직교 주파수 분할 다중)</h2>
 <p>주파수를 여러 구간으로 나눠 동시에 쓰려면 한 가지 걸림돌이 있다. 옆
@@ -1884,6 +1908,12 @@ MHz 에 부반송파가 600개 넘게 있고 슬롯마다 14심볼이니 칸이 
 MHz 는 273 이고, 15 kHz 로 가면 20 MHz 가 106 이다. 3.8절과 10 장의
 계산이 전부 이 표에서 나온다. 51 × 360 kHz = 18.36 MHz 가 실제로
 데이터가 흐르는 폭이다.</p>
+<p>🔎 지금 당신의 장비에서. 우리 대역폭에 PRB 가 몇 개인지는 기지국이
+기동 로그에 찍는다.</p>
+<pre class="bash"><code>docker logs srsgnb 2&gt;&amp;1 | grep -iE &quot;prb|bandwidth&quot; | head -3</code></pre>
+<p>20 MHz·30 kHz 에서 <strong>51</strong> 이 나와야 한다. 다른 숫자가
+나오면 설정의 대역폭이나 SCS 가 생각과 다른 것이고, 그러면 3.8 의 계산도
+전부 달라진다.</p>
 <h2 id="36-단말이-기지국을-찾는-신호-ssb">3.6 단말이 기지국을 찾는 신호:
 SSB</h2>
 <p>여기까지는 이미 연결된 단말에게 데이터를 나눠 주는 얘기였다. 그런데
@@ -2320,6 +2350,11 @@ Transmission Protocol, 메시지 경계를 보존하는 전송 프로토콜)로 
 때 전파 얘기는 나오지 않고, 독자의 네트워크 지식이 거의 그대로 통한다.
 반대로 기지국이 이상하면 코어 로그를 아무리 봐도 안 나온다. 문제가 어느
 쪽인지를 먼저 가르는 것이 모든 디버깅의 시작이다.</p>
+<p>🔎 지금 당신의 장비에서. "기지국 뒤부터는 그냥 IP" 는 패킷으로
+확인된다.</p>
+<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -c 5 sctp      # N2: 기지국 ↔ AMF</code></pre>
+<p>SCTP 패킷이 잡히면 이 문장이 당신 장비에서 참이다. 브리지 이름은
+<code>docker network ls</code> 로 찾는다(9.8).</p>
 <h2 id="44-코어는-왜-조각조각인가">4.4 코어는 왜 조각조각인가</h2>
 <p>코어 구성도를 처음 보면 <strong>AMF, SMF, UPF, AUSF, UDM, UDR, PCF,
 NRF, NSSF, BSF</strong> 가 쏟아진다. 16 의 엔지니어 모드처럼 이것도
@@ -2395,6 +2430,11 @@ Protocol, 패킷 전달 규칙을 설치하는 프로토콜. 7장)를 쓴다. �
 <strong>기지국은 수가 많고 밖에 서 있어서 뚫리기 쉽다. 그래서 기지국에는
 가입자의 비밀을 주지 않는다.</strong> 6 장의 키 계층이 이 철학을
 암호키로 구현한 것이고, 15 의 신뢰 경계가 같은 말이다.</p>
+<p>🔎 지금 당신의 장비에서. 조각들의 이름을 전부 꺼내 놓고 위 설명과
+맞춰 본다.</p>
+<pre class="bash"><code>docker ps --format &#39;{{.Names}}&#39; | sort | tr &#39;\n&#39; &#39; &#39;</code></pre>
+<p>모르는 이름이 하나도 없어야 한다. 하나라도 모르면 5.5 의 분류표로
+돌아간다.</p>
 <h2 id="45-시그널링의-세대-ss7-에서-http2-까지">4.5 시그널링의 세대: SS7
 에서 HTTP/2 까지</h2>
 <p>코어의 조각끼리 주고받는 <strong>말</strong>도 세대마다 바뀌었다.
@@ -3535,6 +3575,13 @@ Management)</strong> 은 SMF 와의 대화로, PDU 세션을 만들고 바꾸고
 <code>sm-contexts/…/modify</code> 호출이 그 전달이다. 즉 "열어 보지 않고
 넘기는" 층이 기지국에 한 번, AMF 에 한 번, 두 겹으로 있다. 조각마다
 <strong>자기 일만 본다</strong>는 원칙이 끝까지 가는 것이다.</p>
+<p>🔎 지금 당신의 장비에서. NAS 가 기지국을 투명하게 지난다는 것은
+캡처에서 보인다.</p>
+<pre class="bash"><code># 표시 필터:  ngap           ← 기지국↔AMF 의 봉투
+# 표시 필터:  nas-5gs        ← 그 안에 든 단말↔코어의 내용</code></pre>
+<p>같은 패킷을 두 필터로 보면, 바깥은 기지국이 만든 것이고 안은 기지국이
+손대지 않은 것이다. 보안 모드 뒤부터 안이 안 보이는 것은 6.6 에서
+설명한다.</p>
 <h2 id="55-우리-배포의-컨테이너-26-개를-지도에-놓기">5.5 우리 배포의
 컨테이너 26 개를 지도에 놓기</h2>
 <p><code>docker ps</code> 에 나온 이름을 전부 분류한다. 모르는 이름이
@@ -3906,6 +3953,38 @@ SQN</strong> 을 섞고, 단말은 "지난번보다 큰가"를 검사한다.</p>
 다.</p>
 <p>앞의 셋은 3G 에서 완성됐고 <strong>AKA(Authentication and Key
 Agreement)</strong> 라는 이름이다. 넷째는 5G 가 더했다.</p>
+<p>🔎 지금 당신의 장비에서. 네 가지가 실제로 돌고 있는지는 한 자리씩
+확인된다.</p>
+<table>
+<thead>
+<tr class="header">
+<th>걱정했던 것</th>
+<th>어디서 보이나</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>① 단말이 진짜인가</td>
+<td><code>docker logs amf</code> 의 <code>Authentication request</code>
+→ <code>response</code> 왕복</td>
+</tr>
+<tr class="even">
+<td>② 망이 진짜인가</td>
+<td>카드가 AUTN 의 MAC-A 를 검증한다. 틀리면 카드가 거절한다(6.7 의 실패
+읽는 법)</td>
+</tr>
+<tr class="odd">
+<td>③ 재생 공격</td>
+<td>같은 자리의 SQN. 어긋나면
+<code>synchronisation_failure</code>(6.7)</td>
+</tr>
+<tr class="even">
+<td>④ 번호 노출</td>
+<td><code>docker logs amf | grep -o 'suci-[0-9-]*'</code> — 보호 방식
+자리가 <code>0</code> 이면 평문이다(6.3)</td>
+</tr>
+</tbody>
+</table>
 <h2 id="63-suci-첫-메시지에서-imsi-를-숨기는-법">6.3 SUCI: 첫 메시지에서
 IMSI 를 숨기는 법</h2>
 <p>5장 로그에 <code>suci-0-001-01-0-0-0-1234567895</code> 가 있었다.
@@ -4061,6 +4140,13 @@ RAND, AUTN, RES 셋뿐이고 셋 다 Ki 없이는 쓸모가 없다.</p>
 </tr>
 </tbody>
 </table>
+<p>🔎 지금 당신의 장비에서. 이 왕복은 <strong>두 곳</strong>에서 볼 수
+있고, 둘을 같이 보는 것이 중요하다.</p>
+<pre class="bash"><code>docker logs amf 2&gt;&amp;1 | grep -iE &quot;authentication (request|response)&quot; | tail -4
+docker logs pyhss 2&gt;&amp;1 | grep -iE &quot;rand|autn|xres&quot; | tail -6</code></pre>
+<p>망 쪽 로그는 "보냈다/받았다"만 말한다. <strong>그 값이 맞는지는
+카드에게 직접 물어야</strong> 알 수 있고, 그 방법이 6.5 의 끝에
+있다.</p>
 <h2 id="65-milenage-hmac-자리에-있는-것은-aes-여섯-번이다">6.5 MILENAGE:
 HMAC 자리에 있는 것은 AES 여섯 번이다</h2>
 <p>독자가 아는 HMAC 은 "키와 메시지를 해시 함수에 특정 순서로 넣는
@@ -4176,6 +4262,15 @@ RES* 와 TLS 같은 키 파생</h2>
 그 "만드는" 과정을 여러 단계로 쪼개서 <strong>장비마다 다른 단계의
 키</strong>를 준다. 트리의 각 층이 장비 하나다. 기지국은 맨 아래 층만
 받는다.</p>
+<p>🔎 지금 당신의 장비에서. 키 계층이 실제로 섰는지는 <strong>갑자기 안
+보이게 되는 것</strong>으로 확인한다.</p>
+<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w nas.pcap sctp          # 등록 한 번을 통째로
+# 와이어샤크 표시 필터: nas-5gs</code></pre>
+<p><code>Security mode command</code>(5.6a 의 <code>0x5D</code>)
+전까지는 NAS 필드가 전부 풀려 보이고, <strong>그 뒤부터는 안이 안
+보인다.</strong> 그 경계가 바로 이 절에서 만든 K_NASenc 가 걸린
+지점이다. 안 보이는 것이 고장이 아니라 <strong>성공의
+증거</strong>다.</p>
 <h2 id="67-sqn-과-재동기-실험실에서-실제로-만나는-문제">6.7 SQN 과
 재동기: 실험실에서 실제로 만나는 문제</h2>
 <p>결제 API 를 만들어 봤다면 이 구조를 안다. <strong>같은 요청을 두 번
@@ -4206,6 +4301,62 @@ RES* 와 TLS 같은 키 파생</h2>
 IND(index)라는 5 비트 인덱스로 고른다. 5G 코어, IMS, 로밍 망이 동시에
 인증해도 서로 카운터를 밟지 않게 하려고다. 4a 에서 본 sysmocom 전용 파일
 <code>EF_USIM_SQN</code> 의 <code>ind_len</code> 이 그 설정이다.</p>
+<h3 id="실험실에서-sqn-을-맞추는-법">실험실에서 SQN 을 맞추는 법</h3>
+<p>이 절이 이 장에서 가장 자주 쓰이는 자리다. 가입자 DB 가
+<strong>둘</strong>이므로(mongo 와 PyHSS) 양쪽을 같은 값으로 올려
+둔다.</p>
+<pre class="bash"><code>docker exec mongo mongosh --quiet open5gs --eval \
+ &#39;db.subscribers.updateOne({imsi:&quot;&lt;IMSI&gt;&quot;},{$set:{&quot;security.sqn&quot;:NumberLong(&quot;64&quot;)}})&#39;
+curl -s -X PATCH http://127.0.0.1:8080/auc/&lt;id&gt; -H &#39;Content-Type: application/json&#39; -d &#39;{&quot;sqn&quot;:64}&#39;</code></pre>
+<p>🔎 지금 당신의 장비에서 — <strong>그리고 이것이 "Ki 가 제대로
+심겼는가"를 확인하는 유일한 방법이다.</strong> Ki 는 카드에서 읽을 수
+없으니(4a.6), 카드에게 <strong>직접 인증을 시켜 보는 것</strong> 말고는
+길이 없다. 단말에 꽂아 보고 "안 붙네" 하는 것보다 훨씬 빠르고 원인이
+분명하다.</p>
+<p>먼저 임의의 RAND·SQN 으로 기대값을 계산한다.</p>
+<pre class="bash"><code>python3 - &lt;&lt;&#39;PY&#39;
+import sys; sys.path.insert(0, &#39;tools&#39;)
+from milenage import f1, f2345, xor
+ki, opc = bytes.fromhex(&#39;&lt;KI&gt;&#39;), bytes.fromhex(&#39;&lt;OPC&gt;&#39;)
+rand = bytes.fromhex(&#39;00112233445566778899aabbccddeeff&#39;)
+sqn, amf = bytes.fromhex(&#39;000000000020&#39;), bytes.fromhex(&#39;8000&#39;)   # SQN 32
+maca, _ = f1(ki, opc, rand, sqn, amf)
+res, ck, ik, ak, _ = f2345(ki, opc, rand)
+print(&#39;RAND&#39;, rand.hex())
+print(&#39;AUTN&#39;, (xor(sqn, ak) + amf + maca).hex())
+print(&#39;기대 RES&#39;, res.hex(), &#39;\n기대 CK &#39;, ck.hex(), &#39;\n기대 IK &#39;, ik.hex())
+PY</code></pre>
+<p>그 값을 카드에 넣는다.</p>
+<pre class="bash"><code>printf &#39;select ADF.USIM\nauthenticate &lt;RAND&gt; &lt;AUTN&gt;\n&#39; &gt; /tmp/auth.script
+sudo python3 pySim-shell.py -p0 --script /tmp/auth.script</code></pre>
+<p>카드가 돌려준 <code>res</code>·<code>ck</code>·<code>ik</code> 가
+계산값과 <strong>같으면 Ki 와 OPc 가 정확히 들어간 것</strong>이다.</p>
+<p><strong>실패를 읽는 법이 핵심이다.</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th>카드의 답</th>
+<th>뜻</th>
+<th>할 일</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>synchronisation_failure</code></td>
+<td><strong>SQN 이 낮은 것이지 Ki 가 틀린 게 아니다</strong></td>
+<td>SQN 을 올려 다시 한다</td>
+</tr>
+<tr class="even">
+<td><code>res</code> 가 <strong>다르게</strong> 나옴</td>
+<td>그때가 Ki·OPc 불일치다</td>
+<td>카드를 다시 굽거나 DB 를 맞춘다</td>
+</tr>
+</tbody>
+</table>
+<p>이 구분을 모르면 멀쩡한 카드를 틀렸다고 판단하고 다시 굽게 된다.
+그리고 <strong>이 시험 자체가 카드의 SQN 을 올리므로</strong>, 끝나면
+위의 두 명령으로 망 쪽 SQN 을 그보다 크게 맞춰 둔다. 그러면 첫 접속에서
+재동기 왕복이 생기지 않는다.</p>
 <h2 id="68-ims-인증-같은-milenage-를-http-digest-에-담은-것">6.8 IMS
 인증: 같은 MILENAGE 를 HTTP Digest 에 담은 것</h2>
 <p>8 장의 IMS 등록에도 인증이 있다. <strong>같은 AKA, 같은
@@ -4229,7 +4380,17 @@ P-CSCF 와 단말이 그 키로 <strong>IPsec 보안 연계</strong>를 맺어 �
 SIP 메시지를 보호한다(TS 33.203). 우리 소프트 UA 는 IPsec 없이 평문 SIP
 로 등록했고 우리 P-CSCF 설정이 그것을 허용했다 [검증 필요: P-CSCF 의
 IPsec 사용 여부 설정].</p>
+<p>🔎 지금 당신의 장비에서. IMS 쪽 인증은 SIP 헤더에 그대로 보인다.</p>
+<pre class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; reg-a
+docker logs pcscf 2&gt;&amp;1 | grep -iE &quot;AKAv1-MD5|nonce|401&quot; | tail -5</code></pre>
+<p><code>401</code> 과 함께 오는 <code>nonce</code> 가 <strong>RAND +
+AUTN 을 base64 로 담은 것</strong>이고, 단말이 돌려주는
+<code>response</code> 가 RES 를 Digest 규칙으로 가공한 값이다. 같은
+MILENAGE 가 전파 구간(NAS)과 IMS(SIP) 두 곳에서 각각 한 번씩 돈다는 것을
+여기서 눈으로 확인한다.</p>
 <h2 id="68a-와이어샤크로-보기">6.8a 와이어샤크로 보기</h2>
+<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w reg.pcap sctp     # 등록 한 번을 잡고
+# 표시 필터:  nas-5gs.mm.message_type == 0x56</code></pre>
 <p>5 장의 <code>reg.pcap</code> 에서 필터
 <code>nas-5gs.mm.message_type == 0x56</code> 을 치면 Authentication
 request 만 남는다. 펼치면 <code>Authentication parameter RAND</code> 16
@@ -4413,6 +4574,10 @@ IP 는 10.45.0.3, DNS 는 8.8.8.8, QoS 는 이것"을 보낸다. 기지국은 �
 SST 1 은 일반 광대역(eMBB)이고 SD <code>0xffffff</code> 는 "세부 구분
 없음"이다. 우리 가입자 설정의 <code>sst: 1</code> 이 여기 나온
 것이다.</p>
+<p>🔎 지금 당신의 장비에서. 이 순서는 SMF 로그에 그대로 찍힌다.</p>
+<pre class="bash"><code>docker logs smf 2&gt;&amp;1 | grep -iE &quot;session|ipv4|pfcp&quot; | tail -10</code></pre>
+<p>세션 생성 → IP 할당 → PFCP 규칙 설치가 순서대로 보이면 7.3 의 그림이
+돈 것이다. 중간에서 멈추면 그 줄이 가리키는 조각부터 본다.</p>
 <h2 id="74-ip-는-누가-주는가-smf-가-dhcp-다-단-dhcp-프로토콜-없이">7.4
 IP 는 누가 주는가: SMF 가 DHCP 다, 단 DHCP 프로토콜 없이</h2>
 <p>위에서 SMF 가 풀에서 주소를 골랐다. 즉 <strong>SMF 가 DHCP 서버
@@ -4537,6 +4702,12 @@ iptables 의 POSTROUTING 을 지나고, 거기에 MASQUERADE 규칙이 있어서
 <p>실험 중 "SIP 는 되는데 데이터가 안 된다" 또는 그 반대가 생기면, 이
 NAT 규칙과 UPF 의 라우트를 가장 먼저 본다. 두 DNN 의 서브넷이 각각 어느
 TUN 에 붙어 있고 어느 규칙을 타는지가 거기 다 있다.</p>
+<p>🔎 지금 당신의 장비에서. UPF 안을 직접 들여다본다.</p>
+<pre class="bash"><code>docker exec upf ip -br addr show ogstun      # 터널을 벗은 뒤의 장치. 10.45.0.1 이 보여야 한다
+docker exec upf iptables -t nat -S | grep MASQUERADE</code></pre>
+<p>둘째 줄의 NAT 규칙에 <strong>P-CSCF 주소
+예외</strong>(<code>! -d 172.22.0.21</code>)가 들어 있는지 본다. 그 한
+줄이 없으면 IMS 등록이 <code>412</code> 로 죽는다(8.4).</p>
 <h2 id="77-두-번째-의문-모뎀이-꾸며낸-서브넷">7.7 두 번째 의문: 모뎀이
 꾸며낸 서브넷</h2>
 <p>14 에서 예고한 것이다. 이 절은 <strong>장치가 알려 준 값을 그대로
@@ -5151,6 +5322,12 @@ alt="차폐함 안 갤럭시 S22+ 의 통화 화면. 통화 시간 00:07, 상대
 주소를 기억(latch)</strong> 하고 그쪽으로 역방향을 보낸다. 우리 발신 쪽
 수신이 처음 세 개 빠진 것이 latch 전의 패킷이고, ACK 가 안 가던 때
 역방향이 아예 안 열린 것도 latch 가 완성되지 않아서였다.</p>
+<p>🔎 지금 당신의 장비에서. 미디어가 실제로 rtpengine 을 지나는지
+본다.</p>
+<pre class="bash"><code>docker logs rtpengine 2&gt;&amp;1 | tail -20</code></pre>
+<p>스트림이 쌍으로 잡히고 양방향 패킷 수가 올라가면 통화가 성립한
+것이다. 한쪽만 올라가면 latch 가 안 된 것이고, 원인은 대개 ACK 나 Route
+set 이다(18 장 사례 9).</p>
 <h2 id="86a-영상통화-미디어-줄-하나와-5qi-2">8.6a 영상통화: 미디어 줄
 하나와 5QI 2</h2>
 <p>영상통화는 새 프로토콜이 아니다. <strong>INVITE 의 SDP 에 미디어 줄이
@@ -5308,6 +5485,11 @@ alt="문자 목록. +001011234567895 에서 온 &quot;TEST&quot; 한 통" /></p>
 착신 단말이 3GPP SMS 를 받을 수 있는지(등록 때
 <code>+g.3gpp.smsip</code> 를 광고했는지) 보고 OTT 형식으로 내려 준
 것이다. 한글 본문이 그대로 도착했다.</p>
+<p>🔎 지금 당신의 장비에서. 문자는 SMSC 를 반드시 거친다.</p>
+<pre class="bash"><code>docker logs smsc 2&gt;&amp;1 | tail -20</code></pre>
+<p><code>202 Accepted</code> 가 보이면 받아 둔 것이고, 그 뒤 전달 줄이
+없으면 큐에 남은 것이다(8.7 의 벽 ⑦). 길이에서 막히면
+<code>exceeds maximum length</code> 가 찍힌다.</p>
 <h2 id="87a-mms-문자와-전혀-다른-길로-간다">8.7a MMS: 문자와 전혀 다른
 길로 간다</h2>
 <p>사진이 붙은 문자, MMS 는 "긴 SMS" 가 아니다. <strong>경로가 아예
@@ -5598,6 +5780,10 @@ A-law), <code>96~127</code> 동적(SDP 의 rtpmap 이 정의). 우리 비디오�
 분석해 보지는 않았다. 캡처해서 열면 같은 통화가
 <code>Lost: 3 (1.5%)</code> 같은 줄로 보일 것이다.</p>
 <h2 id="88b-와이어샤크로-보기">8.8b 와이어샤크로 보기</h2>
+<pre class="bash"><code>sudo tcpdump -i &lt;브리지&gt; -n -w call.pcap &#39;udp port 5060 or tcp port 5060 or tcp port 5062 or udp portrange 40000-40100&#39;
+# 표시 필터:  sip           ← 시그널링
+#            rtp            ← 미디어
+#            diameter       ← HSS 왕복(포트 3875)</code></pre>
 <p>통화 한 번을 캡처하고 필터 <code>sip</code> 을 치면 와이어샤크의
 <strong>전화 → VoIP 통화</strong> 메뉴가 통화를 자동으로 묶어 준다.
 거기서 "흐름 순서" 를 누르면 8.5절의 그림이 <strong>실제
@@ -8492,6 +8678,13 @@ Ctrl-Q 로 풀리는 현상을 겪어 봤다면, 그것이 지금도 tty 라인 
 다시 보내는 물리 계층 재전송. 16)</strong> 와 <strong>ROHC(RObust Header
 Compression, 무선 구간에서 IP/UDP/RTP 헤더를 몇 바이트로 줄이는
 압축)</strong> 로 이어진다. 이름만 바뀌고 역할은 같다.</p>
+<p>🔎 지금 당신의 장비에서. 이 선들이 지금 어떻게 설정돼 있는지는 한
+줄로 보인다.</p>
+<pre class="bash"><code>stty -F /dev/ttyUSB3 -a | head -3</code></pre>
+<p><code>crtscts</code> 가 켜져 있으면 하드웨어 흐름 제어,
+<code>-crtscts</code> 면 꺼진 것이다. USB 가짜 시리얼에서는 이 값이
+실제로 쓰이지 않는 경우가 많고(11.5), 그래서 11.4 의
+<code>raw -echo</code> 가 훨씬 중요하다.</p>
 <h2 id="128-connect-다음-ppp-와-ip--5g-pdu-세션의-조상">12.8 CONNECT
 다음: PPP 와 IP — 5G PDU 세션의 조상</h2>
 <p>BBS 시절에는 <code>CONNECT</code> 뒤에 글자가 그대로 오갔다. 상대가
@@ -11493,6 +11686,12 @@ LG유플러스의 NR 단독 셀(AcT 12)까지 떴다는 것은, 케이블로 닫
 대비 19 dB 라 256QAM 경계까지 쓸 수 있다. 마지막 칸이 비어 있으니 이
 측정은 <strong>데이터가 흐르는 중</strong>에 잰 것이다." 휴대폰 엔지니어
 모드의 화면도 이름만 다를 뿐 정확히 같은 문장으로 읽힌다.</p>
+<p>🔎 지금 당신의 장비에서. 이 장의 모든 칸을 한 번에 꺼내 본다.</p>
+<pre class="bash"><code>at &#39;AT+QENG=&quot;servingcell&quot;&#39;
+at &#39;AT+QRSRP&#39;; at &#39;AT+QSINR&#39;</code></pre>
+<p>첫 줄의 칸들을 16.2~16.7 의 순서로 하나씩 짚어 읽고, 둘째 줄과
+비교한다. <strong>한 줄 안의 RSRP 와 SINR 이 서로 다른 안테나의 값일 수
+있다</strong>는 것이 1.8 의 교훈이다.</p>
 <h2 id="1610-요약">16.10 요약</h2>
 <table>
 <thead>
@@ -12282,6 +12481,14 @@ SINR 이 떨어지는 <strong>꺾임</strong>이 있다. 꺾임의 위쪽이 증
 <h2 id="178-지금-당신의-장비에서">17.8 지금 당신의 장비에서</h2>
 <p>17.2 의 표를 <strong>위에서부터</strong> 친다. 멈춘 단계의 번호와 그
 단계의 출력을 적는다. 그 번호가 당신이 펴야 할 장이다.</p>
+<p>막히기 전에 한 번 돌려 두면 좋은 것이 있다. 지금 상태를 통째로 찍어
+두는 것이다.</p>
+<pre class="bash"><code>$P5/bin/selftest.sh                                   # 단계별 자동 점검(9.9)
+docker ps --format &#39;{{.Names}}\t{{.Status}}&#39; | sort   # 조각들이 다 떠 있나
+at &#39;AT+QENG=&quot;servingcell&quot;&#39;; at &#39;AT+QRSRP&#39;             # 지금 신호</code></pre>
+<p>이 세 줄의 출력을 <strong>잘 돌 때 한 번</strong> 남겨 두면, 나중에
+깨졌을 때 비교할 대상이 생긴다. 17.1 의 둘째 원칙("조건을 적는다")이
+실제로는 이 습관이다.</p>
 <h2 id="점검-문제">점검 문제</h2>
 <ol type="1">
 <li>17.2 의 8 단계(<code>AT+COPS=?</code> 에 우리 셀이 보임)는
