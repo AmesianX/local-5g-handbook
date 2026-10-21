@@ -169,7 +169,7 @@ python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> reg-a          # A 등록만 (AKAv
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> callee 10      # B 등록 후 착신 대기, 10초 통화
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> caller 10      # A 등록 후 B 에게 발신
 VIDEO=1 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> caller 10   # SDP 에 m=video 추가
-python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> sms-send '' '<본문>' <B_MSISDN>   # TPDU 로 문자
+python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> sms-send 3 'sip:<B_MSISDN>@<REALM>' '<본문>' <B_MSISDN>   # TPDU 로 문자
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP> sms-recv       # B 로 등록해 문자 수신
 python3 tools/ims_call.py <PCSCF_IP> <SRC_IP>                # 둘 다 한 프로세스에서: 등록→통화→BYE
 docker logs pcscf 2>&1 | tail -50             # 412/488/500 은 여기서 이유를 찾는다 (13장)

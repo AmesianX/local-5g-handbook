@@ -55,7 +55,7 @@ OAI 시뮬레이션 프로파일(`compose/oai_n78_rfsim.yaml` 과 `configs/oai/g
 
 - `device_args: type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,num_recv_frames=64,num_send_frames=64` — 장치 고정(9.2, 10.7 사고 1), LibreSDR 전용 FPGA, USB 버퍼 수.
 - `otw_format: sc12` — USB 위의 샘플을 12비트로 보내 대역폭을 줄인다(2장).
-- `tx_gain: 80`, `rx_gain: 36` — 40 → 65 → 80 으로 올린 과정은 10.8. 바꾸기 전 값은 `configs/_backup/gnb.yml.gain65.bak` 등에 남아 있다.
+- `tx_gain: 80`, `rx_gain: 36` — 업스트림 기본값은 74 다(`gnb.yml.orig.bak`). 그것을 65 로 내렸다가 80 으로 올린 과정이 10.8 이고, 74 에서 65 로 내린 이유는 당시 기록에 남아 있지 않다 [검증 필요]. 바꾸기 전 값은 `configs/_backup/gnb.yml.gain74.bak`·`gnb.yml.gain65.bak` 에 남아 있다.
 - `dl_arfcn: 623334`, `band: 78`, `channel_bandwidth_MHz: 20`, `common_scs: 30` — 주파수 계획(10.6). 기동 로그상 SSB 는 `dl_ssb_arfcn=623040`(3345.6 MHz) 로 선택됐다.
 - `pci: 1`.
 
