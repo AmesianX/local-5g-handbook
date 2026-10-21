@@ -75,7 +75,7 @@ cell_cfg:
 
 log:
   filename: /mnt/srsran/gnb.log
-  all_level: warning
+  all_level: info
 
 pcap:
   mac_enable: false
@@ -124,7 +124,7 @@ pcap:
 
 ### `log` 와 `pcap`
 
-`all_level: warning` 이면 경고 이상만 파일에 남는다. 그래서 우리 `gnb.log` 가 정상 운전 중에는 0 바이트였다. 디버깅할 때는 `info` 로 올리거나 층별로 `mac_level: debug` 처럼 준다. `pcap` 은 MAC, NGAP, N3, 그리고 기지국 안쪽의 두 프로토콜 각각을 pcap 파일로 떨어뜨릴 수 있다. 그 둘은 처음 나오는 이름이다. 앞 절에서 기지국을 CU 와 DU 로 쪼갰는데, 쪼갠 이상 둘 사이에도 프로토콜이 있어야 한다. **F1AP(F1 Application Protocol)** 는 CU 와 DU 사이 F1 인터페이스의 제어 메시지이고("이 단말에게 이런 베어러를 만들어라"를 CU 가 DU 에 지시한다), **E1AP(E1 Application Protocol)** 는 CU 를 다시 CU-CP 와 CU-UP 으로 나눈 그 사이 E1 인터페이스의 제어 메시지다("이 세션의 GTP-U 터널을 열어라"를 CU-CP 가 CU-UP 에 지시한다). NGAP 이 기지국과 AMF 사이의 말이었듯이, 이 둘은 기지국 **안쪽** 조각끼리의 말이다. 상용망에서는 이 메시지가 실제로 선을 타고 다른 장비로 가지만, srsRAN 은 세 조각을 한 프로세스에 넣었으므로 함수 호출로 건넨다. 그래도 같은 메시지 형식을 거치기 때문에 pcap 으로 뽑아 와이어샤크의 `f1ap`, `e1ap` 필터로 열 수 있다 — 기지국 내부의 대화를 패킷으로 보는 드문 기회다. **`ngap_enable: true` 로 켜면 N2 의 모든 메시지가 와이어샤크로 열리는 파일이 되고, `mac_enable: true` 면 전파 위의 MAC 프레임까지 보인다.** 5 장의 와이어샤크 절은 브리지를 캡처했지만, 기지국 자체가 뱉는 pcap 이 더 깨끗하다. 단 MAC pcap 은 초당 수 MB 라 잠깐만 켠다.
+`all_level` 은 로그 수준이다. 우리는 10 월 14 일까지 `warning`(경고 이상만)으로 운용했고, 그래서 그동안 `gnb.log` 는 정상 운전 중 0 바이트였다. 차폐함 안 실물 단말을 붙이면서 `info` 로 올렸다 — `warning` 에서는 RACH 와 RRC Setup 이 안 찍혀 단말이 붙는지 판단조차 못 했기 때문이다(18 장 사례 19). 지금 정본은 `info` 이고, 층별로 `mac_level: debug` 처럼 더 올릴 수도 있다. `pcap` 은 MAC, NGAP, N3, 그리고 기지국 안쪽의 두 프로토콜 각각을 pcap 파일로 떨어뜨릴 수 있다. 그 둘은 처음 나오는 이름이다. 앞 절에서 기지국을 CU 와 DU 로 쪼갰는데, 쪼갠 이상 둘 사이에도 프로토콜이 있어야 한다. **F1AP(F1 Application Protocol)** 는 CU 와 DU 사이 F1 인터페이스의 제어 메시지이고("이 단말에게 이런 베어러를 만들어라"를 CU 가 DU 에 지시한다), **E1AP(E1 Application Protocol)** 는 CU 를 다시 CU-CP 와 CU-UP 으로 나눈 그 사이 E1 인터페이스의 제어 메시지다("이 세션의 GTP-U 터널을 열어라"를 CU-CP 가 CU-UP 에 지시한다). NGAP 이 기지국과 AMF 사이의 말이었듯이, 이 둘은 기지국 **안쪽** 조각끼리의 말이다. 상용망에서는 이 메시지가 실제로 선을 타고 다른 장비로 가지만, srsRAN 은 세 조각을 한 프로세스에 넣었으므로 함수 호출로 건넨다. 그래도 같은 메시지 형식을 거치기 때문에 pcap 으로 뽑아 와이어샤크의 `f1ap`, `e1ap` 필터로 열 수 있다 — 기지국 내부의 대화를 패킷으로 보는 드문 기회다. **`ngap_enable: true` 로 켜면 N2 의 모든 메시지가 와이어샤크로 열리는 파일이 되고, `mac_enable: true` 면 전파 위의 MAC 프레임까지 보인다.** 5 장의 와이어샤크 절은 브리지를 캡처했지만, 기지국 자체가 뱉는 pcap 이 더 깨끗하다. 단 MAC pcap 은 초당 수 MB 라 잠깐만 켠다.
 
 ## 10.4 기동 로그를 한 줄씩
 
@@ -178,7 +178,7 @@ Cell pci=1, bw=20 MHz, 1T1R, dl_arfcn=623334 (n78), dl_freq=3350.01 MHz, dl_ssb_
 N2: Connection to AMF on 172.22.0.10:38412 completed
 ==== gNB started ===
 ```
-SCTP 연결과 NG Setup 이 끝났다. AMF 로그에는 같은 순간 `gNB-N2 accepted[172.22.0.37]` 가 찍힌다(5.3). 이 줄 뒤부터 B210 은 **SSB 를 20 ms 마다 쏘고 있다.** 로그에는 아무것도 더 안 찍힌다. `all_level: warning` 이라 정상 동작은 침묵이다.
+SCTP 연결과 NG Setup 이 끝났다. AMF 로그에는 같은 순간 `gNB-N2 accepted[172.22.0.37]` 가 찍힌다(5.3). 이 줄 뒤부터 B210 은 **SSB 를 20 ms 마다 쏘고 있다.** 로그에는 아무것도 더 안 찍힌다. 이 기동분의 설정은 `warning` 이라 정상 동작은 침묵이다(지금의 `info` 에서는 RACH·RRC 줄이 이어서 찍힌다).
 
 ### 정상이 아닐 때 로그가 하는 말: 실시간 실패
 

@@ -3687,11 +3687,13 @@ SIP 프록시들을 통틀어 부르는 이름이고, 앞에 붙는 P·I·S 한 
 기지국 설정의 <code>PLMN</code> 을 <code>001</code>+<code>01</code> 로
 바꾸는 것이 같은 방식이다.</p>
 <p>이 구조에서 운영 원칙 하나가 나온다. <strong>설정을 바꿀 때는
-<code>configs/env/env</code> 한 곳을 고치고
-<code>deploy-configs.sh</code> 로 배포한다. 컨테이너 안의 파일을 직접
-고치면 재기동 때 사라진다.</strong> 우리가 단말 IP 대역을
-<code>192.168.100.0/24</code> 에서 <code>10.45.0.0/16</code> 으로 바꾼
-것은 env 두 줄(<code>UE_IPV4_INTERNET</code>,
+<code>configs/env/env.in</code> 한 곳(비밀값과 호스트 고유값은
+<code>configs/secrets/lab.env</code>)을 고치고
+<code>deploy-configs.sh</code> 로 렌더·배포한다. 컨테이너 안의 파일을
+직접 고치면 재기동 때 사라지고, 렌더된 <code>env/env</code> 를 직접
+고치면 다음 배포 때 템플릿으로 덮인다(부록 C.1).</strong> 우리가 단말 IP
+대역을 <code>192.168.100.0/24</code> 에서 <code>10.45.0.0/16</code> 으로
+바꾼 것은 env 두 줄(<code>UE_IPV4_INTERNET</code>,
 <code>UE_IPV4_IMS</code>)이었고, <code>ip_utils.py</code> 가 거기서
 서브넷과 게이트웨이를 파생시켜 <code>smf.yaml</code> 과
 <code>upf.yaml</code> 에 넣었다. 반면 DNS 존의 A 레코드는 급해서
@@ -4436,8 +4438,11 @@ P-CSCF 가 단말에 넘기기 전에 <strong>떼어 낸다.</strong> 우리 로
 지켜진다. 그러면 P-CSCF 는 떼어 낸 ck/ik 로 무엇을 하는가. 표준대로라면
 P-CSCF 와 단말이 그 키로 <strong>IPsec 보안 연계</strong>를 맺어 이후
 SIP 메시지를 보호한다(TS 33.203). 우리 소프트 UA 는 IPsec 없이 평문 SIP
-로 등록했고 우리 P-CSCF 설정이 그것을 허용했다 [검증 필요: P-CSCF 의
-IPsec 사용 여부 설정].</p>
+로 등록했고 우리 P-CSCF 설정이 그것을 허용했다. 반면 차폐함 안 실물
+단말은 IPsec 보안 연계 위에서 등록한 것으로 보인다 — P-CSCF 로그의
+Contact 가 <code>…@10.46.0.15:6200</code> 처럼 Kamailio IMS 의 IPsec 용
+포트로 찍혔다 [검증 필요: P-CSCF 의 IPsec 설정과, 암호화된 SIP 가
+ESP(IPsec 의 암호화 패킷) 로 잡히는지 캡처로 확인].</p>
 <p>🔎 지금 당신의 장비에서. IMS 쪽 인증은 SIP 헤더에 그대로 보인다.</p>
 <pre class="code" class="bash"><code>python3 tools/ims_call.py &lt;PCSCF_IP&gt; &lt;SRC_IP&gt; reg-a
 docker logs pcscf 2&gt;&amp;1 | grep -iE &quot;AKAv1-MD5|nonce|401&quot; | tail -5</code></pre>
@@ -6273,12 +6278,13 @@ ghcr.io/herlesupreeth/docker_open5gs:master   1.55GB</code></pre>
 사흘쯤 지나자 어느 파일을 우리가 고쳤고 어느 것이 원본인지 아무도
 몰랐고, 클론을 갱신(<code>git pull</code>)하는 순간 우리 수정이
 충돌하거나 사라질 판이었다. 그래서 둘을 갈랐다.</p>
-<pre class="code w2"><code>work/
+<pre class="code w3"><code>work/
 ├── private5g/            ← 우리 것. git 으로 관리. 여기만 고친다
 │   ├── bin/              제어 스크립트 (core-ctl, ran-ctl, deploy-configs, selftest)
 │   ├── configs/          설정 정본
-│   │   ├── env/env           → 클론의 .env
-│   │   ├── srsran/gnb.yml    → 클론의 srsran/gnb.yml
+│   │   ├── secrets/lab.env   비밀값·호스트 고유값 (저장소 밖. 예시만 lab.env.example)
+│   │   ├── env/env.in        템플릿 → 렌더된 env/env → 클론의 .env
+│   │   ├── srsran/gnb.yml.in 템플릿 → 렌더된 gnb.yml  → 클론의 srsran/gnb.yml
 │   │   ├── pcscf/route/*.cfg → 클론의 pcscf/route/
 │   │   └── _backup/          바꾸기 전 원본 (gnb.yml.gain65.bak 같은)
 │   ├── tools/            측정·검증 스크립트 (ims_call.py, milenage.py, rxpwr.py …)
@@ -6328,7 +6334,10 @@ gnb.yml, uhd.conf</h2>
 <p><code>.env</code> 는 컴포즈가 읽는 환경변수 파일이고, 각 컨테이너의
 기동 스크립트가 이 값으로 자기 설정 파일의 자리표시자를 <code>sed</code>
 로 치환한다(5.6절). 그래서 이 파일 하나가 망 전체의 정체성을 정한다.
-우리 파일에서 의미 있는 줄만 뽑는다.</p>
+정본은 <code>configs/env/env.in</code> 이고,
+<code>&lt;HOST_LAN_IP&gt;</code> 처럼 실험실마다 다른 값은
+<code>configs/secrets/lab.env</code> 에서 <code>deploy-configs.sh</code>
+가 채워 넣는다(부록 C.1). 렌더된 파일에서 의미 있는 줄만 뽑는다.</p>
 <pre class="code"><code>MCC=001
 MNC=01
 TAC=1
@@ -6380,9 +6389,11 @@ PLMN(Public Land Mobile Network, "어느 나라 어느 통신사 망인가")
 <p>기지국 설정은 10장 전체가 다루므로 여기서는 이 실험실 구성에 관련된
 두 줄만 본다.</p>
 <pre class="code w4" class="yaml"><code>  device_args: type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,num_recv_frames=64,num_send_frames=64</code></pre>
-<p><code>serial=5JKRCXX</code> 가 9.2절의 첫 번째 규칙이다.
-<code>fpga=</code> 는 LibreSDR 전용 이미지를 컨테이너 안 경로로 준다. 이
-파일이 컨테이너 안 <code>/mnt/srsran/</code> 에 있는 이유는
+<p><code>serial=5JKRCXX</code> 가 9.2절의 첫 번째 규칙이다(템플릿
+<code>gnb.yml.in</code> 에는 <code>serial=@B210_SERIAL@</code> 로 있고
+<code>lab.env</code> 의 값이 들어간다). <code>fpga=</code> 는 LibreSDR
+전용 이미지를 컨테이너 안 경로로 준다. 이 파일이 컨테이너 안
+<code>/mnt/srsran/</code> 에 있는 이유는
 정본(<code>configs/srsran/libresdr_alphafox02.bin</code>)이 배포
 스크립트로 클론의 <code>srsran/</code> 에 복사되고, 그 디렉터리가
 compose 에서 <code>/mnt/srsran</code> 으로 마운트되기 때문이다. 경로 세
@@ -6772,7 +6783,7 @@ cell_cfg:
 
 log:
   filename: /mnt/srsran/gnb.log
-  all_level: warning
+  all_level: info
 
 pcap:
   mac_enable: false
@@ -6902,29 +6913,32 @@ TDD 패턴을 바꿀 때 PRACH 인덱스를 같이 봐야 하는 이유가 이�
 프리앰블 목표 수신 전력 −100 dBm(10.8 에서 다시), 응답 대기 창은
 <code>10 &lt;&lt; μ</code>, 30 kHz(μ=1)에서 20 슬롯 = 10 ms.</p>
 <h3 id="log-와-pcap"><code>log</code> 와 <code>pcap</code></h3>
-<p><code>all_level: warning</code> 이면 경고 이상만 파일에 남는다.
-그래서 우리 <code>gnb.log</code> 가 정상 운전 중에는 0 바이트였다.
-디버깅할 때는 <code>info</code> 로 올리거나 층별로
-<code>mac_level: debug</code> 처럼 준다. <code>pcap</code> 은 MAC, NGAP,
-N3, 그리고 기지국 안쪽의 두 프로토콜 각각을 pcap 파일로 떨어뜨릴 수
-있다. 그 둘은 처음 나오는 이름이다. 앞 절에서 기지국을 CU 와 DU 로
-쪼갰는데, 쪼갠 이상 둘 사이에도 프로토콜이 있어야 한다. <strong>F1AP(F1
-Application Protocol)</strong> 는 CU 와 DU 사이 F1 인터페이스의 제어
-메시지이고("이 단말에게 이런 베어러를 만들어라"를 CU 가 DU 에 지시한다),
-<strong>E1AP(E1 Application Protocol)</strong> 는 CU 를 다시 CU-CP 와
-CU-UP 으로 나눈 그 사이 E1 인터페이스의 제어 메시지다("이 세션의 GTP-U
-터널을 열어라"를 CU-CP 가 CU-UP 에 지시한다). NGAP 이 기지국과 AMF
-사이의 말이었듯이, 이 둘은 기지국 <strong>안쪽</strong> 조각끼리의
-말이다. 상용망에서는 이 메시지가 실제로 선을 타고 다른 장비로 가지만,
-srsRAN 은 세 조각을 한 프로세스에 넣었으므로 함수 호출로 건넨다. 그래도
-같은 메시지 형식을 거치기 때문에 pcap 으로 뽑아 와이어샤크의
-<code>f1ap</code>, <code>e1ap</code> 필터로 열 수 있다 — 기지국 내부의
-대화를 패킷으로 보는 드문 기회다. <strong><code>ngap_enable: true</code>
-로 켜면 N2 의 모든 메시지가 와이어샤크로 열리는 파일이 되고,
-<code>mac_enable: true</code> 면 전파 위의 MAC 프레임까지
-보인다.</strong> 5 장의 와이어샤크 절은 브리지를 캡처했지만, 기지국
-자체가 뱉는 pcap 이 더 깨끗하다. 단 MAC pcap 은 초당 수 MB 라 잠깐만
-켠다.</p>
+<p><code>all_level</code> 은 로그 수준이다. 우리는 10 월 14 일까지
+<code>warning</code>(경고 이상만)으로 운용했고, 그래서 그동안
+<code>gnb.log</code> 는 정상 운전 중 0 바이트였다. 차폐함 안 실물 단말을
+붙이면서 <code>info</code> 로 올렸다 — <code>warning</code> 에서는 RACH
+와 RRC Setup 이 안 찍혀 단말이 붙는지 판단조차 못 했기 때문이다(18 장
+사례 19). 지금 정본은 <code>info</code> 이고, 층별로
+<code>mac_level: debug</code> 처럼 더 올릴 수도 있다. <code>pcap</code>
+은 MAC, NGAP, N3, 그리고 기지국 안쪽의 두 프로토콜 각각을 pcap 파일로
+떨어뜨릴 수 있다. 그 둘은 처음 나오는 이름이다. 앞 절에서 기지국을 CU 와
+DU 로 쪼갰는데, 쪼갠 이상 둘 사이에도 프로토콜이 있어야 한다.
+<strong>F1AP(F1 Application Protocol)</strong> 는 CU 와 DU 사이 F1
+인터페이스의 제어 메시지이고("이 단말에게 이런 베어러를 만들어라"를 CU
+가 DU 에 지시한다), <strong>E1AP(E1 Application Protocol)</strong> 는 CU
+를 다시 CU-CP 와 CU-UP 으로 나눈 그 사이 E1 인터페이스의 제어
+메시지다("이 세션의 GTP-U 터널을 열어라"를 CU-CP 가 CU-UP 에 지시한다).
+NGAP 이 기지국과 AMF 사이의 말이었듯이, 이 둘은 기지국
+<strong>안쪽</strong> 조각끼리의 말이다. 상용망에서는 이 메시지가 실제로
+선을 타고 다른 장비로 가지만, srsRAN 은 세 조각을 한 프로세스에
+넣었으므로 함수 호출로 건넨다. 그래도 같은 메시지 형식을 거치기 때문에
+pcap 으로 뽑아 와이어샤크의 <code>f1ap</code>, <code>e1ap</code> 필터로
+열 수 있다 — 기지국 내부의 대화를 패킷으로 보는 드문 기회다.
+<strong><code>ngap_enable: true</code> 로 켜면 N2 의 모든 메시지가
+와이어샤크로 열리는 파일이 되고, <code>mac_enable: true</code> 면 전파
+위의 MAC 프레임까지 보인다.</strong> 5 장의 와이어샤크 절은 브리지를
+캡처했지만, 기지국 자체가 뱉는 pcap 이 더 깨끗하다. 단 MAC pcap 은 초당
+수 MB 라 잠깐만 켠다.</p>
 <h2 id="104-기동-로그를-한-줄씩">10.4 기동 로그를 한 줄씩</h2>
 <p><code>docker compose -f srsgnb.yaml up -d</code> 뒤
 <code>docker logs srsgnb</code> 가 보여 준 것이다. 전부 싣고 전부
@@ -7014,8 +7028,9 @@ TDD 의 표시다. <code>dl_ssb_arfcn</code> 이 <code>dl_arfcn</code> 과
 <p>SCTP 연결과 NG Setup 이 끝났다. AMF 로그에는 같은 순간
 <code>gNB-N2 accepted[172.22.0.37]</code> 가 찍힌다(5.3). 이 줄 뒤부터
 B210 은 <strong>SSB 를 20 ms 마다 쏘고 있다.</strong> 로그에는 아무것도
-더 안 찍힌다. <code>all_level: warning</code> 이라 정상 동작은
-침묵이다.</p>
+더 안 찍힌다. 이 기동분의 설정은 <code>warning</code> 이라 정상 동작은
+침묵이다(지금의 <code>info</code> 에서는 RACH·RRC 줄이 이어서
+찍힌다).</p>
 <h3 id="정상이-아닐-때-로그가-하는-말-실시간-실패">정상이 아닐 때 로그가
 하는 말: 실시간 실패</h3>
 <p>침묵이 깨지는 경우가 있다. 이 실험실의 10월 4~5일 기동분
@@ -11082,23 +11097,25 @@ metrics  0.0.0.0:9090-&gt;9090/tcp</code></pre>
 본다. 실험실의 SMSC 와 P-CSCF 는 포트를 공개하지 않아 도커 브리지
 안에서만 보인다.</p>
 <p>여덟째, <strong>키를 한 곳에만 둔다.</strong> 가입자 키(Ki, OPc)와
-카드 관리 키(ADM1)는 코어 설정의 환경 파일과 가입자 DB 에만 두고, 이
-책과 공개 저장소에는 자리표시자(<code>&lt;KI&gt;</code>,
-<code>&lt;OPC&gt;</code>, <code>&lt;ADM1&gt;</code>)만 넣었다. 카드에
-키를 쓴 도구의 명령줄 기록(셸 히스토리)도 지울 대상이다. 그리고 이
-원칙을 우리는 한 번 어겼다. 이 책의 첫 판을 저장소에 올릴 때 4a 장의
-예시에 <strong>실제 카드의 ADM1 값이</strong> <code>verify_adm</code>
-명령과 그 헥스 표기로 들어가 있었다. 실험 기록을 옮겨 적다 섞인 것이고,
-몇 시간 뒤 다른 장을 고치던 중에 발견했다. 파일을 고치는 것으로는 끝나지
-않았다. git 은 지난 커밋을 전부 보관하므로 모든 커밋에서 그 값을 지우는
-히스토리 재작성과 강제 푸시를 해야 했고, 그 사이 저장소를 받아 간 사람이
-있었다면 값은 이미 나간 것으로 봐야 한다. 그 뒤로 우리는 커밋하기 전마다
-실제 값 목록으로 <strong>현재 파일과 전체 히스토리</strong>를 함께
-검색한다(헥스 표기, 일부 문자열까지). 규칙을 적어 두는 것만으로는 막지
-못한다는 것을 우리 손으로 증명한 셈이다. 실험실 작업
-문서(<code>NEXT.md</code>)와 측정 도구에는 지금도 시험 키가 평문으로
-남아 있다 — 그 파일들이 저장소 밖에 있고 실험실 호스트를 떠나지 않는다는
-것이 유일한 방어선이다.</p>
+카드 관리 키(ADM1)는 <code>configs/secrets/lab.env</code>(저장소 밖,
+템플릿에 렌더됨. 부록 C.1)와 가입자 DB 에만 두고, 이 책과 공개
+저장소에는 자리표시자(<code>&lt;KI&gt;</code>, <code>&lt;OPC&gt;</code>,
+<code>&lt;ADM1&gt;</code>)만 넣었다. 카드에 키를 쓴 도구의 명령줄
+기록(셸 히스토리)도 지울 대상이다. 그리고 이 원칙을 우리는 한 번 어겼다.
+이 책의 첫 판을 저장소에 올릴 때 4a 장의 예시에 <strong>실제 카드의 ADM1
+값이</strong> <code>verify_adm</code> 명령과 그 헥스 표기로 들어가
+있었다. 실험 기록을 옮겨 적다 섞인 것이고, 몇 시간 뒤 다른 장을 고치던
+중에 발견했다. 파일을 고치는 것으로는 끝나지 않았다. git 은 지난 커밋을
+전부 보관하므로 모든 커밋에서 그 값을 지우는 히스토리 재작성과 강제
+푸시를 해야 했고, 그 사이 저장소를 받아 간 사람이 있었다면 값은 이미
+나간 것으로 봐야 한다. 그 뒤로 우리는 커밋하기 전마다 실제 값 목록으로
+<strong>현재 파일과 전체 히스토리</strong>를 함께 검색한다(헥스 표기,
+일부 문자열까지). 규칙을 적어 두는 것만으로는 막지 못한다는 것을 우리
+손으로 증명한 셈이다. 실험실 작업 문서(<code>NEXT.md</code>)와
+<code>docs/sim-cards.md</code> 에 남아 있던 시험 키는 저장소를 공개하기
+전 전수 검사에서 잡아 자리표시자로 바꿨고(18 장 사례 22), 측정 도구는
+<code>labsecrets</code> 모듈로 <code>lab.env</code> 에서 읽도록 고쳤다.
+지금 평문 키가 있는 곳은 <code>lab.env</code> 와 DB 뿐이다.</p>
 <h2 id="155-무엇을-믿지-않는가">15.5 무엇을 믿지 않는가</h2>
 <p>규칙과 별개로, 코드를 짤 때 믿지 않기로 한 것들이 있다.
 <strong>모뎀이 보낸 글자를 그대로 쓰지 않는다.</strong>
@@ -11339,8 +11356,11 @@ Area Code, 추적 영역 코드)다. 왜 이런 번호가 필요한지부터 보
 <h3 id="band-대역-번호">Band: 대역 번호</h3>
 <p>응답의 열한 번째 칸 <code>78</code> 은 n78, 즉 1장에서 고른 3.3~3.8
 GHz TDD 대역이다. 엔지니어 모드에는 "Band 78", "n78", "NR Band" 로 뜨고
-LTE 는 "Band 3", "B7" 식이다. 번호표의 출처는 NR 이 3GPP TS 38.101-1,
-LTE 가 TS 36.101 이다.</p>
+LTE 는 "Band 3", "B7" 식이다. 차폐함 안 갤럭시는 같은 셀을
+<strong>n77</strong> 로 보고했는데 고장이 아니다 — 3350 MHz 는
+n77(3.3~4.2 GHz)과 n78(3.3~3.8 GHz)이 겹치는 구간이라, 단말이 어느
+이름으로 부르든 같은 주파수다(<code>docs/shieldbox-phone.md</code>).
+번호표의 출처는 NR 이 3GPP TS 38.101-1, LTE 가 TS 36.101 이다.</p>
 <h3 id="arfcn-주파수를-번호로-부르기">ARFCN: 주파수를 번호로 부르기</h3>
 <p>응답의 열 번째 칸 <code>623040</code> 은 주파수다. 다만 "3345.6 MHz"
 라고 적는 대신 정수 번호로 부르는 약속을 쓰는데, 그 번호가
@@ -14279,14 +14299,26 @@ private5g/configs/srsran/   ──▶  docker_open5gs/srsran/ ──(볼륨)─�
                                                      /open5gs/install/etc/open5gs/amf.yaml 등
         bin/deploy-configs.sh 가 ①→② 를 복사         (치환 결과. 여기서 고치면 재기동 때 사라짐)
         (cmp 로 다른 것만, --check 는 차이만 출력)</code></pre>
+<p>① 앞에는 단계가 하나 더 있다. 비밀값과 호스트 고유값 — Ki·OPc·ADM1,
+B210 시리얼, 호스트 LAN 주소, 폰 주소 — 은
+<code>configs/secrets/lab.env</code> 한 파일에만 있고(저장소에는
+<code>lab.env.example</code> 만),
+<code>configs/env/env.in</code>·<code>configs/srsran/gnb.yml.in</code>·<code>configs/oai/nr-ue.n78.rfsim.conf.in</code>
+템플릿의 <code>@B210_SERIAL@</code> 같은 자리를
+<code>deploy-configs.sh</code> 가 그 값으로 채워 ①을 만든다(2026-10-15
+저장소 정리 뒤의 구조). 렌더된 ①은 추적하지 않는다. 그러므로
+<code>env/env</code> 나 <code>gnb.yml</code> 을 직접 고치면 다음 배포 때
+템플릿으로 덮인다 — <strong>고칠 곳은 <code>.in</code> 이고, 비밀값은
+<code>lab.env</code> 다.</strong></p>
 <p>①→② 는 <code>deploy-configs.sh</code> 가 하고,
 <code>core-ctl.sh START</code> 가 기동 전에 이것을 먼저 부른다. ②→③ 은
 도커와 각 컨테이너의 <code>*_init.sh</code> 가 한다. 예를 들어
 <code>amf_init.sh</code> 는 클론의 <code>amf/amf.yaml</code> 을 컨테이너
 안으로 복사한 뒤 <code>AMF_IP</code>, <code>MCC</code>,
 <code>MNC</code>, <code>TAC</code> 같은 글자를 <code>sed</code> 로 env
-값으로 바꾼다. 그래서 <strong>값을 바꾸려면 ①을 고치고, 확인은 ③에서
-한다.</strong></p>
+값으로 바꾼다. 그래서 <strong>값을 바꾸려면 ①의
+템플릿(<code>*.in</code>, 비밀값은 <code>secrets/lab.env</code>)을
+고치고, 확인은 ③에서 한다.</strong></p>
 <pre class="code w4" class="bash"><code>bin/deploy-configs.sh --check                     # ①과 ②가 같은가
 docker exec amf grep -n &#39;tac\|mcc&#39; /open5gs/install/etc/open5gs/amf.yaml   # ③에 실제로 뭐가 들어갔나</code></pre>
 <h2 id="c2-정본-목록-deploy-configssh-매핑">C.2 정본 목록
@@ -14302,66 +14334,73 @@ docker exec amf grep -n &#39;tac\|mcc&#39; /open5gs/install/etc/open5gs/amf.yaml
 </thead>
 <tbody>
 <tr class="odd">
-<td><code>env/env</code></td>
+<td><code>secrets/lab.env</code> +
+<code>env/env.in</code>·<code>srsran/gnb.yml.in</code>·<code>oai/nr-ue.n78.rfsim.conf.in</code></td>
+<td>(렌더 → 아래 정본들)</td>
+<td><code>deploy-configs.sh</code></td>
+<td>9.6, 15.4, C.1</td>
+</tr>
+<tr class="even">
+<td><code>env/env</code> (렌더 결과)</td>
 <td><code>.env</code></td>
 <td>모든 컨테이너(env_file) → 각 <code>*_init.sh</code></td>
 <td>5.6, 9.6</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>dns/ims_zone</code></td>
 <td><code>dns/ims_zone</code></td>
 <td><code>dns</code> 컨테이너(bind)</td>
 <td>8, 18</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>compose/sa-vonr-deploy.yaml</code></td>
 <td><code>sa-vonr-deploy.yaml</code></td>
 <td>docker compose (코어·IMS 전체 정의)</td>
 <td>9, 15</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>srsran/gnb.yml</code></td>
 <td><code>srsran/gnb.yml</code></td>
 <td><code>srsgnb</code> 의 <code>gnb</code> 프로세스</td>
 <td>10 전체</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>srsran/libresdr_alphafox02.bin</code></td>
 <td><code>srsran/…bin</code></td>
 <td><code>srsgnb</code> 안 UHD (FPGA 적재)</td>
 <td>2, 9.2, 10</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>srsran/gnb_zmq_n78.yml</code></td>
 <td><code>srsran/…</code></td>
 <td>시뮬레이션 기지국(ZMQ)</td>
 <td>3</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>pcscf/route/register.cfg</code></td>
 <td><code>pcscf/route/</code></td>
 <td><code>pcscf</code> 의 Kamailio</td>
 <td>8</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>pcscf/route/mo.cfg</code></td>
 <td><code>pcscf/route/</code></td>
 <td><code>pcscf</code> (발신 통화 경로)</td>
 <td>8</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>pcscf/route/mt.cfg</code></td>
 <td><code>pcscf/route/</code></td>
 <td><code>pcscf</code> (착신 통화 경로)</td>
 <td>8</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>oai/gnb.sa.band78…usrpb210.conf</code></td>
 <td><code>oai/…</code></td>
 <td>OAI 기지국(실장비용, 미사용)</td>
 <td>3</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>srslte/ue_5g_zmq*.conf</code></td>
 <td><code>srslte/…</code></td>
 <td>srsUE(n3 시뮬레이션)</td>
@@ -14400,11 +14439,13 @@ NAT 규칙이 전부 파생된다.</li>
 <li><code>otw_format: sc12</code> — USB 위의 샘플을 12비트로 보내
 대역폭을 줄인다(2장).</li>
 <li><code>tx_gain: 80</code>, <code>rx_gain: 36</code> — 업스트림
-기본값은 74 다(<code>gnb.yml.orig.bak</code>). 그것을 65 로 내렸다가 80
-으로 올린 과정이 10.8 이고, 74 에서 65 로 내린 이유는 당시 기록에 남아
-있지 않다 [검증 필요]. 바꾸기 전 값은
+기본값은 74 다(<code>gnb.yml.orig.bak</code>). 실제 경로는 <strong>74 →
+40 → 65 → 80</strong> 이었다. 74 에서 40 으로 내린 이유는 기록에
+없고("송신 게인은 최소에서 시작한다"는 원칙으로 짐작할 뿐이다 [검증
+필요]), 40 에서는 모뎀이 셀을 못 봐 10 월 5 일에 65 로
+올렸으며(<code>docs/modem.md</code>), 65 → 80 이 10.8 이다. 백업은
 <code>configs/_backup/gnb.yml.gain74.bak</code>·<code>gnb.yml.gain65.bak</code>
-에 남아 있다.</li>
+이고 40 짜리 백업은 없다.</li>
 <li><code>dl_arfcn: 623334</code>, <code>band: 78</code>,
 <code>channel_bandwidth_MHz: 20</code>, <code>common_scs: 30</code> —
 주파수 계획(10.6). 기동 로그상 SSB 는

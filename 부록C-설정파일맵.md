@@ -16,7 +16,9 @@ private5g/configs/srsran/   ──▶  docker_open5gs/srsran/ ──(볼륨)─�
         (cmp 로 다른 것만, --check 는 차이만 출력)
 ```
 
-①→② 는 `deploy-configs.sh` 가 하고, `core-ctl.sh START` 가 기동 전에 이것을 먼저 부른다. ②→③ 은 도커와 각 컨테이너의 `*_init.sh` 가 한다. 예를 들어 `amf_init.sh` 는 클론의 `amf/amf.yaml` 을 컨테이너 안으로 복사한 뒤 `AMF_IP`, `MCC`, `MNC`, `TAC` 같은 글자를 `sed` 로 env 값으로 바꾼다. 그래서 **값을 바꾸려면 ①을 고치고, 확인은 ③에서 한다.**
+① 앞에는 단계가 하나 더 있다. 비밀값과 호스트 고유값 — Ki·OPc·ADM1, B210 시리얼, 호스트 LAN 주소, 폰 주소 — 은 `configs/secrets/lab.env` 한 파일에만 있고(저장소에는 `lab.env.example` 만), `configs/env/env.in`·`configs/srsran/gnb.yml.in`·`configs/oai/nr-ue.n78.rfsim.conf.in` 템플릿의 `@B210_SERIAL@` 같은 자리를 `deploy-configs.sh` 가 그 값으로 채워 ①을 만든다(2026-10-15 저장소 정리 뒤의 구조). 렌더된 ①은 추적하지 않는다. 그러므로 `env/env` 나 `gnb.yml` 을 직접 고치면 다음 배포 때 템플릿으로 덮인다 — **고칠 곳은 `.in` 이고, 비밀값은 `lab.env` 다.**
+
+①→② 는 `deploy-configs.sh` 가 하고, `core-ctl.sh START` 가 기동 전에 이것을 먼저 부른다. ②→③ 은 도커와 각 컨테이너의 `*_init.sh` 가 한다. 예를 들어 `amf_init.sh` 는 클론의 `amf/amf.yaml` 을 컨테이너 안으로 복사한 뒤 `AMF_IP`, `MCC`, `MNC`, `TAC` 같은 글자를 `sed` 로 env 값으로 바꾼다. 그래서 **값을 바꾸려면 ①의 템플릿(`*.in`, 비밀값은 `secrets/lab.env`)을 고치고, 확인은 ③에서 한다.**
 
 ```bash
 bin/deploy-configs.sh --check                     # ①과 ②가 같은가
@@ -27,7 +29,8 @@ docker exec amf grep -n 'tac\|mcc' /open5gs/install/etc/open5gs/amf.yaml   # ③
 
 | 정본 (`private5g/configs/…`) | 배포 위치 (클론) | 읽는 주체 | 다루는 장 |
 |---|---|---|---|
-| `env/env` | `.env` | 모든 컨테이너(env_file) → 각 `*_init.sh` | 5.6, 9.6 |
+| `secrets/lab.env` + `env/env.in`·`srsran/gnb.yml.in`·`oai/nr-ue.n78.rfsim.conf.in` | (렌더 → 아래 정본들) | `deploy-configs.sh` | 9.6, 15.4, C.1 |
+| `env/env` (렌더 결과) | `.env` | 모든 컨테이너(env_file) → 각 `*_init.sh` | 5.6, 9.6 |
 | `dns/ims_zone` | `dns/ims_zone` | `dns` 컨테이너(bind) | 8, 18 |
 | `compose/sa-vonr-deploy.yaml` | `sa-vonr-deploy.yaml` | docker compose (코어·IMS 전체 정의) | 9, 15 |
 | `srsran/gnb.yml` | `srsran/gnb.yml` | `srsgnb` 의 `gnb` 프로세스 | 10 전체 |
@@ -55,7 +58,7 @@ OAI 시뮬레이션 프로파일(`compose/oai_n78_rfsim.yaml` 과 `configs/oai/g
 
 - `device_args: type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,num_recv_frames=64,num_send_frames=64` — 장치 고정(9.2, 10.7 사고 1), LibreSDR 전용 FPGA, USB 버퍼 수.
 - `otw_format: sc12` — USB 위의 샘플을 12비트로 보내 대역폭을 줄인다(2장).
-- `tx_gain: 80`, `rx_gain: 36` — 업스트림 기본값은 74 다(`gnb.yml.orig.bak`). 그것을 65 로 내렸다가 80 으로 올린 과정이 10.8 이고, 74 에서 65 로 내린 이유는 당시 기록에 남아 있지 않다 [검증 필요]. 바꾸기 전 값은 `configs/_backup/gnb.yml.gain74.bak`·`gnb.yml.gain65.bak` 에 남아 있다.
+- `tx_gain: 80`, `rx_gain: 36` — 업스트림 기본값은 74 다(`gnb.yml.orig.bak`). 실제 경로는 **74 → 40 → 65 → 80** 이었다. 74 에서 40 으로 내린 이유는 기록에 없고("송신 게인은 최소에서 시작한다"는 원칙으로 짐작할 뿐이다 [검증 필요]), 40 에서는 모뎀이 셀을 못 봐 10 월 5 일에 65 로 올렸으며(`docs/modem.md`), 65 → 80 이 10.8 이다. 백업은 `configs/_backup/gnb.yml.gain74.bak`·`gnb.yml.gain65.bak` 이고 40 짜리 백업은 없다.
 - `dl_arfcn: 623334`, `band: 78`, `channel_bandwidth_MHz: 20`, `common_scs: 30` — 주파수 계획(10.6). 기동 로그상 SSB 는 `dl_ssb_arfcn=623040`(3345.6 MHz) 로 선택됐다.
 - `pci: 1`.
 
