@@ -59,7 +59,33 @@ pre.w2 code { font-size:6.2pt !important; }
 pre.w3 code { font-size:5.4pt !important; }
 pre.w4 code { font-size:4.7pt !important; }
 table { font-size:8.6pt; width:100%; }
-img { max-width:100% !important; max-height:none !important; break-inside:avoid; }
+/* 그림: 테두리를 두르고, 폰 스크린샷만 폭을 못 박는다.
+
+   테두리 — 폰 스크린샷은 가장자리가 밝아서, 테두리가 없으면 어디까지가 화면이고
+   어디부터가 종이인지 구분이 안 된다.
+
+   크기 — 스크린샷 원본은 540x1170(세로가 가로의 2.17 배)이고 그대로 두면 한 장이
+   95x206mm, 본문 높이 263mm 의 78% 를 먹는다. 그래서 남은 자리에 못 들어가 통째로
+   다음 쪽으로 밀리며 앞쪽에 구멍을 냈다.
+
+   ⚠ 이 그림들에 **mm 로 적은 길이는 적은 값의 1/1.5 로 들어간다**. PNG 가 144dpi
+   로 표시돼 있어서 CSS px(96dpi)와 1.5 배 어긋나기 때문이다. 실측으로 확인했다:
+   width 58mm→37.6mm, 60mm→39mm, 68mm→44mm, 75mm→49mm, 90mm→59mm. 그래서 아래
+   68mm 는 종이에서 **44x96mm** 가 된다. 값을 바꾸면 반드시 다시 재 볼 것.
+
+   68mm 를 고른 근거(실측, 장 끝 쪽을 뺀 40mm 이상 구멍 / 총 쪽수):
+     60mm → 39x84mm   구멍 3 쪽(최대 73mm)  167 쪽
+     68mm → 44x96mm   구멍 3 쪽(최대 70mm)  168 쪽   ← 더 큰데 구멍은 같다
+     75mm → 49x106mm  구멍 6 쪽(최대 122mm) 168 쪽
+     90mm → 59x128mm  구멍 5 쪽(최대 ...)   170 쪽
+   남은 구멍 3 개는 그림이 아니라 쪼갤 수 없는 코드블록 자리다.
+
+   가로 도표(fig-*.png)는 300dpi 라 배율이 또 다르고, 원래 폭에 맞춰 들어가므로
+   건드리지 않는다. max-width:100% 같은 백분율은 이 어긋남을 타지 않는다. */
+img { max-width:100% !important; max-height:none !important;
+      height:auto; break-inside:avoid; box-sizing:border-box;
+      border:1px solid #c9c9c9; border-radius:2px; padding:2px; background:#fff; }
+img:not([src*="fig-"]) { width:25% !important; }
 img + em, p > em:only-child { font-size:9pt; color:#555; }
 a { color:inherit; text-decoration:none; }
 
@@ -287,6 +313,35 @@ def book_info(body_pages):
     }
 
 
+def audit(front_pages):
+    """합본에 **찍힌 차례**를 다시 읽어, 거기 적힌 쪽에 그 제목이 실제로 있는지 본다.
+
+    계산해 둔 숫자(meta)를 보면 안 된다 — 그건 "내가 적으려던 값"이지 "종이에 찍힌
+    값"이 아니다. 실제로 한 번 속았다: 차례에 넘기는 숫자만 1 쪽 밀어 놓고 돌렸는데
+    meta 를 보던 감사는 321/321 통과를 찍었다. 찍힌 것을 읽어야 증명이 된다.
+
+    차례의 점선 지시선은 글자가 아니라 테두리라, 한 줄이 '제목 ⟨빈칸⟩ 쪽번호' 로
+    나온다. 줄바꿈된 긴 제목은 못 읽으므로 **읽어낸 줄만** 세고 그 수를 같이 알린다.
+    """
+    pages = page_texts(OUT)
+    toc = subprocess.run(['pdftotext', '-q', '-layout', '-f', '3', '-l', str(front_pages),
+                          str(OUT), '-'], check=True,
+                         capture_output=True).stdout.decode('utf-8', 'replace')
+    ok, bad = 0, 0
+    for title, num in re.findall(r'^\s*(.+?)\s{2,}(\d{1,3})\s*$', toc, re.M):
+        t = _squeeze(re.sub(r'^(?:\d{2}[a-z]?|부록\s*[A-D]|머리말)\s+', '', title.strip()))
+        if len(t) < 5:
+            continue
+        i = front_pages + int(num) - 1
+        if 0 <= i < len(pages) and t[:18] in pages[i]:
+            ok += 1
+        else:
+            bad += 1
+            if bad <= 5:
+                print(f'  \u26a0 차례 어긋남: {title.strip()[:42]!r} → {num}쪽')
+    return ok, bad
+
+
 def main():
     if not SRC.exists():
         sys.exit('reader.html 이 없다. 먼저 python3 tools/build_reader.py')
@@ -332,11 +387,16 @@ def main():
 
     subprocess.run(['pdfunite', str(front), str(body), str(OUT)], check=True)
     front.unlink(); body.unlink()
+    ok, bad = audit(front_pages)
     mb = OUT.stat().st_size / 1024 / 1024
     secs = sum(len(m['secs']) for m in meta)
     note = f', 쪽 못 찾음 {miss}' if miss else ''
+    mark = '✅' if not bad else '⛔'
     print(f'  {OUT.name}  ({mb:.1f} MB, 장 {n} 개, 차례 {len(meta)}+{secs} 줄, '
           f'앞머리 {front_pages} 쪽{note})')
+    print(f'  {mark} 차례 대조 {ok}/{ok + bad} — 차례가 가리키는 쪽에 그 제목이 있다')
+    if bad:
+        sys.exit(1)
 
 
 if __name__ == '__main__':
