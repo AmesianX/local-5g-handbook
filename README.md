@@ -1,81 +1,105 @@
-# 로컬 5G 망 구축 — 해커를 위한 이동통신 실무서
+# Building a Local 5G Network — A Hacker's Field Guide to Mobile Networks
 
-사설 5G SA 망을 처음부터 세운 기록. 전파·SDR·물리 계층부터 코어망, 인증, IMS 전화·문자, 기지국 설정, 모뎀 제어, 시험과 사례집까지.
+**English** · [한국어](README.ko.md)
 
-- **PDF**: `python3 tools/make_pdf.py` 가 `로컬5G망구축하기.pdf` 를 만든다(A4 210 쪽). 표지·차례를 앞에 붙이고 쪽번호를 넣는다. 빌드 산출물이라 저장소에는 두지 않는다.
-- **읽기**: `reader.html` 을 브라우저로 열면 목차·검색·읽던 위치가 되는 한 화면으로 읽힌다. 다시 만들 때는 `python3 tools/build_reader.py`.
-- **시작**: [00-머리말](00-머리말.md) → 장 번호 순서.
-- **점검 ①**: `python3 tools/acronym_audit.py` 가 "처음 나온 자리에서 풀지 않은 약어"를 센다. 이것은 **검토 목록**이다. 지금 7 건이 남아 있고, 전부 도구가 못 보는 자리다 — 풀이가 표 칸 안에서 끝나거나(`BW`, `SUBMIT`), 바로 앞에서 푼 약어의 변형이거나(`NR-ARFCN`, `NR-SA`), 용어집 항목 설명에 섞인 부수 약어다(`NACK`, `CU-DU`, `PCRF`). 규칙은 "새 장을 쓴 뒤 이 숫자가 늘지 않는가"다. 한동안 1 건으로 보였던 것은 도구가 강조용 굵은 글씨를 정의로 오인했기 때문이고(18장 사례 22 와 같은 종류의 실패), 그것을 고치자 35 건이 드러나 본문에서 채웠다.
-- **점검 ②**: `python3 tools/gloss_audit.py` 는 **굵게 표시한 외래어·기술 용어**가 그 자리에서 풀렸는지 본다. 지금 100 개 중 11 개가 남는데 전부 용어가 아니라 강조이거나 앞 문장이 이미 푼 것이라, 0 이 목표인 검사가 아니라 **훑어볼 목록**이다.
+> **📕 [Download the PDF (A4, 181 pages, Korean)](https://github.com/AmesianX/local-5g-handbook/releases/latest/download/local-5g-handbook-ko.pdf)** · [All editions](https://github.com/AmesianX/local-5g-handbook/releases)
 
-## 목차 (계획)
+One Linux box, one software-defined radio, one 5G modem and a SIM card whose secret key we wrote ourselves. This is the record of how we built a complete 5G mobile network in a single room, from the radio up through the core and the phone system, until a real Galaxy phone rang with a number issued by our own network.
 
-### Part I. 기초: 전파, 샘플, 변조
-- 00. 이 책을 읽는 법 (본 파일 아래 참조)
-- 01. 전파와 주파수: 빛과 같은 파동, 파장, 안테나, dB와 dBm
-- 02. SDR과 B210: 소프트웨어로 전파를 다루는 장치, 샘플과 대역폭
-- 03. OFDM과 5G NR 물리 계층: 부반송파, 슬롯, PRB, SSB, TDD
+> **Phreaking was the hacker's playground of the 1970s. Today, it's building your own local 5G network.**
 
-### Part II. 망의 구조와 동작 원리
-- 04. 이동통신망 한눈에 보기: 1G→5G 가 왜 바뀌었나(AMPS·GSM·CDMA·UMTS·LTE·NR), 무선(RAN)과 코어, 통신사라는 존재(로밍·상호접속·번호체계 E.164), 코어 시그널링의 세대(SS7→Diameter→HTTP/2)
-- 04a. SIM 카드의 정체: 스마트카드와 ISO 7816, APDU 한 바이트씩, 카드 안의 파일시스템(MF/DF/EF), Java Card, PIN·PUK·ADM 이 따로 있는 이유, 키(Ki)가 카드 밖으로 절대 안 나오는 설계, pySim 으로 우리가 한 일이 정확히 무엇이었나
-- 05. 5G 코어(5GC)와 서비스 기반 구조(SBI)
-- 06. 가입자 식별과 인증: IMSI, SUCI, USIM, Ki/OPc, AKA
-- 07. 세션과 IP 할당: PDU 세션, UPF, NAT, 단말 IP 대역
-- 08. 음성과 문자: IMS, VoNR, SIP, SMS over IMS, 영상통화(5QI 2), MMS(WAP 푸시 + HTTP), QoS(5QI)와 PCC
+*The book is written in Korean. This page introduces it in English.*
 
-### Part III. 구축과 실험
-- 09. 실험실 구성: 컨테이너, 네트워크, 설정 파일의 정본
-- 10. 기지국(gNB) 설정: 주파수 계획, 전력과 게인, 장치 고정
-- **11~16. 모뎀과 제어 인터페이스** — 이 책에서 가장 두꺼운 묶음이다. 독자의 경험 기억에서 출발한다.
-  - 11. 모뎀과 AT 명령: 글자 한 줄이 모뎀 안까지 가는 길 (시리얼·UART·가상 포트·파서 위치)
-  - 12. 모뎀의 역사와 다이얼업 해부: Bell 103 부터 56k 까지, PC통신·BBS, ATDT 한 줄 뒤에서 일어나는 일, 핸드셰이크 소리의 정체, 데이터 모드와 +++, PPP 가 5G PDU 세션의 조상인 이유
-  - 13. AT 명령 체계 전부: V.250 기본 명령, 3GPP 27.007 확장 명령, 문법 4형식, 결과 코드와 URC, 제조사 전용 명령(+Q/!/#/^), 문서에 없는 명령, SMS 를 AT 로 보내는 원리(PDU 모드)
-  - 14. AT 를 넘어서: 왜 AT 가 모자라는가, QMI(TLV 구조)·MBIM·RIL·ModemManager, 데이터 경로의 진화(PPP→RmNet→wwan0), 우리 실험에서 AT 와 QMI 를 어디에 썼나
-  - 15. 공격 표면과 신뢰 경계 (방어 관점만): 베이스밴드 분리, 공개 연구의 요지(ATtention Spanned 2018, Simjacker 2019), 모뎀 포트 권한, OS 자동관리에서의 격리, 실험실 위생
-  - 16. 엔지니어 모드 완전 해부: 휴대폰 서비스 모드·우리 모뎀 응답에 뜨는 **모든 용어**를 하나도 남기지 않고 푼다 (RSRP·RSRQ·SINR·CQI·MCS·RI·PCI·NCI·TAC·ARFCN·SSB·BW·SCS·TA·RRC 상태·SA/NSA·CA·5QI…)
-- 17. 시험 절차와 측정: 단계별 검증, 처리량, 게인 스윕, 차폐함 누설 계측, 통화 시험 도구
-- 18. 트러블슈팅 사례집: 실제로 막혔던 스물네 번과 풀이
+---
 
-### Part IV. 부록
-- A. 용어집 (전 장 통합)
-- B. 명령 레퍼런스
-- C. 설정 파일 맵
-- D. 전파와 법규 고지
+## A carrier of your own, in your own room
 
-## 이 저장소의 파일
+Most of us grew up believing that a mobile network is something only a handful of licensed carriers are allowed to run. That isn't wrong, but it helps to ask *why* spectrum has owners in the first place. Radio waves radiated into the open interfere with one another, degrade public services and trample on the carriers' business, so the airwaves can't be a free-for-all. Which raises an interesting question: what about a closed space from which not a single milliwatt escapes? If there is no one to interfere with, could we stand up a base station of our own and start signing up subscribers?
 
-| 파일 | 내용 |
+Picture it. We flash a blank SIM with a 128-bit key of our choosing, add one line with an IMSI and a phone number to our subscriber database, and slide the card into a Galaxy phone. The status bar lights up with `5G` and `HD`. We dial the number and the phone rings; we send a text and the bubble appears. And everything in between — the cryptographic handshake in which the phone proves who it is, the message that hands it an IP address, the SIP that sets up the call, the RTP packets carrying a voice — flows through our own Linux box, so we can follow, in Wireshark, a conversation the carriers have never once let us see.
+
+Push the idea a little further. The network's only way out to the internet is the Linux box's default route. Carry that box and the radio to a mountain hut, a ship at sea, or a village whose towers have fallen in an earthquake, plug a satellite terminal into that route, and *our* cell comes alive right there: people take the phones out of their pockets, insert a SIM we burned for them, and call each other and get online. A network that does everything a carrier does, without a carrier, that we can carry in our hands. This is not just a daydream, either. Japan has licensed exactly this kind of network to non-carriers since 2019 under the name **Local 5G**, Korea since 2021 as **e-Um 5G**, and those networks are built from the very same pieces this book assembles.
+
+## It started at 2600 Hz
+
+In the 1970s there were people in the United States who called themselves **phone phreaks**. Long-distance switches of the day signalled to one another over the very same line that carried your voice, so if you blew a 2600 Hz tone into the handset, the switch concluded the line was idle and sat waiting for its next command. A toy whistle given away in boxes of breakfast cereal produced exactly that pitch, and a device that generated the whole set of tones at the push of a button became known as the **blue box**. A college student named Steve Wozniak redesigned the blue box with digital circuitry, and his friend Steve Jobs sold them. Jobs later said that without the blue box there would have been no Apple — that it was where they first learned a giant system could be moved by a box that fit in your palm.
+
+For the half-century that followed, mobile networks became the most closed territory a hacker could face. The baseband runs its own firmware beneath the operating system, base stations sit on rooftops, and the core lives in refrigerator-sized racks inside the carrier's exchange; all we ever got to see were a few signal bars on the status bar. Then, quietly, the work inside those refrigerators turned into Linux processes calling one another over HTTP/2. Open-source cores and base stations matured to the point where real phones can attach to them, and programmable SIM cards became something an individual can simply order.
+
+The phreaks found ways to fool the switch. **Now we get to own the switch.** Just as hackers back then were hooked on peering into the guts of a continent-spanning network with nothing but a whistle, the engineer of our era has inherited that same thrill, and it takes the form of **building a 5G network in your own room.** The difference is that this time we aren't fooling anyone's network — we are building our own from end to end. Which is exactly why there is no need to hide it, and why we can publish it as a book and enjoy it together.
+
+## But what about the radio? Experiments A and B
+
+The dream is big, but the first step has to be careful. A radio experiment carries risk in two directions: outward, we must never disturb anyone else's communications; inward, we must not burn our own equipment. The whole book is built on two experiments that avoid both.
+
+**Experiment A — anyone, right now.** Instead of antennas, connect the software radio playing the base station (a B210) and the 5G modem module playing the phone **directly with coaxial cable, with an attenuator in between.** The signal travels only inside a metal tube instead of through the air, so nothing is radiated, and you can start on your desk without an expensive shielded enclosure. Registration and authentication, data and throughput, and even calls and texts placed by our own test tools — nearly the whole network is built and measured with this one setup. It is the idea this book cherishes most: rather than trapping radio waves, we never create them in the first place, and the modem under test doubles as the instrument that measures the network.
+
+**Experiment B — with a real phone.** What goes inside the shield box — a metal enclosure radio waves cannot escape — is **the phone, not the B210.** The B210 stays outside and its signal is fed through the wall of the box over coax, becoming radio only at a small antenna on the inside. The phone is the side whose antenna can't be removed, so the phone is what we enclose. Do it the other way round and the phone, left outside, hears a commercial cell thousands of times stronger and never even sees ours. You need to get hold of a shield box, so the bar is higher, but in return you get to experiment with the very phone in your pocket.
+
+> ⚠️ **Connect without an attenuator and you will burn your gear.** When a phone first raises its hand to the network it can shout at up to +23 dBm, while the B210's receiver is only good for about 0 dBm. A 40 dB attenuator brings that shout down to −17 dBm. And don't drop the attenuator just because you're inside the shield box: a hand's width of air barely takes anything off the signal. Section 0.7 has the full rules.
+
+## What we actually achieved
+
+Every number in this book was measured in our own lab. Throughout the text, calculated values are marked **[estimate]**, measured values **[measured]**, and anything still unconfirmed **[needs verification]**.
+
+| | |
 |---|---|
-| `00-머리말.md` ~ `18-*.md`, `부록A~D` | 책 본문 |
-| `reader.html` | 읽기용 단일 페이지 (빌드 산출물) |
-| `tools/build_reader.py`, `tools/reader_template.html` | 읽기 페이지 빌드 |
-| `tools/acronym_audit.py`, `tools/gloss_audit.py`, `tools/landing_audit.py` | 점검 도구 셋(약어·용어 풀이·절 착지) |
-| `tools/make_figures.py`, `tools/make_pdf.py` | 1~3 장 도표 생성, PDF 출력 |
-| `tools/ims_call.py`, `tools/milenage.py` | 책에 나오는 시험 도구 (키는 자리표시자) |
-| `집필기준.md` | 집필할 때 지키기로 한 기준. **책의 일부가 아니다** |
+| Radio | 5G NR SA, band n78 TDD, centre 3350.01 MHz (40 MHz clear of commercial allocations), 20 MHz |
+| RAN · Core | srsRAN Project + B210 · Open5GS 5GC + Kamailio IMS + PyHSS |
+| Experiment A | Quectel RM520N-GL modem + self-programmed sysmoISIM-SJA5, direct coax + 40 dB attenuator |
+| Experiment B | Real Galaxy S22+ handset inside a TOJOIN MS3020-A shield box |
+| Throughput (A) | 55 Mbps down / 11 Mbps up |
+| Round-trip latency | A: 38 ms, B: 25–31 ms (UE → UPF) |
+| Calls & messaging | VoNR voice calls, SMS, MMS, video call setup (on a real phone in experiment B) |
+| Shield-box leakage | Below detection limit |
 
-## 안전과 법규 (반드시 먼저 읽을 것)
+## Why we are sharing this
 
-이 책이 다루는 실험은 **전파를 실제로 방사하는 부분**을 포함한다.
+The phreaks traded what they discovered through newsletters and magazines, and we are doing the same with the road we stumbled along. Mobile networking has long been locked behind thousands of pages of standards and the doors of the carriers, and a curious engineer diving in alone can easily be worn out by decibels, channel numbers and SIM keys before ever bringing up a first cell. That was us, too. We lost half a day to a single USB 2.0 cable, chased 30 dB around the wrong corner of the system because we misread one number on an engineering screen, and watched a call setup that had worked between our scripts for four months get rejected by a real phone on its very first try.
 
-- 이동통신 주파수는 나라마다 허가 대상이다. 허가 없이 공중에 송신하면 법을 어기는 것이다.
-- 이 책의 실험은 **차폐함(전파가 밖으로 나가지 않도록 막힌 상자)** 안에서, 케이블로 직결하는 것을 전제로 한다.
-- 공중 방사 시험은 해당 국가의 무선국 허가 절차를 거친 뒤에만 한다.
-- 예시로 쓰는 PLMN 001/01 은 국제 표준이 시험용으로 정한 번호다. 상용 사업자의 번호와 주파수는 쓰지 않는다.
+So this book does not lay out theory first, textbook-style. Knowledge appears exactly where building experiment A gets stuck, as the answer to that particular block, and the twenty-four times we actually got stuck are preserved in a casebook — the symptom, the wrong hypotheses, the one decisive log line, and the fix. We want the next person not to lose the same hours in the same places. By the time you close the book, you should be able to explain what happens behind those signal bars not from someone else's diagram but from the logs of a network you brought up with your own hands.
 
-## 민감정보 원칙
+## Who it's for
 
-책에는 다음을 **실제 값으로 넣지 않는다**: 가입자 인증 키(Ki, OPc), 관리자 PIN(ADM), 개인 식별 번호(PIN/PUK), 실험실 내부 주소, 실제 전화번호. 모든 예시는 `<KI>`, `<OPC>`, `<ADM1>`, `<MSISDN>` 같은 자리표시자로 쓴다.
+Hackers and engineers who are at home with networking and Linux but have never studied electronics or mobile communications. If you can open a capture in Wireshark and spin up a container, you are ready; it's fine if you've never heard of a decibel or OFDM. Unfamiliar ideas are explained through things you already know — port numbers, relative paths, floating-point epsilon.
 
-## 표기 규칙
+## Contents
 
-- **굵은 글씨**: 그 장에서 처음 등장한 전문 용어. 옆에 정의가 붙는다.
-- `코드`: 실제 명령이나 설정 값. 이 실험실에서 실제로 쓴 것이다.
-- ⚠️: 실수하면 장비나 법규에 문제가 되는 지점.
-- 🔎: 직접 확인해 볼 수 있는 방법.
-- **측정**과 **추정**을 구분한다. 측정값은 이 실험실에서 실제로 잰 값이고, 추정값은 계산으로 얻은 상한이다. 둘을 섞지 않는다.
+| | | |
+|---|---|---|
+| | **Preface · Ch. 0** | A network of your own: why build it, experiments A and B, the rules that keep your gear alive |
+| **Part I** | Before the gear arrives | 1 Radio waves and frequency · 2 SDR and the B210 · 3 Mobile networks at a glance |
+| **Part II** | First signal | 4 Building the lab · 5 OFDM and the 5G NR physical layer · 6 The base station |
+| **Part III** | First subscriber | 7 What a SIM really is · 8 Modems and AT commands · 9 The 5G core and SBI · 10 Identity and authentication |
+| **Part IV** | The network walks | 11 Sessions and IP · 12 QMI and the data path · 13 Voice and text (IMS) · 14 The engineering screen, dissected · 15 Test procedure and measurement |
+| **Part V** | Experiment B | 16 A real phone inside the shield box |
+| **Part VI** | When you fall | 17 Casebook: the twenty-four times we got stuck |
+| **Part VII** | Going deeper | 18 History of the modem and dial-up, dissected · 19 The entire AT command system · 20 Attack surface and trust boundaries |
+| **Appendices** | | A Glossary · B Command reference · C Configuration file map · D Radio and legal notice |
 
-## 라이선스
+## Safety and the law
 
-MIT. © AmesianX. 본문의 모든 측정값과 로그는 이 실험실에서 얻은 것이다.
+Every experiment in this book assumes **nothing is radiated into the open air**: in experiment A the signal stays inside coaxial cable, in experiment B inside a shield box. Mobile spectrum requires a licence in every country, so transmitting over the air without one is against the law — and the 3.6 GHz values common in example configs sit right in the middle of commercial allocations, so never copy them as-is. PLMN 001/01 is the code the international standards set aside for testing. Appendix D collects where the law draws its lines; please read it before you power anything on.
+
+Real values for subscriber keys (Ki, OPc), card admin keys (ADM) and PIN/PUK never appear in the book; they are all replaced by placeholders such as `<KI>`, `<OPC>` and `<ADM1>`.
+
+## Repository layout
+
+| Path | Contents |
+|---|---|
+| `00-머리말.md`, `00a-…`, `01-…` – `20-…`, `부록A–D` | The book, in Markdown |
+| `reader.html` | Single-page reader with contents, search and reading position; download and open in a browser |
+| `images/` | Figures and real-phone screenshots |
+| `tools/make_pdf.py`, `tools/build_reader.py` | Build the PDF and the reader; the PDF build verifies every table-of-contents page number against the printed pages |
+| `tools/edit_guard.py` | Checks that an edited manuscript left code, numbers and cross-references untouched |
+| `tools/acronym_audit.py`, `tools/gloss_audit.py`, `tools/landing_audit.py` | Acronym, term-definition and section-ending audits |
+| `tools/ims_call.py`, `tools/milenage.py` | Test tools used in the book (keys are placeholders) |
+
+```bash
+python3 tools/build_reader.py   # reader.html
+python3 tools/make_pdf.py       # 로컬5G망구축하기.pdf (needs Playwright Chromium and poppler-utils)
+```
+
+## License
+
+MIT License. © AmesianX. All measurements and logs in the text come from this lab.
