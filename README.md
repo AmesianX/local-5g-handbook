@@ -84,20 +84,20 @@ Hackers and engineers who are at home with networking and Linux but have never s
 
 ## Contents
 
-| | | |
-|---|---|---|
-| | **Preface · Ch. 0** | A network of your own: why build it, experiments A and B, the rules that keep your gear alive |
-| 🅰️ | **Experiment A — build the network over coax** | Parts I–IV. B210 and 5G modem wired directly through attenuators. Anyone, right now |
-| **Part I** | Before the gear arrives | 1 Radio waves and frequency · 2 SDR and the B210 · 3 Mobile networks at a glance |
-| **Part II** | First signal | 4 Building the lab · 5 OFDM and the 5G NR physical layer · 6 The base station |
-| **Part III** | First subscriber | 7 What a SIM really is · 8 Modems and AT commands · 9 The 5G core and SBI · 10 Identity and authentication |
-| **Part IV** | The network walks | 11 Sessions and IP · 12 QMI and the data path · 13 Voice and text (IMS) · 14 The engineering screen, dissected · 15 Test procedure and measurement |
-| 🅱️ | **Experiment B — a real phone in a shield box** | Part V. Keep the network from A, swap the UE for a real phone |
-| **Part V** | Experiment B | 16 A real phone inside the shield box |
-| | **Beyond** | The casebook for when you get stuck, and background that makes you stronger |
-| **Part VI** | When you fall | 17 Casebook: the twenty-four times we got stuck |
-| **Part VII** | Going deeper | 18 History of the modem and dial-up, dissected · 19 The entire AT command system · 20 Attack surface and trust boundaries |
-| **Appendices** | | A Glossary · B Command reference · C Configuration file map · D Radio and legal notice |
+<table>
+<tr><td width="14%" nowrap></td><td width="26%"><b>Preface · Ch. 0</b></td><td width="60%">A network of your own: why build it, experiments A and B, the rules that keep your gear alive</td></tr>
+<tr><td nowrap>🅰️</td><td><b>Experiment A — build the network over coax</b></td><td>Parts I–IV. B210 and 5G modem wired directly through attenuators. Anyone, right now</td></tr>
+<tr><td nowrap><b>Part I</b></td><td>Before the gear arrives</td><td>1 Radio waves and frequency · 2 SDR and the B210 · 3 Mobile networks at a glance</td></tr>
+<tr><td nowrap><b>Part II</b></td><td>First signal</td><td>4 Building the lab · 5 OFDM and the 5G NR physical layer · 6 The base station</td></tr>
+<tr><td nowrap><b>Part III</b></td><td>First subscriber</td><td>7 What a SIM really is · 8 Modems and AT commands · 9 The 5G core and SBI · 10 Identity and authentication</td></tr>
+<tr><td nowrap><b>Part IV</b></td><td>The network walks</td><td>11 Sessions and IP · 12 QMI and the data path · 13 Voice and text (IMS) · 14 The engineering screen, dissected · 15 Test procedure and measurement</td></tr>
+<tr><td nowrap>🅱️</td><td><b>Experiment B — a real phone in a shield box</b></td><td>Part V. Keep the network from A, swap the UE for a real phone</td></tr>
+<tr><td nowrap><b>Part V</b></td><td>Experiment B</td><td>16 A real phone inside the shield box</td></tr>
+<tr><td nowrap></td><td><b>Beyond</b></td><td>The casebook for when you get stuck, and background that makes you stronger</td></tr>
+<tr><td nowrap><b>Part VI</b></td><td>When you fall</td><td>17 Casebook: the twenty-four times we got stuck</td></tr>
+<tr><td nowrap><b>Part VII</b></td><td>Going deeper</td><td>18 History of the modem and dial-up, dissected · 19 The entire AT command system · 20 Attack surface and trust boundaries</td></tr>
+<tr><td nowrap><b>Appendices</b></td><td></td><td>A Glossary · B Command reference · C Configuration file map · D Radio and legal notice</td></tr>
+</table>
 
 ## Safety and the law
 
@@ -205,20 +205,20 @@ MIT License. © AmesianX. All measurements and logs in the text come from this l
 
 ## 책의 구성
 
-| | | |
-|---|---|---|
-| | **머리말 · 0 장** | 나만의 이동통신망: 왜 세우는가, 실험 A 와 B, 장비를 태우지 않는 규칙 |
-| 🅰️ | **실험 A — 동축 케이블로 망을 세운다** | Part I~IV. B210 과 5G 모뎀을 감쇠기를 끼운 동축으로 직결. 누구나, 지금 바로 |
-| **Part I** | 장비가 오기 전에 | 1 전파와 주파수 · 2 SDR 과 B210 · 3 이동통신망 한눈에 보기 |
-| **Part II** | 첫 전파 | 4 실험실 구성 · 5 OFDM 과 5G NR 물리 계층 · 6 기지국 |
-| **Part III** | 첫 가입자 | 7 SIM 카드의 정체 · 8 모뎀과 AT 명령 · 9 5G 코어와 SBI · 10 가입자 식별과 인증 |
-| **Part IV** | 망이 걷는다 | 11 세션과 IP 할당 · 12 QMI 와 데이터 경로 · 13 음성과 문자(IMS) · 14 엔지니어 모드 완전 해부 · 15 시험 절차와 측정 |
-| 🅱️ | **실험 B — 차폐함 안의 진짜 폰** | Part V. 실험 A 로 세운 망을 그대로 두고 단말만 실물 폰으로 |
-| **Part V** | 실험 B | 16 차폐함 안에 진짜 폰을 올린다 |
-| | **그다음** | 막혔을 때 펴 보는 사례집과, 알면 더 강해지는 배경 |
-| **Part VI** | 넘어졌을 때 | 17 사례집: 우리가 막혔던 스물네 번 |
-| **Part VII** | 더 깊이 | 18 모뎀의 역사와 다이얼업 해부 · 19 AT 명령 체계 전부 · 20 공격 표면과 신뢰 경계 |
-| **부록** | | A 용어집 · B 명령 레퍼런스 · C 설정 파일 맵 · D 전파와 법규 고지 |
+<table>
+<tr><td width="14%" nowrap></td><td width="26%"><b>머리말 · 0 장</b></td><td width="60%">나만의 이동통신망: 왜 세우는가, 실험 A 와 B, 장비를 태우지 않는 규칙</td></tr>
+<tr><td nowrap>🅰️</td><td><b>실험 A — 동축 케이블로 망을 세운다</b></td><td>Part I~IV. B210 과 5G 모뎀을 감쇠기를 끼운 동축으로 직결. 누구나, 지금 바로</td></tr>
+<tr><td nowrap><b>Part I</b></td><td>장비가 오기 전에</td><td>1 전파와 주파수 · 2 SDR 과 B210 · 3 이동통신망 한눈에 보기</td></tr>
+<tr><td nowrap><b>Part II</b></td><td>첫 전파</td><td>4 실험실 구성 · 5 OFDM 과 5G NR 물리 계층 · 6 기지국</td></tr>
+<tr><td nowrap><b>Part III</b></td><td>첫 가입자</td><td>7 SIM 카드의 정체 · 8 모뎀과 AT 명령 · 9 5G 코어와 SBI · 10 가입자 식별과 인증</td></tr>
+<tr><td nowrap><b>Part IV</b></td><td>망이 걷는다</td><td>11 세션과 IP 할당 · 12 QMI 와 데이터 경로 · 13 음성과 문자(IMS) · 14 엔지니어 모드 완전 해부 · 15 시험 절차와 측정</td></tr>
+<tr><td nowrap>🅱️</td><td><b>실험 B — 차폐함 안의 진짜 폰</b></td><td>Part V. 실험 A 로 세운 망을 그대로 두고 단말만 실물 폰으로</td></tr>
+<tr><td nowrap><b>Part V</b></td><td>실험 B</td><td>16 차폐함 안에 진짜 폰을 올린다</td></tr>
+<tr><td nowrap></td><td><b>그다음</b></td><td>막혔을 때 펴 보는 사례집과, 알면 더 강해지는 배경</td></tr>
+<tr><td nowrap><b>Part VI</b></td><td>넘어졌을 때</td><td>17 사례집: 우리가 막혔던 스물네 번</td></tr>
+<tr><td nowrap><b>Part VII</b></td><td>더 깊이</td><td>18 모뎀의 역사와 다이얼업 해부 · 19 AT 명령 체계 전부 · 20 공격 표면과 신뢰 경계</td></tr>
+<tr><td nowrap><b>부록</b></td><td></td><td>A 용어집 · B 명령 레퍼런스 · C 설정 파일 맵 · D 전파와 법규 고지</td></tr>
+</table>
 
 처음 읽을 때는 순서대로 따라오는 편이 좋다. 이미 특정 문제를 쫓고 있다면 17 장 사례집에서 증상을 찾아 거기서 가리키는 장으로 거슬러 올라가도 된다.
 
