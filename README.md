@@ -85,7 +85,7 @@ Hackers and engineers who are at home with networking and Linux but have never s
 ## Contents
 
 <table>
-<tr><td width="14%" nowrap></td><td width="26%"><b>Preface · Ch. 0</b></td><td width="60%">A network of your own: why build it, experiments A and B, the rules that keep your gear alive</td></tr>
+<tr><td width="10%" nowrap></td><td width="34%"><b>Preface · Ch. 0</b></td><td width="56%">A network of your own: why build it, experiments A and B, the rules that keep your gear alive</td></tr>
 <tr><td nowrap>🅰️</td><td><b>Experiment A — build the network over coax</b></td><td>Parts I–IV. B210 and 5G modem wired directly through attenuators. Anyone, right now</td></tr>
 <tr><td nowrap><b>Part I</b></td><td>Before the gear arrives</td><td>1 Radio waves and frequency · 2 SDR and the B210 · 3 Mobile networks at a glance</td></tr>
 <tr><td nowrap><b>Part II</b></td><td>First signal</td><td>4 Building the lab · 5 OFDM and the 5G NR physical layer · 6 The base station</td></tr>
@@ -206,7 +206,7 @@ MIT License. © AmesianX. All measurements and logs in the text come from this l
 ## 책의 구성
 
 <table>
-<tr><td width="14%" nowrap></td><td width="26%"><b>머리말 · 0 장</b></td><td width="60%">나만의 이동통신망: 왜 세우는가, 실험 A 와 B, 장비를 태우지 않는 규칙</td></tr>
+<tr><td width="10%" nowrap></td><td width="34%"><b>머리말 · 0 장</b></td><td width="56%">나만의 이동통신망: 왜 세우는가, 실험 A 와 B, 장비를 태우지 않는 규칙</td></tr>
 <tr><td nowrap>🅰️</td><td><b>실험 A — 동축 케이블로 망을 세운다</b></td><td>Part I~IV. B210 과 5G 모뎀을 감쇠기를 끼운 동축으로 직결. 누구나, 지금 바로</td></tr>
 <tr><td nowrap><b>Part I</b></td><td>장비가 오기 전에</td><td>1 전파와 주파수 · 2 SDR 과 B210 · 3 이동통신망 한눈에 보기</td></tr>
 <tr><td nowrap><b>Part II</b></td><td>첫 전파</td><td>4 실험실 구성 · 5 OFDM 과 5G NR 물리 계층 · 6 기지국</td></tr>
