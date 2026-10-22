@@ -7,9 +7,7 @@
 import glob, html, pathlib, re, subprocess, sys
 
 HERE = pathlib.Path(__file__).resolve().parent.parent
-ORDER = ['00', '01', '02', '03', '04-', '04a', '05', '06', '07', '08', '09', '10',
-         '11-', '12', '13', '14', '15', '16', '17', '18',
-         '부록A', '부록B', '부록C', '부록D']
+ORDER = ['00-', '00a', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '부록A', '부록B', '부록C', '부록D']
 
 TITLES = {}
 
@@ -35,7 +33,7 @@ def chapter_meta(path, body_md):
     """장 번호·제목·부제를 뽑는다."""
     first = next((l for l in body_md.split('\n') if l.startswith('# ')), '# ' + path.stem)
     full = first[2:].strip()
-    if path.stem.startswith('00'):
+    if path.stem.startswith('00-'):            # 머리말만. 00a 는 0 장이다
         return '머리말', '로컬 5G 망 구축', ''
     m = re.match(r'^(부록\s*[A-D]|[0-9]+[a-z]?)\.\s*(.+)$', full)
     if m:
