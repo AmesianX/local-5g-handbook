@@ -1,6 +1,6 @@
 # 부록 C. 설정 파일 맵: 어떤 값이 어느 파일에서 와서 어느 프로세스가 읽는가
 
-이 망에서 무언가를 바꾸려 할 때 가장 먼저 부딪히는 질문은 "그 값이 어디 있느냐"다. AMF 의 주소는 `amf.yaml` 에 있는 것처럼 보이지만 실제로는 `.env` 에서 오고, 단말 IP 대역은 `smf.yaml` 에 써 있지만 그 줄을 고치면 다음 기동 때 사라진다. 이 부록은 그 지도를 한 장으로 모은다. 4장 4.5절의 원칙 — **정본은 `private5g/configs/`, 클론은 배포 사본, 컨테이너 안은 기동 때마다 다시 만들어지는 결과물** — 을 전제로 읽는다.
+망 설정을 바꾸려다 보면 값을 어떻게 고칠지보다, 그 값이 어디서 왔는지 찾는 데 먼저 막히곤 한다. AMF 의 주소는 `amf.yaml` 에 있는 것처럼 보이지만 실제로는 `.env` 에서 오고, 단말 IP 대역은 `smf.yaml` 에 써 있지만 그 줄을 고치면 다음 기동 때 사라진다. 그럴 때 따라갈 지도를 여기에 모았다. 4장 4.5절에서 살펴본 대로 정본은 `private5g/configs/`, 클론은 배포 사본, 컨테이너 안은 기동 때마다 다시 만들어지는 결과물이라는 점을 기억하며 따라가 보자.
 
 ## C.1 값이 흐르는 세 단계
 
@@ -16,9 +16,9 @@ private5g/configs/srsran/   ──▶  docker_open5gs/srsran/ ──(볼륨)─�
         (cmp 로 다른 것만, --check 는 차이만 출력)
 ```
 
-① 앞에는 단계가 하나 더 있다. 비밀값과 호스트 고유값 — Ki·OPc·ADM1, B210 시리얼, 호스트 LAN 주소, 폰 주소 — 은 `configs/secrets/lab.env` 한 파일에만 있고(저장소에는 `lab.env.example` 만), `configs/env/env.in`·`configs/srsran/gnb.yml.in`·`configs/oai/nr-ue.n78.rfsim.conf.in` 템플릿의 `@B210_SERIAL@` 같은 자리를 `deploy-configs.sh` 가 그 값으로 채워 ①을 만든다(2026-10-15 저장소 정리 뒤의 구조). 렌더된 ①은 추적하지 않는다. 그러므로 `env/env` 나 `gnb.yml` 을 직접 고치면 다음 배포 때 템플릿으로 덮인다 — **고칠 곳은 `.in` 이고, 비밀값은 `lab.env` 다.**
+그런데 ①을 만들기 전에도 단계가 하나 더 있다. 비밀값과 호스트 고유값 — Ki·OPc·ADM1, B210 시리얼, 호스트 LAN 주소, 폰 주소 — 은 `configs/secrets/lab.env` 한 파일에만 있고(저장소에는 `lab.env.example` 만), `configs/env/env.in`·`configs/srsran/gnb.yml.in`·`configs/oai/nr-ue.n78.rfsim.conf.in` 템플릿의 `@B210_SERIAL@` 같은 자리를 `deploy-configs.sh` 가 그 값으로 채워 ①을 만든다(2026-10-15 저장소 정리 뒤의 구조). 렌더된 ①은 추적하지 않으므로 `env/env` 나 `gnb.yml` 을 직접 고치면 다음 배포 때 템플릿으로 덮이게 된다. 우리가 고칠 곳은 `.in` 이고, 비밀값은 `lab.env` 에 두어야 한다.
 
-①→② 는 `deploy-configs.sh` 가 하고, `core-ctl.sh START` 가 기동 전에 이것을 먼저 부른다. ②→③ 은 도커와 각 컨테이너의 `*_init.sh` 가 한다. 예를 들어 `amf_init.sh` 는 클론의 `amf/amf.yaml` 을 컨테이너 안으로 복사한 뒤 `AMF_IP`, `MCC`, `MNC`, `TAC` 같은 글자를 `sed` 로 env 값으로 바꾼다. 그래서 **값을 바꾸려면 ①의 템플릿(`*.in`, 비밀값은 `secrets/lab.env`)을 고치고, 확인은 ③에서 한다.**
+①→② 는 `deploy-configs.sh` 가 하고, `core-ctl.sh START` 가 기동 전에 이것을 먼저 부른다. ②→③ 은 도커와 각 컨테이너의 `*_init.sh` 가 한다. 예를 들어 `amf_init.sh` 는 클론의 `amf/amf.yaml` 을 컨테이너 안으로 복사한 뒤 `AMF_IP`, `MCC`, `MNC`, `TAC` 같은 글자를 `sed` 로 env 값으로 바꾼다. 그러니 값을 바꾸려면 ①의 템플릿(`*.in`, 비밀값은 `secrets/lab.env`)을 고친 뒤, 실제 반영 여부는 ③에서 확인하면 된다.
 
 ```bash
 bin/deploy-configs.sh --check                     # ①과 ②가 같은가
@@ -46,7 +46,7 @@ OAI 시뮬레이션 프로파일(`compose/oai_n78_rfsim.yaml` 과 `configs/oai/g
 
 ## C.3 우리가 업스트림 기본값에서 바꾼 것 전부
 
-업스트림(`herlesupreeth/docker_open5gs`)의 기본값과 다른 곳은 아래가 전부다. 각 줄의 "왜"가 본문 어디에 있는지 함께 적는다. 새로 실험실을 꾸리는 독자는 이 표를 체크리스트로 쓰면 된다.
+업스트림(`herlesupreeth/docker_open5gs`)의 기본값에서 바꾼 곳을 아래에 모았다. 각 줄의 "왜"가 본문 어디에 있는지 함께 적는다. 처음 실험실을 꾸린다면 이 표를 따라 하나씩 확인해 보자.
 
 **`.env`**
 
@@ -58,7 +58,7 @@ OAI 시뮬레이션 프로파일(`compose/oai_n78_rfsim.yaml` 과 `configs/oai/g
 
 - `device_args: type=b200,serial=5JKRCXX,fpga=/mnt/srsran/libresdr_alphafox02.bin,num_recv_frames=64,num_send_frames=64` — 장치 고정(4.2, 6.7 사고 1), LibreSDR 전용 FPGA, USB 버퍼 수.
 - `otw_format: sc12` — USB 위의 샘플을 12비트로 보내 대역폭을 줄인다(2장).
-- `tx_gain: 80`, `rx_gain: 36` — 업스트림 기본값은 74 다(`gnb.yml.orig.bak`). 실제 경로는 **74 → 40 → 65 → 80** 이었다. 74 에서 40 으로 내린 이유는 기록에 없고("송신 게인은 최소에서 시작한다"는 원칙으로 짐작할 뿐이다 [검증 필요]), 40 에서는 모뎀이 셀을 못 봐 10 월 5 일에 65 로 올렸으며(`docs/modem.md`), 65 → 80 이 6.8 이다. 백업은 `configs/_backup/gnb.yml.gain74.bak`·`gnb.yml.gain65.bak` 이고 40 짜리 백업은 없다.
+- `tx_gain: 80`, `rx_gain: 36` — 업스트림 기본값은 74 다(`gnb.yml.orig.bak`). 실제 경로는 74 → 40 → 65 → 80 이었다. 74 에서 40 으로 내린 이유는 기록에 없고("송신 게인은 최소에서 시작한다"는 원칙으로 짐작할 뿐이다 [검증 필요]), 40 에서는 모뎀이 셀을 못 봐 10 월 5 일에 65 로 올렸으며(`docs/modem.md`), 65 → 80 이 6.8 이다. 백업은 `configs/_backup/gnb.yml.gain74.bak`·`gnb.yml.gain65.bak` 이고 40 짜리 백업은 없다.
 - `dl_arfcn: 623334`, `band: 78`, `channel_bandwidth_MHz: 20`, `common_scs: 30` — 주파수 계획(6.6). 기동 로그상 SSB 는 `dl_ssb_arfcn=623040`(3345.6 MHz) 로 선택됐다.
 - `pci: 1`.
 
@@ -68,20 +68,20 @@ OAI 시뮬레이션 프로파일(`compose/oai_n78_rfsim.yaml` 과 `configs/oai/g
 
 **`pcscf/route/{register,mo,mt}.cfg`**
 
-- P-CSCF 가 PCF 에 보내는 N5 정책 요청(JSON, `Npcf_PolicyAuthorization`) 안의 미디어 컴포넌트마다 있던 `"qosReference": "qosVoNR"` 줄을 지웠다(발신 4곳, 착신 4곳, 등록 1곳). 원본은 `configs/_backup/*.qosref.bak`(2026-09-21). **바꾼 이유는 당시 기록에 남아 있지 않다.** 우리가 소스에서 확인한 것은 다음뿐이다. 로컬에 받아 둔 Open5GS 소스(`src/pcf/npcf-handler.c`, 2026-09-19 커밋 bb810d3)의 PCF 는 `qosReference` 가 오면 자기 설정의 `qos_profile` 목록에서 같은 이름을 찾고, 없으면 `"Unknown qosReference - check PCF qos_profiles config"` 로 거절한다. `qosReference` 가 없으면 미디어 종류로 정한다 — AUDIO 는 QoS 인덱스 1, VIDEO 는 2. 우리 PCF 설정에는 `qosVoNR` 이라는 프로파일이 없다. 그러므로 이 줄을 지운 것이 PCF 가 음성에 5QI 1, 영상에 5QI 2 를 고르게 한 경로와 일치한다. 다만 실제로 돌고 있는 PCF 이미지는 `v2.8.0-48-gf87da61` 이고 그 커밋이 로컬 소스에 없어 같은 코드인지 확인하지 못했다 [검증 필요].
+- P-CSCF 가 PCF 에 보내는 N5 정책 요청(JSON, `Npcf_PolicyAuthorization`) 안의 미디어 컴포넌트마다 있던 `"qosReference": "qosVoNR"` 줄을 지웠다(발신 4곳, 착신 4곳, 등록 1곳). 원본은 `configs/_backup/*.qosref.bak`(2026-09-21). 바꾼 이유는 당시 기록에 남아 있지 않다. 우리가 소스에서 확인한 것은 다음뿐이다. 로컬에 받아 둔 Open5GS 소스(`src/pcf/npcf-handler.c`, 2026-09-19 커밋 bb810d3)의 PCF 는 `qosReference` 가 오면 자기 설정의 `qos_profile` 목록에서 같은 이름을 찾고, 없으면 `"Unknown qosReference - check PCF qos_profiles config"` 로 거절한다. `qosReference` 가 없으면 미디어 종류로 정한다 — AUDIO 는 QoS 인덱스 1, VIDEO 는 2. 우리 PCF 설정에는 `qosVoNR` 이라는 프로파일이 없다. 그러므로 이 줄을 지운 것이 PCF 가 음성에 5QI 1, 영상에 5QI 2 를 고르게 한 경로와 일치한다. 다만 실제로 돌고 있는 PCF 이미지는 `v2.8.0-48-gf87da61` 이고 그 커밋이 로컬 소스에 없어 같은 코드인지 확인하지 못했다 [검증 필요].
 
 **`sa-vonr-deploy.yaml`** (코어·IMS compose 정의)
 
 - PyHSS REST(8080), webui(9999), grafana(3000), metrics(9090) 의 `ports:` 를 `0.0.0.0` 공개에서 `127.0.0.1:` 로 바꿨다. 업스트림 기본은 호스트의 모든 인터페이스에 공개라, 인증 없는 PyHSS API 가 LAN 에 열려 있었다(20.4). 원본은 `configs/_backup/sa-vonr-deploy.yaml.pre-loopback.bak`.
 
-**호스트 쪽 (컨테이너 밖)**
+호스트 쪽 (컨테이너 밖)
 
 - `/etc/udev/rules.d/99-private5g-modem-ignore.rules` — ModemManager 가 우리 모뎀(2c7c:0801)을 건드리지 않게 한다(4.3, 17장).
 - `~/.uhd/uhd.conf` — 시리얼별 FPGA 이미지 지정. 호스트에서 UHD 도구를 직접 쓸 때만 읽힌다(4.6).
 
 ## C.4 파일이 아닌 설정: 데이터베이스에 든 것
 
-망의 일부 설정은 파일이 아니라 **DB 안에** 있다. 이것들은 `deploy-configs.sh` 가 다루지 않고, 컨테이너를 지워도 도커 볼륨에 남는다. 반대로 볼륨을 지우면 사라진다.
+파일만 찾아서는 나오지 않는 설정도 있다. DB 안의 값들은 `deploy-configs.sh` 가 다루지 않고, 컨테이너를 지워도 도커 볼륨에 남는다. 다만 볼륨까지 지우면 함께 사라지니 구별해 두자.
 
 **`mongo` — 5G 코어 가입자(Open5GS).** 가입자마다 IMSI, 키(K, OPc), AMF 필드, 그리고 DNN 별 세션 설정이 한 문서에 들어 있다. 우리가 넣거나 바꾼 것은 이렇다. `ims` DNN 세션의 기본 5QI 를 5 로(13장 — 5QI 9 면 PCF 가 IMS 시그널링을 거절), 그리고 **5QI 1 PCC 규칙**(음성. 없으면 PCF 가 `No PCC Rule in DB [QoS Index:1]` 로 거절, 17장)과 **5QI 2 PCC 규칙**(영상). 2026-10-14 에 DB 를 다시 읽어 보니 통화에 쓴 가입자 둘은 `internet`·`ims` 두 세션 모두에 PCC 규칙 [1, 2] 가 들어 있었고, 그중 하나는 `internet` 세션 기본 5QI 도 5 로 올라가 있었다(실험 중 바꾼 흔적). 세 번째 가입자(시뮬레이션용)는 PCC 규칙이 없다. 확인은 이렇게 한다.
 
@@ -94,11 +94,11 @@ docker exec mongo mongosh open5gs --quiet --eval \
 
 **`smsc` 의 메시지 표.** SMSC 가 받아 둔 문자는 MySQL 의 SMSC 스키마(`smsc-create.sql`)에 쌓였다가 전달 뒤 지워진다. 전달이 멈추면 여기에 남아 있는 것이 증거다(17장).
 
-DB 의 내용은 키를 포함하므로 **이 책과 저장소에는 넣지 않는다.** 백업이 필요하면 `docker exec mongo mongodump --archive > open5gs.archive` 처럼 받아 실험실 밖으로 내보내지 않는 곳에 둔다.
+DB 에는 키도 들어 있으므로 그 내용은 책과 저장소에 싣지 않았다. 백업이 필요하면 `docker exec mongo mongodump --archive > open5gs.archive` 처럼 받아 실험실 밖으로 내보내지 않는 곳에 둔다.
 
 ## C.5 런타임에만 존재하는 것
 
-다음은 설정 파일이 아니라 기동 스크립트가 **매번 만드는** 상태다. 이상하면 파일이 아니라 만드는 스크립트를 본다.
+다음 항목들은 설정 파일에 고정되어 있지 않고, 기동 스크립트가 실행할 때마다 만드는 상태다. 값이 이상하다면 만들어진 파일만 고치지 말고 그 상태를 만든 스크립트까지 따라가 보자.
 
 | 상태 | 만드는 곳 | 확인 |
 |---|---|---|
