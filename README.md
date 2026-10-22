@@ -62,6 +62,22 @@ The phreaks traded what they discovered through newsletters and magazines, and w
 
 So this book does not lay out theory first, textbook-style. Knowledge appears exactly where building experiment A gets stuck, as the answer to that particular block, and the twenty-four times we actually got stuck are preserved in a casebook — the symptom, the wrong hypotheses, the one decisive log line, and the fix. We want the next person not to lose the same hours in the same places. By the time you close the book, you should be able to explain what happens behind those signal bars not from someone else's diagram but from the logs of a network you brought up with your own hands.
 
+## The hardware in our lab
+
+<table>
+<tr>
+<td align="center" valign="top"><a href="images/photos/sim-cards.jpg"><img src="images/photos/sim-cards.jpg" width="220" alt="sysmoISIM-SJA5 cards (9FV and S17). PIN, PUK and IMSI blurred"></a><br><sub>sysmoISIM-SJA5 cards (9FV and S17). PIN, PUK and IMSI blurred</sub></td>
+<td align="center" valign="top"><a href="images/photos/shieldbox.jpg"><img src="images/photos/shieldbox.jpg" width="220" alt="The shield box, TOJOIN MS3020-A"></a><br><sub>The shield box, TOJOIN MS3020-A</sub></td>
+<td align="center" valign="top"><a href="images/photos/shieldbox-open.jpg"><img src="images/photos/shieldbox-open.jpg" width="220" alt="Lid open. The phone goes in here"></a><br><sub>Lid open. The phone goes in here</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top"><a href="images/photos/shieldbox-filter-panel.jpg"><img src="images/photos/shieldbox-filter-panel.jpg" width="220" alt="Filter panel: RJ45, USB and power feed-throughs, SMA ports"></a><br><sub>Filter panel: RJ45, USB and power feed-throughs, SMA ports</sub></td>
+<td align="center" valign="top"><a href="images/photos/shieldbox-test-report.jpg"><img src="images/photos/shieldbox-test-report.jpg" width="220" alt="Factory test report: −101.8 dB at 3.5 GHz"></a><br><sub>Factory test report: −101.8 dB at 3.5 GHz</sub></td>
+</tr>
+</table>
+
+<sub>Click a photo to see it full size.</sub>
+
 ## Who it's for
 
 Hackers and engineers who are at home with networking and Linux but have never studied electronics or mobile communications. If you can open a capture in Wireshark and spin up a container, you are ready; it's fine if you've never heard of a decibel or OFDM. Unfamiliar ideas are explained through things you already know — port numbers, relative paths, floating-point epsilon.
@@ -163,6 +179,22 @@ MIT License. © AmesianX. All measurements and logs in the text come from this l
 프리커들이 소식지와 잡지로 자기가 알아낸 것을 서로 나눴듯이, 우리도 우리가 헤맨 길을 그대로 내놓는다. 이동통신은 오랫동안 표준 문서 수천 쪽과 통신사의 문 너머에 갇혀 있던 지식이라, 호기심 많은 엔지니어가 혼자 뛰어들면 첫 셀을 띄우기도 전에 데시벨과 주파수 번호와 SIM 키 앞에서 지쳐 버리기 쉽다. 우리도 그랬다. USB 2.0 케이블 하나 때문에 반나절을 날렸고, 엔지니어 모드의 숫자 하나를 잘못 읽어 30 dB 를 엉뚱한 데서 찾아 헤맸고, 넉 달 동안 스크립트끼리는 잘 통하던 전화를 실물 폰은 첫 통화에서 거절했다.
 
 그래서 이 책은 교과서처럼 지식을 먼저 늘어놓지 않는다. 실험 A 를 세우다가 막히는 바로 그 자리에서 그 막힘을 푸는 답으로 지식을 꺼내고, 우리가 실제로 막혔던 스물네 번은 증상과 틀린 가설과 결정적인 로그 한 줄과 조치까지 사례집에 그대로 남겼다. 다음 사람이 같은 자리에서 같은 시간을 버리지 않기를 바라서다. 이 책을 덮을 즈음에는 상태바의 안테나 막대 뒤에서 무슨 일이 일어나는지를, 남이 그려 준 그림이 아니라 우리 손으로 띄운 망의 로그로 설명할 수 있게 될 것이다.
+
+## 우리 실험실의 장비
+
+<table>
+<tr>
+<td align="center" valign="top"><a href="images/photos/sim-cards.jpg"><img src="images/photos/sim-cards.jpg" width="220" alt="sysmoISIM-SJA5 카드 두 종(9FV·S17). PIN·PUK·IMSI 는 가렸다"></a><br><sub>sysmoISIM-SJA5 카드 두 종(9FV·S17). PIN·PUK·IMSI 는 가렸다</sub></td>
+<td align="center" valign="top"><a href="images/photos/shieldbox.jpg"><img src="images/photos/shieldbox.jpg" width="220" alt="차폐함 TOJOIN MS3020-A"></a><br><sub>차폐함 TOJOIN MS3020-A</sub></td>
+<td align="center" valign="top"><a href="images/photos/shieldbox-open.jpg"><img src="images/photos/shieldbox-open.jpg" width="220" alt="뚜껑을 연 차폐함. 이 안에 폰이 들어간다"></a><br><sub>뚜껑을 연 차폐함. 이 안에 폰이 들어간다</sub></td>
+</tr>
+<tr>
+<td align="center" valign="top"><a href="images/photos/shieldbox-filter-panel.jpg"><img src="images/photos/shieldbox-filter-panel.jpg" width="220" alt="필터 패널: RJ45·USB·전원 관통과 SMA 단자"></a><br><sub>필터 패널: RJ45·USB·전원 관통과 SMA 단자</sub></td>
+<td align="center" valign="top"><a href="images/photos/shieldbox-test-report.jpg"><img src="images/photos/shieldbox-test-report.jpg" width="220" alt="공장 시험 성적서: 3.5 GHz 에서 −101.8 dB"></a><br><sub>공장 시험 성적서: 3.5 GHz 에서 −101.8 dB</sub></td>
+</tr>
+</table>
+
+<sub>사진을 누르면 크게 볼 수 있다.</sub>
 
 ## 이런 사람을 위해 썼다
 
