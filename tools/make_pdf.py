@@ -332,7 +332,7 @@ def audit(front_pages):
                          capture_output=True).stdout.decode('utf-8', 'replace')
     ok, bad = 0, 0
     for title, num in re.findall(r'^\s*(.+?)\s{2,}(\d{1,3})\s*$', toc, re.M):
-        t = _squeeze(re.sub(r'^(?:\d{2}[a-z]?|부록\s*[A-D]|머리말)\s+', '', title.strip()))
+        t = _squeeze(re.sub(r'^(?:\d{1,2}[a-z]?|부록\s*[A-D]|머리말)\s+', '', title.strip()))
         if len(t) < 5:
             continue
         i = front_pages + int(num) - 1
