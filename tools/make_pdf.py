@@ -229,7 +229,12 @@ def _squeeze(s):
 
 def page_texts(pdf):
     """PDF 각 쪽의 글자를 쪽 순서대로 돌려준다 (공백 제거본)."""
-    raw = subprocess.run(['pdftotext', '-q', str(pdf), '-'],
+    # -raw: 콘텐츠 스트림에 적힌 순서로 읽는다. 기본 모드는 읽기 순서를 좌표로
+    # 추정하는데, 두 줄로 넘어간 장 제목의 조각을 거꾸로 정렬하는 일이 있었다
+    # (실측: '02. SDR과 B210: …' 이 '과 B210: …02. SDR' 로 나와 장 경계 탐지가
+    # 무너지고 절 61 개가 범위 밖으로 밀렸다). -raw 는 이 문서에서 제목을 정확히
+    # 복원하며, 이미 발행한 PDF 로 대조해도 결과가 같다(298/298).
+    raw = subprocess.run(['pdftotext', '-q', '-raw', str(pdf), '-'],
                          check=True, capture_output=True).stdout.decode('utf-8', 'replace')
     pages = raw.split('\f')
     if pages and not pages[-1].strip():
