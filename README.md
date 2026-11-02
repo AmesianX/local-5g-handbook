@@ -129,7 +129,7 @@ MIT License. © AmesianX. All measurements and logs in the text come from this l
 
 </details>
 
-> **📕 [PDF 내려받기 (A4, 183쪽)](https://github.com/AmesianX/local-5g-handbook/releases/latest/download/local-5g-handbook-ko.pdf)** · [모든 판 보기](https://github.com/AmesianX/local-5g-handbook/releases)
+> **📕 [PDF 내려받기 (A4, 182쪽)](https://github.com/AmesianX/local-5g-handbook/releases/latest/download/local-5g-handbook-ko.pdf)** · [모든 판 보기](https://github.com/AmesianX/local-5g-handbook/releases)
 
 리눅스 한 대, 소프트웨어 라디오 하나, 5G 모뎀 하나, 그리고 비밀 키를 직접 써 넣은 SIM 카드 한 장으로 우리 방에 5G 이동통신망을 세우고, 실물 갤럭시 폰에 우리 망의 번호로 전화를 걸어 벨을 울리기까지의 기록이다.
 
