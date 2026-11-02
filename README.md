@@ -195,7 +195,7 @@ MIT License. © AmesianX. All measurements and logs in the text come from this l
 <tr>
 <td align="center" valign="top"><a href="images/photos/shieldbox-filter-panel.jpg"><img src="images/photos/shieldbox-filter-panel.jpg" width="220" alt="필터 패널: RJ45·USB·전원 관통과 SMA 단자"></a><br><sub>필터 패널: RJ45·USB·전원 관통과 SMA 단자</sub></td>
 <td align="center" valign="top"><a href="images/photos/shieldbox-test-report.jpg"><img src="images/photos/shieldbox-test-report.jpg" width="220" alt="공장 시험 성적서: 3.5 GHz 에서 −101.8 dB"></a><br><sub>공장 시험 성적서: 3.5 GHz 에서 −101.8 dB</sub></td>
-<td align="center" valign="top"><a href="images/photos/b210-rm520n.jpg"><img src="images/photos/b210-rm520n.jpg" width="220" alt="USRP B210 (left) and the Quectel RM520N-GL modem (right), joined by coax with inline attenuators"></a><br><sub>USRP B210 (left) and the Quectel RM520N-GL modem (right), joined by coax with inline attenuators</sub></td>
+<td align="center" valign="top"><a href="images/photos/b210-rm520n.jpg"><img src="images/photos/b210-rm520n.jpg" width="220" alt="왼쪽이 USRP B210, 오른쪽이 Quectel RM520N-GL 모뎀. 안테나 없이 동축선으로 잇고 중간에 감쇠기를 넣어 세기를 낮춘다"></a><br><sub>왼쪽이 USRP B210, 오른쪽이 Quectel RM520N-GL 모뎀. 안테나 없이 동축선으로 잇고 중간에 감쇠기를 넣어 세기를 낮춘다</sub></td>
 </tr>
 </table>
 
